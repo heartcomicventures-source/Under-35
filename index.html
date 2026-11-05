@@ -94,6 +94,10 @@ section{padding:14px}
 .live{margin:0 0 10px}
 .lvrow{display:flex;align-items:center;flex-wrap:wrap;gap:8px}
 .lvbtn{height:34px;padding:0 14px}
+.lk{margin:8px 0 0;font-size:11px;color:var(--mut);display:flex;align-items:center;flex-wrap:wrap;gap:6px 8px}
+.lk a{padding:1px 8px;border-radius:5px;background:var(--chip);border:1px solid var(--line);color:var(--tx);font-size:11px;font-weight:600;text-decoration:none}
+.lk span,.lk small{flex-basis:100%}
+.lk small{font-size:10px;color:var(--mut)}
 .lvauto{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--mut)}
 .lvauto input{width:16px;height:16px;accent-color:var(--grn)}
 #lvlist{margin-top:8px;background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden}
@@ -281,6 +285,9 @@ body{touch-action:manipulation;-webkit-text-size-adjust:100%;-webkit-tap-highlig
  body .ckrow{gap:10px 16px;font-size:12px}
  body .ckrow input[type=checkbox]{width:24px;height:24px}
  body .pu{padding:9px 16px;font-size:12px}
+ body .lk{font-size:12px}
+ body .lk a{padding:9px 16px;font-size:12px}
+ body .lk small{font-size:11px}
  body .pgo{height:38px}
  body .paste textarea{height:38px}
  body .paste textarea:focus{height:96px}
@@ -342,6 +349,7 @@ body{touch-action:manipulation;-webkit-text-size-adjust:100%;-webkit-tap-highlig
      <button type="button" class="pu" id="lvunlink" data-a="lvunlink" hidden>Unlink</button>
      <label class="lvauto" id="lvautow" hidden><input type="checkbox" id="lvauto">Auto every 30 s</label>
     </div>
+    <p class="lk" id="lk" hidden><span>Check this match on</span><a id="lk_sofa" target="_blank" rel="noopener noreferrer">Sofascore</a> <a id="lk_fs" target="_blank" rel="noopener noreferrer">FootyStats</a><small>Opens a web search for the match name below.</small></p>
     <p class="pres" id="lvmsg" role="status" hidden></p>
     <div id="lvlist" hidden>
      <input id="lvfilter" type="text" placeholder="Filter by team or league" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Filter live matches">
@@ -349,7 +357,7 @@ body{touch-action:manipulation;-webkit-text-size-adjust:100%;-webkit-tap-highlig
     </div>
    </div>
    <div class="paste">
-    <div class="prow"><textarea id="paste" rows="1" placeholder="Paste stats here, or type a quick line" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Paste match stats"></textarea><button type="button" class="pgo" data-a="pfill">Fill</button></div>
+    <div class="prow"><textarea id="paste" rows="1" placeholder="Paste or type a stats line" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Paste match stats"></textarea><button type="button" class="pgo" data-a="pfill">Fill</button></div>
     <p class="pres" id="pres" hidden><span id="prt"></span><button type="button" class="pu" id="pundo" data-a="pundo" hidden>Undo</button></p>
    </div>
    <div class="mg">
@@ -930,6 +938,19 @@ function recordImport(text){
  }
  return out.length?out:null;
 }
+// Look-up links: a web search limited to one stats site, for the match name on screen. Empty when there is no real match name.
+const LK_SITES={sofa:'sofascore.com',fs:'footystats.org'};
+function lookupQuery(name){
+ if(typeof name!=='string')return '';
+ const t=name.replace(/\s+/g,' ').trim();
+ if(!t||/^example match$/i.test(t))return '';
+ return t.replace(/\s+(?:v|vs|vs\.|-|–|—)\s+/i,' ').slice(0,60);
+}
+function lookupUrl(site,name){
+ const q=lookupQuery(name),d=LK_SITES[site];
+ if(!q||!d)return '';
+ return 'https://www.google.com/search?q='+encodeURIComponent(q+' site:'+d);
+}
 //</logic>
 
 const D={start:50,targetMult:1.07,days:2,perDay:6,minOdds:1.06,dayLoss:1,cool:15,maxStreak:2,stop:10,stakePct:10,stakeCap:10,avgMax:1,minFrom:60,minTo:65,goalsBelow:3,sotMax:3,xgMax:1.2,side:'under',line:3.5,m:{},ovAvg:1.5,ovGoals:3,ovSot:8,ovXg:3,scope:'both',staking:'flat',gate:'block',carry:'reset',fmt:'dec',comm:0};
@@ -987,8 +1008,15 @@ function gate(v,ev,stk){
  return'';
 }
 
+function lkSync(name){
+ const a=lookupUrl('sofa',name),b=lookupUrl('fs',name);
+ $('lk').hidden=!a;
+ if(a){$('lk_sofa').href=a;$('lk_fs').href=b}
+ else{$('lk_sofa').removeAttribute('href');$('lk_fs').removeAttribute('href')}
+}
 function update(){
  const v=rd(),ev=evaluate(v,c),vd=verdict(ev,v,c),left=betsLeft(s,c),tg=rnd(s.start*c.targetMult),stk=stakeFor(v,c,s.bal,left,tg),why=gate(v,ev,stk),fin=s.ended||!!s.halt,locked=s.lockUntil>Date.now();
+ lkSync(v.name);
  $('lbl').textContent='Day '+Math.min(s.day,c.days)+' of '+c.days+': next stake';
  $('stake').textContent=fmt(stk.amt);
  $('sub').textContent=v.odds>1?('Wins '+fmt(rnd(stk.amt*(v.odds-1)))+' at odds '+v.odds):(stk.why||'Enter the odds to see the return');
