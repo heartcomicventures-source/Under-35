@@ -1320,7 +1320,7 @@ function update(){
    return '<div class="ob"><span class="oi"><b>'+esc(o.name||'Match')+'</b><small>'+fmt(o.stake)+' at '+o.odds+'</small>'+(sg?'<small class="osg">'+esc(sg.text)+' Tap '+(pick==='won'?'Won':pick==='lost'?'Lost':'Void')+' to confirm.</small>':'')+'</span>'+bt('won','Won',' w')+bt('lost','Lost',' l')+bt('void','Void','')+'</div>';
   }).join('');
  }
- a+='<button class="buy" type="button" data-a="logbet"'+(why?' disabled':'')+'>LOG '+mkName(c.side,lineOf(c)).toUpperCase()+'</button><button class="neu" type="button" data-a="next">NEXT MATCH</button><p>'+(why?esc(why):'Place the bet with your bookmaker, then log it here.')+'</p>';
+ a+='<button class="buy" type="button" data-a="logbet"'+(why?' disabled':'')+'>LOG '+mkName(c.side,lineOf(c)).toUpperCase()+'</button><button class="neu" type="button" data-a="next">NEXT MATCH</button><p>'+(why?esc(why):'Place the bet with your bookmaker, then log it here.')+'</p>'+(live&&live.id!=null?'<p class="pace" id="asnote">This match is linked. After you log the bet, its final result is checked for you and Won, Lost or Void is suggested.</p>':apiKey?'<p class="pace" id="asnote">Tip: pick the match with Live matches or Scan first. A linked match gets its result checked for you after you log the bet.</p>':'');
  $('acts').innerHTML=a;
 
  const eb=$('endbtn');
