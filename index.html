@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Under 3.5 Panel</title>
-<meta name="description" content="Manual checklist and stake tracker for betting soccer goal lines (Under and Over) at any platform's odds, with optional live stats from your own API-Sports key.">
+<meta name="description" content="Manual checklist, stake tracker and backtest for betting soccer goal lines (Under and Over) at any platform's odds, with optional live stats from your own API-Sports key.">
 <meta name="theme-color" content="#080c0f" media="(prefers-color-scheme: dark)">
 <meta name="theme-color" content="#e5eaed" media="(prefers-color-scheme: light)">
 <meta name="mobile-web-app-capable" content="yes">
@@ -98,6 +98,24 @@ section{padding:14px}
 .lk a{padding:1px 8px;border-radius:5px;background:var(--chip);border:1px solid var(--line);color:var(--tx);font-size:11px;font-weight:600;text-decoration:none}
 .lk span,.lk small{flex-basis:100%}
 .lk small{font-size:10px;color:var(--mut)}
+.keyl select{display:block;width:100%;margin-top:3px;padding:8px 10px;background:var(--card);color:var(--tx);border:1px solid var(--line);border-radius:8px;font:600 14px var(--body)}
+.btf{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.btf .keyl{margin:0;min-width:0}
+.btf .full{grid-column:1/-1}
+.btf .btmh{margin:0;align-self:end;padding-bottom:12px}
+.btbtns{display:flex;gap:10px}
+.btbtns .wide{flex:1;width:auto}
+#btsig{padding:10px 12px;border-radius:10px;font-size:12px;margin-bottom:10px;background:var(--card);border:1.5px solid var(--line);color:var(--mut)}
+#btsig b{display:block;font:700 22px/1.1 var(--display);letter-spacing:.05em;margin-bottom:3px}
+#btsig p{margin:3px 0 0;color:var(--tx);opacity:.9}
+#btsig.go{background:var(--grnbg);border-color:var(--grn);color:var(--grn)}
+#btsig.am{background:var(--ambbg);border-color:var(--amb);color:var(--amb)}
+#btsig.bad{background:var(--redbg);border-color:var(--red);color:var(--red)}
+.bttw{overflow-x:auto;margin-bottom:10px}
+.bttb{width:100%;border-collapse:collapse;font-size:12px;font-variant-numeric:tabular-nums}
+.bttb th{font-size:11px;color:var(--mut);font-weight:600;text-align:right;padding:6px 8px;border-bottom:1px solid var(--line)}
+.bttb td{padding:7px 8px;text-align:right;border-bottom:1px solid var(--line)}
+.bttb th:first-child,.bttb td:first-child{text-align:left}
 .lvauto{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--mut)}
 .lvauto input{width:16px;height:16px;accent-color:var(--grn)}
 #lvlist{margin-top:8px;background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden}
@@ -273,10 +291,10 @@ body.compact{padding-block:10px}
 /* Touch screens: 16px fields stop iPhone Safari zooming in when you tap a field, and the small buttons get bigger tap targets */
 body{touch-action:manipulation;-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent}
 @media (pointer:coarse),(hover:none){
- body input:not([type=checkbox]),body select,body .mg select,body textarea,body .ckrow input[type=time],body .paste textarea,body #lvfilter{font-size:16px}
+ body input:not([type=checkbox]),body select,body .mg select,body .keyl select,body .rmk select,body textarea,body .ckrow input[type=time],body .paste textarea,body #lvfilter{font-size:16px}
  body .lvauto input{width:24px;height:24px}
  body .lvauto{font-size:12px}
- body .keyl input{min-height:44px}
+ body .keyl input,body .keyl select{min-height:44px}
  body .lvr{padding:12px 10px}
  body .lvbtn{height:38px}
  body .brand select{font-size:20px}
@@ -315,7 +333,7 @@ body{touch-action:manipulation;-webkit-text-size-adjust:100%;-webkit-tap-highlig
   <button id="theme" type="button" aria-label="Switch between light and dark"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" style="display:block;margin:auto"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M8 2a6 6 0 0 1 0 12z" fill="currentColor"/></svg></button>
   <button id="pause" type="button" aria-label="Pause or resume betting">❚❚</button>
  </header>
- <nav class="tabs"><button type="button" class="on" data-t="bet">Bet</button><button type="button" data-t="rec">Record</button><button type="button" data-t="set">Settings</button></nav>
+ <nav class="tabs"><button type="button" class="on" data-t="bet">Bet</button><button type="button" data-t="rec">Record</button><button type="button" data-t="bt">Backtest</button><button type="button" data-t="set">Settings</button></nav>
  <p class="ckalert" id="ckalert" role="status" hidden></p>
 
  <section id="v-bet">
@@ -440,6 +458,36 @@ body{touch-action:manipulation;-webkit-text-size-adjust:100%;-webkit-tap-highlig
   <button class="wide" id="r_reset" type="button" data-a="rreset">Reset record</button>
  </section>
 
+ <section id="v-bt" hidden>
+  <div id="btsig"><b id="bth">BACKTEST</b><p id="btt">Replays finished matches against your rules to see how often they would have won. Run it on your hosted page or the standalone file.</p></div>
+  <p class="pace" id="btmk"></p>
+  <div class="btf">
+   <label class="keyl">Days back<select id="bt_days"><option value="3">3 days</option><option value="7" selected>7 days</option><option value="14">14 days</option><option value="30">30 days</option></select></label>
+   <label class="keyl">Matches to check<input id="bt_max" inputmode="numeric" autocomplete="off" value="100"></label>
+   <label class="keyl full">League or country (optional)<input id="bt_filter" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="e.g. England, La Liga, or leave empty"></label>
+   <label class="keyl">Minute to test<input id="bt_min" inputmode="numeric" autocomplete="off" value="60"></label>
+   <p class="pace btmh" id="btmh"></p>
+  </div>
+  <p class="pace am" id="btkey" hidden>Add your API-Sports key in Settings first.</p>
+  <div class="btbtns"><button type="button" class="wide pri" id="btgo" data-a="btgo">Run backtest</button><button type="button" class="wide" id="btstop" data-a="btstop" hidden>Stop</button></div>
+  <p class="pace" id="btmsg" role="status" hidden></p>
+  <div id="btres" hidden>
+   <div class="grid">
+    <div><small>Matches checked</small><b id="bt_n"></b></div>
+    <div><small>Passed your rules</small><b id="bt_in"></b></div>
+    <div><small>Win rate when passed</small><b id="bt_rate"></b></div>
+    <div><small id="bt_bel">Break-even rate</small><b id="bt_be"></b></div>
+    <div><small>Likely true range (95%)</small><b id="bt_ci"></b></div>
+    <div><small>Odds needed to profit</small><b id="bt_fair"></b></div>
+    <div><small>Win rate with no rules</small><b id="bt_base"></b></div>
+    <div><small>Left out</small><b id="bt_skip"></b></div>
+   </div>
+   <p class="pace" id="bt_gl">By goals scored so far, for the matches that passed</p>
+   <div class="bttw"><table class="bttb"><thead><tr><th>Goals in</th><th>Matches</th><th>Won</th><th>Win rate</th><th>Odds needed</th></tr></thead><tbody id="bttb"></tbody></table></div>
+  </div>
+  <p class="pace" id="btnote">Uses one request per day, one per league and one per match checked. When there are more matches than you set, they are spread evenly across the days.</p>
+ </section>
+
  <section id="v-set" hidden>
   <div id="form"></div>
   <div class="fold sfold" id="fd-sl">
@@ -449,7 +497,7 @@ body{touch-action:manipulation;-webkit-text-size-adjust:100%;-webkit-tap-highlig
     <div class="two"><button type="button" class="wide" data-a="keysave">Save key</button><button type="button" class="wide" data-a="keytest">Test</button></div>
     <button type="button" class="wide" data-a="keyforget" id="keyforget">Remove key</button>
     <p class="pace" id="keymsg" role="status" hidden></p>
-    <p class="pace">Optional. With a key, Live matches on the Bet tab fills the minute, score, shots on target, xG and last-5 average goals for you. The key stays in this browser and is sent only to api-sports.io. It is never part of a copied record. Each refresh uses 2 requests.</p>
+    <p class="pace">Optional. With a key, Live matches on the Bet tab fills the minute, score, shots on target, xG and last-5 average goals for you. The key stays in this browser and is sent only to api-sports.io. It is never part of a copied record. Each refresh uses 2 requests. The Backtest tab uses the same key.</p>
    </div>
   </div>
   <div class="fold sfold" id="fd-sr"><button type="button" class="fhd" data-f="sr" aria-expanded="true"><span class="ft">Goal check</span><i class="chev"></i></button><div class="fb"><div id="risk"></div></div></div>
@@ -937,6 +985,107 @@ function recordImport(text){
   out.push({at:isFinite(at)?at:0,odds:o,stake:s,res:x.r==='w'?'won':'lost',pnl:p,mk:/^[uo][0-9]\.5$/.test(String(x.m))?String(x.m):'u3.5'});
  }
  return out.length?out:null;
+}
+// ---- Backtest: replays finished matches against the rules that CAN be rebuilt from after-match data.
+// Rebuildable: last-5 average goals, the entry window, and goals so far at the entry minute. Shots on target and xG at minute N
+// are not in after-match data (only full-match totals), so those two rules are left out and said to be left out.
+// Finished matches from /fixtures?date=&status=FT (regular time only: status FT).
+function btList(j){
+ const a=j&&Array.isArray(j.response)?j.response:[],out=[];
+ a.forEach(r=>{
+  try{
+   const f=r.fixture||{},st=f.status||{},t=r.teams||{},g=r.goals||{},l=r.league||{};
+   if(!f.id||!t.home||!t.away||st.short!=='FT')return;
+   const gh=nOrNull(g.home),ga=nOrNull(g.away);
+   if(gh==null||ga==null)return;
+   let ts=nOrNull(f.timestamp);
+   if(ts==null&&f.date){const p=Date.parse(f.date);if(isFinite(p))ts=Math.floor(p/1000)}
+   if(ts==null)return;
+   out.push({id:f.id,ts:ts,home:{id:t.home.id,name:String(t.home.name||'Home')},away:{id:t.away.id,name:String(t.away.name||'Away')},gh:gh,ga:ga,league:String(l.name||''),leagueId:l.id==null?null:l.id,season:nOrNull(l.season),country:String(l.country||'')});
+  }catch(e){}
+ });
+ return out;
+}
+// One league season: goals each team scored, oldest first, so a team's last-5 average before any match can be worked out.
+function btIndex(j){
+ const idx={};
+ (j&&Array.isArray(j.response)?j.response:[]).forEach(r=>{
+  const m=btList({response:[r]})[0];
+  if(!m)return;
+  (idx[m.home.id]=idx[m.home.id]||[]).push({t:m.ts,g:m.gh});
+  (idx[m.away.id]=idx[m.away.id]||[]).push({t:m.ts,g:m.ga});
+ });
+ Object.keys(idx).forEach(k=>idx[k].sort((a,b)=>a.t-b.t));
+ return idx;
+}
+// Average goals scored in the team's last 5 league games before kickoff (needs at least 3).
+function btAvg(idx,teamId,ts){
+ const a=idx&&idx[teamId];
+ if(!a)return null;
+ const p=a.filter(x=>x.t<ts).slice(-5);
+ return p.length>=3?Math.round(p.reduce((s,x)=>s+x.g,0)/p.length*100)/100:null;
+}
+// /fixtures/events: goals at or before a minute, per side. The goals must add up to the final score or the match is dropped
+// (cancelled goals, own-goal labelling and thin coverage make the timing unreliable). Own goals are tried both ways round.
+function btGoalsAt(j,homeId,awayId,fh,fa,minute){
+ const a=j&&Array.isArray(j.response)?j.response:null;
+ if(!a)return null;
+ const goals=a.filter(e=>e&&e.type==='Goal'&&e.detail!=='Missed Penalty'&&e.team&&e.time&&nOrNull(e.time.elapsed)!=null);
+ for(const flip of [false,true]){
+  let H=0,A=0,h=0,w=0;
+  goals.forEach(e=>{
+   let side=e.team.id===homeId?'H':e.team.id===awayId?'A':null;
+   if(!side)return;
+   if(flip&&e.detail==='Own Goal')side=side==='H'?'A':'H';
+   const early=nOrNull(e.time.elapsed)<=minute;
+   if(side==='H'){H++;if(early)h++}else{A++;if(early)w++}
+  });
+  if(H===fh&&A===fa)return{gh:h,ga:w};
+ }
+ return null;
+}
+// One match at the entry minute, run through the real rule engine with shots on target, xG and odds left unknown.
+// state: dead (nothing left to bet), noavg (no last-5 average yet), out (a testable rule fails), in (all testable rules pass).
+function btRow(m,c,minute){
+ const ev=evaluate({avgH:m.avgH==null?null:m.avgH,avgA:m.avgA==null?null:m.avgA,min:minute,gh:m.gh,ga:m.ga,sotH:null,sotA:null,xgh:null,xga:null,odds:null},c);
+ const tot=m.fh+m.fa,won=ev.over?tot>ev.mg:tot<=ev.mg;
+ const st=['Avg','Time','Goals'].map(s=>{const r=ev.R.find(x=>x.s===s);return r?r.st:'e'});
+ const state=ev.dead?'dead':st.indexOf('f')>=0?'out':st.indexOf('e')>=0?'noavg':'in';
+ return{state:state,won:won,total:m.gh+m.ga};
+}
+// Evenly spaced sample across the period, so a cap does not keep only one day or one league.
+function btPick(list,max){
+ const a=list.slice().sort((x,y)=>x.ts-y.ts||x.id-y.id);
+ if(a.length<=max)return a;
+ const out=[];
+ for(let i=0;i<max;i++)out.push(a[Math.floor(i*a.length/max)]);
+ return out;
+}
+// The n days before today, oldest first.
+function btDays(n,today){
+ const base=Date.parse(today+'T00:00:00Z');
+ if(!isFinite(base))return [];
+ const out=[];
+ for(let i=n;i>=1;i--)out.push(new Date(base-i*864e5).toISOString().slice(0,10));
+ return out;
+}
+// Counts, win rate against break-even at your minimum odds (through the same maths as the Record tab), the no-rules baseline, and a split by goals so far.
+function btSummary(rows,c){
+ const a=Array.isArray(rows)?rows:[];
+ const cnt={all:a.length,noavg:0,dead:0,out:0,inn:0},inn=[],base=[];
+ a.forEach(r=>{
+  if(r.state==='noavg')cnt.noavg++;
+  else if(r.state==='dead')cnt.dead++;
+  else{base.push(r);if(r.state==='in'){cnt.inn++;inn.push(r)}else cnt.out++}
+ });
+ const odds=c&&c.minOdds>1?c.minOdds:1.06;
+ const rs=recordStats(inn.map(r=>({res:r.won?'won':'lost',odds:odds,stake:1,pnl:r.won?rnd(odds-1):-1})),1);
+ const wins=x=>x.filter(r=>r.won).length;
+ const groups={};
+ inn.forEach(r=>{const k=Math.min(r.total,9);const g=groups[k]||(groups[k]={goals:k,n:0,w:0});g.n++;if(r.won)g.w++});
+ const byGoals=Object.keys(groups).map(Number).sort((x,y)=>x-y).map(k=>{const g=groups[k];return{goals:k,n:g.n,w:g.w,rate:g.w/g.n,fair:g.w?Math.round(g.n/g.w*100)/100:null}});
+ const bw=wins(base);
+ return{cnt:cnt,odds:odds,rs:rs,baseN:base.length,baseW:bw,baseRate:base.length?bw/base.length:null,byGoals:byGoals,fair:rs.rate?Math.round(100/rs.rate)/100:null,fairSafe:rs.lo?Math.round(100/rs.lo)/100:null};
 }
 // Look-up links: a web search limited to one stats site, for the match name on screen. Empty when there is no real match name.
 const LK_SITES={sofa:'sofascore.com',fs:'footystats.org'};
@@ -1513,6 +1662,117 @@ function nextMatch(focus){
  if(focus!==false)$('i_avgH').focus();
 }
 
+// ---- Backtest tab: needs the API key. One request per day, per league and per match checked.
+let btRun=false,btStop=false,btReq=0;
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const btClamp=(x,lo,hi,d)=>{const n=parseInt(x,10);return isFinite(n)?Math.max(lo,Math.min(hi,n)):d};
+function btMsg(t,bad){const m=$('btmsg');m.textContent=t||'';m.hidden=!t;m.className='pace'+(bad?' am':'')}
+function btOpen(){
+ $('btmk').textContent='Tests '+mkName(c.side,lineOf(c))+' with the rules in Settings: entry window '+c.minFrom+'–'+c.minTo+', minimum odds '+c.minOdds+'.';
+ const mi=$('bt_min'),v=parseInt(mi.value,10);
+ if(!(v>=c.minFrom&&v<=c.minTo))mi.value=String(c.minFrom);
+ $('btmh').textContent='Any minute from '+c.minFrom+' to '+c.minTo+', your entry window.';
+ $('btkey').hidden=!!apiKey;
+}
+// One API call, waiting out the per-minute limit a few times before giving up.
+async function btGet(path){
+ for(let i=0;;i++){
+  btReq++;
+  try{return await apiGet(path)}
+  catch(e){
+   if(/Too many requests/.test(e.message)&&i<3&&!btStop){btMsg('Waiting 20 seconds for the per-minute limit…');await sleep(20000);continue}
+   throw e;
+  }
+ }
+}
+function btRender(sm,info){
+ const r=sm.rs,n=r.n,p=pct1,nm=mkName(c.side,lineOf(c)),sg=$('btsig');
+ let kind,head,text;
+ if(!n){
+  kind='am';head='NOTHING PASSED';
+  text='None of the '+sm.cnt.all+' matches checked passed your rules for '+nm+' at minute '+info.minute+'. Try more days, more matches or a wider league filter.';
+ }else{
+  kind=r.kind==='idle'?'am':r.kind;head=r.head;
+  text=r.w+' of '+n+' matches that passed would have won ('+p(r.rate)+'). At your minimum odds of '+sm.odds+' you need '+p(r.be)+' to break even. Likely true rate: '+p(r.lo)+' to '+p(r.hi)+'.'
+   +(r.kind==='bad'?' Even the generous end is under break-even, so on these rules this market loses money at those odds.'
+    :r.kind==='go'?' Even the cautious end beats break-even. That is a sample of past matches, not a promise.'
+    :n<REC_MIN?' Below '+REC_MIN+' matches the win rate is mostly luck. Check more days or matches.'
+    :' The range straddles break-even, so this sample cannot tell.');
+ }
+ sg.className=kind;$('bth').textContent=head;$('btt').textContent=text;
+ $('bt_n').textContent=String(sm.cnt.all);
+ $('bt_in').textContent=String(n);
+ $('bt_rate').textContent=n?p(r.rate):'–';
+ $('bt_bel').textContent='Break-even at odds '+sm.odds;
+ $('bt_be').textContent=n?p(r.be):'–';
+ $('bt_ci').textContent=n?p(r.lo)+' to '+p(r.hi):'–';
+ $('bt_fair').textContent=n?sm.fair.toFixed(2)+' to '+sm.fairSafe.toFixed(2):'–';
+ $('bt_base').textContent=sm.baseN?p(sm.baseRate)+' ('+sm.baseN+')':'–';
+ $('bt_skip').textContent=String(sm.cnt.noavg+sm.cnt.dead+info.skipped);
+ $('bttb').innerHTML=sm.byGoals.map(g=>'<tr><td>'+(g.goals>=9?'9+':g.goals)+'</td><td>'+g.n+'</td><td>'+g.w+'</td><td>'+p(g.rate)+'</td><td>'+(g.fair==null?'–':g.fair.toFixed(2))+'</td></tr>').join('');
+ $('bt_gl').hidden=!sm.byGoals.length;
+ $('btres').hidden=false;
+ $('btnote').textContent='Tested '+nm+' on '+info.checked+' of '+info.found+' finished matches found over '+info.days+' days'+(info.q?' for "'+info.q+'"':'')+', at minute '+info.minute+'. '
+  +'Rules tested: average goals (last 5 league games before each match), the entry window and goals so far. Shots on target and xG could not be tested, because after-match data only has full-match totals and not the value at minute '+info.minute+'. '
+  +'Left out: '+sm.cnt.noavg+' with no average yet, '+sm.cnt.dead+' already decided at that minute'+(info.skipped?', '+info.skipped+' whose goal times did not add up to the final score':'')+'. '
+  +'"Odds needed" is the price where that win rate breaks even, up to the cautious end of the range. Real prices move with the score, so read the table, not just the top. Used '+info.req+' requests.';
+}
+async function btStart(){
+ if(btRun)return;
+ if(!apiKey){$('btkey').hidden=false;btMsg('');return}
+ const days=btClamp($('bt_days').value,1,30,7),max=btClamp($('bt_max').value,10,400,100);
+ const minute=Math.max(c.minFrom,Math.min(c.minTo,btClamp($('bt_min').value,0,89,c.minFrom)));
+ $('bt_max').value=String(max);$('bt_min').value=String(minute);
+ const q=$('bt_filter').value.trim(),cfg=Object.assign({},c);
+ btRun=true;btStop=false;btReq=0;$('btgo').hidden=true;$('btstop').hidden=false;$('btkey').hidden=true;
+ $('btres').hidden=true;$('btsig').className='';$('bth').textContent='RUNNING';$('btt').textContent='Replaying finished matches against your rules. This can take a minute. You can stop at any time.';
+ const rows=[];let skipped=0,err='',stopped=false,none=false,found=0,picked=[];
+ const chk=()=>{if(btStop)throw new Error('__stop')};
+ try{
+  let all=[];
+  const ds=btDays(days,dayKey());
+  for(let i=0;i<ds.length;i++){
+   chk();btMsg('Reading finished matches: day '+(i+1)+' of '+ds.length+'…');
+   all=all.concat(btList(await btGet('/fixtures?date='+ds[i]+'&status=FT')));
+  }
+  const hit=apiFilter(all,q);found=hit.length;
+  picked=btPick(hit,max);
+  if(!picked.length)throw new Error('__none');
+  const keys=[],idxs={};
+  picked.forEach(m=>{if(m.leagueId!=null&&m.season!=null){const k=m.leagueId+'|'+m.season;if(keys.indexOf(k)<0)keys.push(k)}});
+  for(let i=0;i<keys.length;i++){
+   chk();btMsg('Reading league form: '+(i+1)+' of '+keys.length+'…');
+   const pr=keys[i].split('|');
+   idxs[keys[i]]=btIndex(await btGet('/fixtures?league='+encodeURIComponent(pr[0])+'&season='+encodeURIComponent(pr[1])+'&status=FT'));
+  }
+  for(let i=0;i<picked.length&&!err;i+=3){
+   chk();btMsg('Checking goal times: '+Math.min(i+3,picked.length)+' of '+picked.length+'…');
+   const res=await Promise.all(picked.slice(i,i+3).map(m=>btGet('/fixtures/events?fixture='+encodeURIComponent(m.id)).then(j=>({m:m,j:j}),e=>({m:m,e:e}))));
+   res.forEach(x=>{
+    if(x.e){err=err||x.e.message;return}
+    const m=x.m,gl=btGoalsAt(x.j,m.home.id,m.away.id,m.gh,m.ga,minute);
+    if(!gl){skipped++;return}
+    const idx=idxs[m.leagueId+'|'+m.season];
+    rows.push(btRow({avgH:btAvg(idx,m.home.id,m.ts),avgA:btAvg(idx,m.away.id,m.ts),gh:gl.gh,ga:gl.ga,fh:m.gh,fa:m.ga},cfg,minute));
+   });
+  }
+ }catch(e){
+  if(e&&e.message==='__stop')stopped=true;else if(e&&e.message==='__none')none=true;else err=(e&&e.message)||'Something went wrong.';
+ }
+ btRun=false;$('btgo').hidden=false;$('btstop').hidden=true;
+ if(none){
+  $('btsig').className='am';$('bth').textContent='NO MATCHES';$('btt').textContent='Nothing was tested.';
+  btMsg('No finished matches found'+(q?' for "'+q+'"':'')+' in the last '+days+' days. Try more days or clear the filter.',true);return;
+ }
+ if(rows.length||picked.length&&!err&&!stopped){
+  btRender(btSummary(rows,cfg),{minute:minute,found:found,checked:rows.length,days:days,q:q,skipped:skipped,req:btReq});
+ }else{
+  $('btsig').className='am';$('bth').textContent='STOPPED';$('btt').textContent='Nothing was tested.';
+ }
+ if(err)btMsg('Stopped early: '+err+(rows.length?' Showing the '+rows.length+' matches checked so far.':''),true);
+ else if(stopped)btMsg('Stopped.'+(rows.length?' Showing the '+rows.length+' matches checked so far.':''));
+ else if(picked.length)btMsg('Done. '+rows.length+' matches checked'+(skipped?', '+skipped+' left out because their goal times did not add up':'')+'.');
+}
 function buildForm(){
  const sel=(k,l,o)=>'<label>'+l+'<select id="f_'+k+'">'+o.map(x=>'<option value="'+x[0]+'"'+(String(c[k])===x[0]?' selected':'')+'>'+x[1]+'</option>').join('')+'</select></label>';
  const nf=k=>'<label>'+FD[k][0]+'<input id="f_'+k+'" type="number" step="'+FD[k][1]+'" min="0" value="'+c[k]+'"></label>';
@@ -1573,8 +1833,8 @@ document.addEventListener('click',e=>{
  const t=e.target.closest('[data-t]');
  if(t){
   document.querySelectorAll('.tabs button').forEach(x=>x.classList.toggle('on',x===t));
-  $('v-bet').hidden=t.dataset.t!=='bet';$('v-set').hidden=t.dataset.t!=='set';$('v-rec').hidden=t.dataset.t!=='rec';
-  if(t.dataset.t==='set')buildForm();else if(t.dataset.t==='rec'){rmsg('');$('r_out').hidden=true;renderRec()}else update();
+  $('v-bet').hidden=t.dataset.t!=='bet';$('v-set').hidden=t.dataset.t!=='set';$('v-rec').hidden=t.dataset.t!=='rec';$('v-bt').hidden=t.dataset.t!=='bt';
+  if(t.dataset.t==='set')buildForm();else if(t.dataset.t==='rec'){rmsg('');$('r_out').hidden=true;renderRec()}else if(t.dataset.t==='bt')btOpen();else update();
   return;
  }
  const a=e.target.closest('[data-a]');if(!a)return;
@@ -1586,6 +1846,8 @@ document.addEventListener('click',e=>{
  else if(k==='rcopy')recCopy();
  else if(k==='rrestore')recRestore();
  else if(k==='rreset'){if(rrArm){book=[];bookSave();rrArm=0;clearTimeout(rrT)}else{rrArm=1;clearTimeout(rrT);rrT=setTimeout(()=>{rrArm=0;renderRec()},4000)}renderRec()}
+ else if(k==='btgo')btStart();
+ else if(k==='btstop'){btStop=true;btMsg('Stopping after the current step…')}
  else if(k==='lvopen')lvOpen();
  else if(k==='lvpick')lvPick(a.dataset.id);
  else if(k==='lvrefresh')lvRefresh(false);
