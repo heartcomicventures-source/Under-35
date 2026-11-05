@@ -26,6 +26,7 @@ img{max-width:100%}
 <style>
 :root{
  /* Layout: one 360px control panel in the style of the reference. Stake on top, a numbered chip for every bet in the session, match inputs that turn green or red as they pass or fail, a big verdict box, six rule rows, session stats with a goal check, then open bets and actions. */
+ --xg1:#3987e5;--xg2:#d95926;
  --bg:#080c0f;--panel:#10151a;--card:#161c22;--line:#232b33;--tx:#edf1f3;--mut:#8693a0;
  --grn:#34d17f;--grnbg:#0e2a1c;--red:#ff5b60;--redbg:#2d1316;--amb:#f2b23d;--ambbg:#2a2110;--chip:#1b222a;
  --display:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;
@@ -33,9 +34,9 @@ img{max-width:100%}
  color-scheme:dark;
 }
 @media (prefers-color-scheme: light){
- :root:not([data-theme="dark"]){--bg:#e5eaed;--panel:#ffffff;--card:#f0f3f5;--line:#d8dee3;--tx:#12181d;--mut:#5f6e7c;--grn:#0b8a4b;--grnbg:#dff4e8;--red:#cf2f35;--redbg:#fce7e8;--amb:#94600c;--ambbg:#fbf0d9;--chip:#e2e7eb;color-scheme:light}
+ :root:not([data-theme="dark"]){--xg1:#2a78d6;--xg2:#eb6834;--bg:#e5eaed;--panel:#ffffff;--card:#f0f3f5;--line:#d8dee3;--tx:#12181d;--mut:#5f6e7c;--grn:#0b8a4b;--grnbg:#dff4e8;--red:#cf2f35;--redbg:#fce7e8;--amb:#94600c;--ambbg:#fbf0d9;--chip:#e2e7eb;color-scheme:light}
 }
-:root[data-theme="light"]{--bg:#e5eaed;--panel:#ffffff;--card:#f0f3f5;--line:#d8dee3;--tx:#12181d;--mut:#5f6e7c;--grn:#0b8a4b;--grnbg:#dff4e8;--red:#cf2f35;--redbg:#fce7e8;--amb:#94600c;--ambbg:#fbf0d9;--chip:#e2e7eb;color-scheme:light}
+:root[data-theme="light"]{--xg1:#2a78d6;--xg2:#eb6834;--bg:#e5eaed;--panel:#ffffff;--card:#f0f3f5;--line:#d8dee3;--tx:#12181d;--mut:#5f6e7c;--grn:#0b8a4b;--grnbg:#dff4e8;--red:#cf2f35;--redbg:#fce7e8;--amb:#94600c;--ambbg:#fbf0d9;--chip:#e2e7eb;color-scheme:light}
 
 *,*::before,*::after{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--tx);font:14px/1.4 var(--body);padding-block:20px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;justify-content:center}
@@ -146,6 +147,51 @@ section{padding:14px}
 .snage{margin:-4px 0 10px;font-size:11px;color:var(--mut);text-align:center}
 .snage.am{color:var(--amb);font-weight:600}
 .snaps{margin-top:10px}
+/* xG graph: thin lines, hairline grid, a dashed limit, line keys instead of boxes */
+.xgcard{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px;margin-bottom:10px}
+.xgleg{display:flex;flex-wrap:wrap;gap:4px 12px;margin:0 0 8px;font-size:11px;color:var(--mut)}
+.xgk{display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+.xgk b{color:var(--tx);font-weight:700;font-variant-numeric:tabular-nums}
+.xgk i{display:inline-block;flex:none}
+.xgk .ln{width:16px;height:0;border-top:2px solid var(--tx)}
+.xgk .ln.s1{border-top-color:var(--xg1)}
+.xgk .ln.s2{border-top-color:var(--xg2)}
+.xgk .ln.lim{border-top:2px dashed var(--tx);opacity:.7}
+.xgk .sq{width:12px;height:10px;border-radius:2px;background:var(--mut);opacity:.22}
+.xgbox{position:relative;touch-action:pan-y;border-radius:6px;-webkit-tap-highlight-color:transparent}
+.xgbox:focus-visible{outline:2px solid var(--grn);outline-offset:2px}
+.xgbox svg{display:block;width:100%;height:auto}
+.xgbox .gl{stroke:var(--line);stroke-width:1}
+.xgbox .base{stroke:var(--mut);stroke-width:1;opacity:.5}
+.xgbox .win{fill:var(--mut);opacity:.16}
+.xgbox .tk{font:500 10px var(--body);fill:var(--mut)}
+.xgbox .lm{stroke:var(--tx);stroke-width:1.25;stroke-dasharray:4 3;opacity:.7}
+.xgbox .lmt{font:600 10px var(--body);fill:var(--tx);paint-order:stroke;stroke:var(--card);stroke-width:3px;stroke-linejoin:round}
+.xgbox .ls{fill:none;stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+.xgbox .ls.s1{stroke:var(--xg1)}
+.xgbox .ls.s2{stroke:var(--xg2)}
+.xgbox .dt{stroke:var(--card);stroke-width:2}
+.xgbox .dt.s1{fill:var(--xg1)}
+.xgbox .dt.s2{fill:var(--xg2)}
+.xgbox .cx{stroke:var(--tx);stroke-width:1;opacity:.45}
+.xgtip{position:absolute;top:4px;z-index:2;pointer-events:none;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:6px 8px;font-size:11px;line-height:1.35;box-shadow:0 2px 8px rgba(0,0,0,.25);white-space:nowrap}
+.xgtip .tm{font-weight:700;color:var(--mut);margin-bottom:2px}
+.xgtip .tr{display:flex;align-items:center;gap:6px}
+.xgtip .tr b{color:var(--tx);font-weight:700;font-variant-numeric:tabular-nums;min-width:2.2em}
+.xgtip .tr span{color:var(--mut)}
+.xgtip .tr i{width:12px;height:0;border-top:2px solid var(--tx);flex:none}
+.xgtip .tr i.s1{border-top-color:var(--xg1)}
+.xgtip .tr i.s2{border-top-color:var(--xg2)}
+.xgcard .pace{margin:8px 0 0}
+.xgtip .tr i.none{border-top-color:transparent}
+.xgtab{margin-top:8px;font-size:11px;color:var(--mut)}
+.xgtab summary{cursor:pointer;padding:4px 0}
+.xgtw{max-height:170px;overflow:auto}
+.xgtb{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+.xgtb th,.xgtb td{text-align:right;padding:3px 6px;border-bottom:1px solid var(--line)}
+.xgtb th:first-child,.xgtb td:first-child{text-align:left}
+.xgtb th{font-weight:600;color:var(--mut)}
+.xgtb td{color:var(--tx)}
 .sn{display:grid;grid-template-columns:34px 38px minmax(0,1fr) minmax(0,1fr);gap:6px;padding:4px 0;border-top:1px solid var(--line);font-size:11px;color:var(--mut);font-variant-numeric:tabular-nums}
 .sn b{color:var(--tx)}
 .ckalert{margin:0;padding:9px 14px;font:700 13px/1.3 var(--body);background:var(--ambbg);color:var(--amb);border-bottom:1px solid var(--line)}
@@ -425,6 +471,21 @@ body{touch-action:manipulation;-webkit-text-size-adjust:100%;-webkit-tap-highlig
   </div>
   <div id="sig" aria-live="polite"></div>
   <p class="snage" id="snage" hidden></p>
+
+  <div class="fold" id="fd-xg">
+   <button type="button" class="fhd" data-f="xg" aria-expanded="true"><span class="ft">xG graph</span><span class="fs" id="fs-xg"></span><i class="chev"></i></button>
+   <div class="fb">
+    <div class="xgcard">
+     <div class="xgleg" id="xgleg"></div>
+     <div class="xgbox" id="xgbox" tabindex="0" role="img" aria-label="xG by minute">
+      <svg id="xgsvg" viewBox="0 0 320 176" preserveAspectRatio="xMidYMid meet" aria-hidden="true"></svg>
+      <div class="xgtip" id="xgtip" hidden></div>
+     </div>
+     <p class="pace" id="xgnote"></p>
+     <details class="xgtab" id="xgtab"><summary>Table</summary><div class="xgtw" id="xgtbl"></div></details>
+    </div>
+   </div>
+  </div>
 
   <div class="fold" id="fd-stats">
    <button type="button" class="fhd" data-f="stats" aria-expanded="true"><span class="ft">Session</span><span class="fs" id="fs-stats"></span><i class="chev"></i></button>
@@ -1173,6 +1234,55 @@ function lookupUrl(site,name){
  if(!q||!d)return '';
  return 'https://www.google.com/search?q='+encodeURIComponent(q+' site:'+d);
 }
+// ---- xG graph: pure helpers. The series comes from the saved Updates; scales and geometry are plain numbers. ----
+const SNAP_KEEP=120;
+const xgR1=x=>Math.round(x*10)/10;
+// The latest run of readings (minute going up) that have xG for both teams, oldest first. A lower minute starts a new run, so a new match typed by hand does not zig-zag back across the old one.
+function xgSeries(snaps){
+ const a=(Array.isArray(snaps)?snaps:[]).filter(s=>s&&typeof s.min==='number'&&isFinite(s.min));
+ let i=a.length-1;while(i>0&&a[i-1].min<=a[i].min)i--;
+ const out=[];
+ a.slice(Math.max(i,0)).forEach(s=>{
+  const h=nOrNull(s.xgh),w=nOrNull(s.xga);
+  if(h==null||w==null||h<0||w<0)return;
+  const p={m:s.min,h:rnd(h),a:rnd(w),t:rnd(h+w)};
+  if(out.length&&out[out.length-1].m===p.m)out[out.length-1]=p;else out.push(p);
+ });
+ return out;
+}
+function xgNice(v){
+ const S=[0.5,1,1.5,2,3,4,5,6,8,10,12,15,20];
+ for(const s of S)if(v<=s+1e-9)return s;
+ return Math.ceil(v/5)*5;
+}
+// Under markets draw one line per team against the per-team limit. Over markets draw the total against the minimum.
+function xgModel(snaps,c){
+ const pts=xgSeries(snaps),over=c.side==='over';
+ const lim=nOrNull(over?c.ovXg:c.xgMax),limit=lim!=null&&lim>0?lim:null;
+ const top=pts.reduce((m,p)=>Math.max(m,over?p.t:Math.max(p.h,p.a)),0);
+ const yMax=xgNice(Math.max(top*1.1,limit!=null?limit*1.25:0,0.5));
+ const step=yMax<=1?0.25:yMax<=2?0.5:yMax<=6?1:yMax<=12?2:5;
+ const yTicks=[];for(let v=0;v<=yMax+1e-9;v=rnd(v+step))yTicks.push(v);
+ const last=pts.length?pts[pts.length-1]:null;
+ const xMax=Math.max(90,Math.ceil((last?last.m:0)/15)*15);
+ const xTicks=[];for(let m=0;m<=xMax;m+=15)xTicks.push(m);
+ const series=over?[{k:'t',name:'Total xG',v:pts.map(p=>p.t)}]:[{k:'h',name:'Home',v:pts.map(p=>p.h)},{k:'a',name:'Away',v:pts.map(p=>p.a)}];
+ const a=nOrNull(c.minFrom),b=nOrNull(c.minTo);
+ return{pts,over,limit,limitName:over?'Needs at least':'Limit',win:a!=null&&b!=null&&b>=a?[a,b]:null,xMax,yMax,xTicks,yTicks,series,last};
+}
+function xgGeom(M,W,H){
+ const l=30,r=12,t=10,b=24,w=W-l-r,h=H-t-b;
+ return{W,H,l,r,t,b,w,h,
+  px:m=>xgR1(l+Math.min(Math.max(m,0),M.xMax)/M.xMax*w),
+  py:v=>xgR1(t+h-Math.min(Math.max(v,0),M.yMax)/M.yMax*h)};
+}
+function xgPath(M,G,i){return M.series[i].v.map((y,j)=>(j?'L':'M')+G.px(M.pts[j].m)+','+G.py(y)).join('')}
+// Index of the reading closest to an x position in chart units.
+function xgNearest(M,G,x){
+ let best=-1,bd=Infinity;
+ M.pts.forEach((p,i)=>{const d=Math.abs(G.px(p.m)-x);if(d<bd){bd=d;best=i}});
+ return best;
+}
 //</logic>
 
 const D={start:50,targetMult:1.07,days:2,perDay:6,minOdds:1.06,dayLoss:1,cool:15,maxStreak:2,stop:10,stakePct:10,stakeCap:10,avgMax:1,minFrom:60,minTo:65,goalsBelow:3,sotMax:3,xgMax:1.2,side:'under',line:3.5,m:{},ovAvg:1.5,ovGoals:3,ovSot:8,ovXg:3,scope:'both',staking:'flat',gate:'block',carry:'reset',fmt:'dec',comm:0};
@@ -1186,7 +1296,7 @@ const NUM=Object.keys(FD);
 const KEY='u35_v2';
 const INP=['avgH','avgA','min','gh','ga','sotH','sotA','xgh','xga','odds'];
 let c={...D},s,hist=[],ses=1,showLog=false,size='normal',lastLock=-1;
-let fold={clock:true,match:true,rules:true,stats:true,sd:true,ss:true,sm:true,sr:true,sl:true};
+let fold={clock:true,match:true,rules:true,xg:true,stats:true,sd:true,ss:true,sm:true,sr:true,sl:true};
 function applyFold(){
  Object.keys(fold).forEach(k=>{
   const el=$('fd-'+k);if(!el)return;
@@ -1296,6 +1406,7 @@ function update(){
  const wasEarly=v.min!=null&&v.min<c.minFrom;
  fr.className='fs '+(ev.passed===ev.R.length?'pos':ev.R.some(r=>r.st==='f'&&!(wasEarly&&(r.s==='Time'||VOLATILE.indexOf(r.s)>=0)))?'neg':'am');
  $('fs-stats').textContent=fmt(s.bal)+' · '+(s.pl>=0?'+':'')+fmt(s.pl);
+ xgRender();
 
  let bt='WAIT',bk='';
  if(s.ended){bt='ENDED';bk='stop'}
@@ -1546,7 +1657,7 @@ function clkFromTime(v){
 // ---- Updates: each paste or edit of the live numbers is kept, so you can watch the trend ----
 let snaps=[];
 const SNK=['min','gh','ga','sotH','sotA','xgh','xga'];
-function snapLoad(){try{const d=JSON.parse(localStorage.getItem('u35_snaps')||'null');if(Array.isArray(d)&&d.every(x=>x&&typeof x.min==='number'&&typeof x.at==='number'))snaps=d.slice(-12)}catch(e){}}
+function snapLoad(){try{const d=JSON.parse(localStorage.getItem('u35_snaps')||'null');if(Array.isArray(d)&&d.every(x=>x&&typeof x.min==='number'&&typeof x.at==='number'))snaps=d.slice(-SNAP_KEEP)}catch(e){}}
 function snapSave(){try{localStorage.setItem('u35_snaps',JSON.stringify(snaps))}catch(e){}}
 function snap(){
  const v=rd();if(v.min==null)return;
@@ -1555,14 +1666,108 @@ function snap(){
  if(l&&SNK.every(k=>l[k]===o[k]))l.at=o.at;
  else if(l&&l.min===o.min)snaps[snaps.length-1]=o;
  else snaps.push(o);
- snaps=snaps.slice(-12);snapSave();renderSnaps();clockTick();
+ snaps=snaps.slice(-SNAP_KEEP);snapSave();renderSnaps();clockTick();
 }
 function renderSnaps(){
  const f=x=>x==null?'\u2013':String(Math.round(x*100)/100);
  $('snaps').hidden=!snaps.length;
+ xgRender(true);
  $('snl').innerHTML=snaps.slice(-6).reverse().map(x=>'<div class="sn"><b>'+x.min+"'</b><span>"+f(x.gh)+'\u2013'+f(x.ga)+'</span><span>SoT '+f(x.sotH)+' \u00b7 '+f(x.sotA)+'</span><span>xG '+f(x.xgh)+' \u00b7 '+f(x.xga)+'</span></div>').join('');
 }
 function snapReset(){snaps=[];snapSave();renderSnaps();clockTick()}
+// ---- xG graph: the Updates drawn as lines. Pointer or arrow keys read a point; the table below has the same numbers. ----
+let xgM=null,xgG=null,xgSel=-1,xgSig='';
+const xgF=v=>String(Math.round(v*100)/100);
+function xgHide(){
+ xgSel=-1;
+ const t=$('xgtip');if(t)t.hidden=true;
+ ['xgcx','xgh1','xgh2'].forEach(id=>{const e=$(id);if(e)e.setAttribute('visibility','hidden')});
+}
+function xgShow(i){
+ const M=xgM,G=xgG;
+ if(!M||i<0||i>=M.pts.length){xgHide();return}
+ xgSel=i;
+ const p=M.pts[i],x=G.px(p.m),cx=$('xgcx');
+ if(!cx)return;
+ cx.setAttribute('x1',x);cx.setAttribute('x2',x);cx.setAttribute('visibility','visible');
+ M.series.forEach((s,k)=>{const d=$('xgh'+(k+1));if(d){d.setAttribute('cx',x);d.setAttribute('cy',G.py(s.v[i]));d.setAttribute('visibility','visible')}});
+ const tip=$('xgtip');tip.textContent='';
+ const tm=document.createElement('div');tm.className='tm';tm.textContent=p.m+"'";tip.appendChild(tm);
+ const row=(cls,val,name)=>{
+  const r=document.createElement('div');r.className='tr';
+  const k=document.createElement('i');k.className=cls;
+  const b=document.createElement('b');b.textContent=xgF(val);
+  const sp=document.createElement('span');sp.textContent=name;
+  r.append(k,b,sp);tip.appendChild(r);
+ };
+ if(M.over){row('s1',p.t,'Total');row('none',p.h,'Home');row('none',p.a,'Away')}
+ else{row('s1',p.h,'Home');row('s2',p.a,'Away')}
+ tip.hidden=false;
+ const bw=$('xgbox').clientWidth,xp=x/G.W*bw,tw=tip.offsetWidth;
+ let left=xp+10;if(left+tw>bw-2)left=xp-10-tw;
+ tip.style.left=Math.max(2,left)+'px';
+}
+function xgRender(force){
+ const sig=JSON.stringify([snaps.length,snaps.length?snaps[snaps.length-1]:0,c.side,c.xgMax,c.ovXg,c.minFrom,c.minTo]);
+ if(!force&&sig===xgSig)return;
+ xgSig=sig;
+ const keep=xgSel,M=xgModel(snaps,c),G=xgGeom(M,320,176),n=M.pts.length,L=M.last;
+ xgM=M;xgG=G;
+ // legend: line keys with the latest values; the limit and the entry window are named here too
+ const key=(cls,name,val)=>'<span class="xgk"><i class="ln '+cls+'"></i>'+name+' <b>'+val+'</b></span>';
+ let lg=M.over?key('s1','Total xG',L?xgF(L.t):'–'):key('s1','Home',L?xgF(L.h):'–')+key('s2','Away',L?xgF(L.a):'–');
+ const lim=M.limit!=null?(M.over?'Needs ≥ ':'Limit ')+xgF(M.limit):'';
+ if(lim)lg+='<span class="xgk"><i class="ln lim"></i>'+lim+'</span>';
+ if(M.win)lg+='<span class="xgk"><i class="sq"></i>Window '+M.win[0]+'–'+M.win[1]+"'</span>";
+ $('xgleg').innerHTML=lg;
+ // chart
+ let h='';
+ if(M.win){const x0=G.px(M.win[0]),x1=G.px(M.win[1]);h+='<rect class="win" x="'+x0+'" y="'+G.t+'" width="'+Math.max(x1-x0,2)+'" height="'+G.h+'"/>'}
+ M.yTicks.forEach(v=>{const y=G.py(v);h+='<line class="'+(v===0?'base':'gl')+'" x1="'+G.l+'" x2="'+(G.W-G.r)+'" y1="'+y+'" y2="'+y+'"/><text class="tk" x="'+(G.l-6)+'" y="'+(y+3.5)+'" text-anchor="end">'+xgF(v)+'</text>'});
+ M.xTicks.forEach(m=>{h+='<text class="tk" x="'+G.px(m)+'" y="'+(G.H-8)+'" text-anchor="middle">'+m+"'</text>"});
+ if(M.limit!=null){const y=G.py(M.limit);h+='<line class="lm" x1="'+G.l+'" x2="'+(G.W-G.r)+'" y1="'+y+'" y2="'+y+'"/><text class="lmt" x="'+(G.W-G.r-2)+'" y="'+(y-4)+'" text-anchor="end">'+lim+'</text>'}
+ if(!n)h+='<text class="tk" x="'+(G.l+G.w/2)+'" y="'+(G.t+G.h/2)+'" text-anchor="middle">No readings yet</text>';
+ if(n>1)M.series.forEach((s,i)=>{h+='<path class="ls s'+(i+1)+'" d="'+xgPath(M,G,i)+'"/>'});
+ if(L)M.series.forEach((s,i)=>{h+='<circle class="dt s'+(i+1)+'" cx="'+G.px(L.m)+'" cy="'+G.py(s.v[n-1])+'" r="4"/>'});
+ h+='<line class="cx" id="xgcx" x1="0" x2="0" y1="'+G.t+'" y2="'+(G.t+G.h)+'" visibility="hidden"/>';
+ M.series.forEach((s,i)=>{h+='<circle class="dt s'+(i+1)+'" id="xgh'+(i+1)+'" r="4" cx="0" cy="0" visibility="hidden"/>'});
+ $('xgsvg').innerHTML=h;
+ $('xgbox').setAttribute('aria-label','xG by minute. '+(L?'Latest at minute '+L.m+': '+(M.over?'total '+xgF(L.t)+', ':'')+'home '+xgF(L.h)+', away '+xgF(L.a)+'. Use the left and right arrow keys to read each point.':'No readings yet.'));
+ $('fs-xg').textContent=L?(M.over?xgF(L.t)+' total':xgF(L.h)+' · '+xgF(L.a))+" at "+L.m+"'":'No readings';
+ const lastIn=snaps.length&&!n;
+ $('xgnote').textContent=n===0?(lastIn?'The numbers have no xG yet. Not every league has it.':'No xG readings yet. Link a live match, or type the minute and both xG values. A point is added each time they change.')
+  :n===1?'One reading so far, at '+M.pts[0].m+"'. The line starts with the second."
+  :n+' readings, '+M.pts[0].m+"' to "+L.m+"'. The graph starts when you link the match; earlier minutes cannot be fetched.";
+ // table twin of the chart
+ const rows=M.pts.slice(-60).reverse().map(p=>'<tr><td>'+p.m+"'</td><td>"+xgF(p.h)+'</td><td>'+xgF(p.a)+'</td><td>'+xgF(p.t)+'</td></tr>').join('');
+ $('xgtbl').innerHTML=n?'<table class="xgtb"><thead><tr><th>Min</th><th>Home</th><th>Away</th><th>Total</th></tr></thead><tbody>'+rows+'</tbody></table>':'<p class="pace">Nothing to show yet.</p>';
+ if(keep>=0)xgShow(Math.min(keep,n-1));else xgHide();
+}
+function xgPointer(e){
+ const r=$('xgsvg').getBoundingClientRect();
+ if(!r.width||!xgM||!xgG)return;
+ xgShow(xgNearest(xgM,xgG,(e.clientX-r.left)/r.width*xgG.W));
+}
+(function(){
+ const b=$('xgbox');
+ b.addEventListener('pointermove',xgPointer);
+ b.addEventListener('pointerdown',xgPointer);
+ b.addEventListener('pointerleave',e=>{if(e.pointerType==='mouse')xgHide()});
+ b.addEventListener('focus',()=>{if(xgM&&xgM.pts.length&&xgSel<0)xgShow(xgM.pts.length-1)});
+ b.addEventListener('blur',xgHide);
+ b.addEventListener('keydown',e=>{
+  const n=xgM?xgM.pts.length:0;if(!n)return;
+  const cur=xgSel<0?n-1:xgSel;let i=-1;
+  if(e.key==='ArrowLeft')i=Math.max(0,cur-1);
+  else if(e.key==='ArrowRight')i=Math.min(n-1,cur+1);
+  else if(e.key==='Home')i=0;
+  else if(e.key==='End')i=n-1;
+  else if(e.key==='Escape'){xgHide();return}
+  else return;
+  e.preventDefault();xgShow(i);
+ });
+ document.addEventListener('pointerdown',e=>{if(!e.target.closest('#xgbox'))xgHide()});
+})();
 let snapTimer=0;
 let undoSnap=null;
 function fillPaste(){
