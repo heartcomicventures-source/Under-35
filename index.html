@@ -1,0 +1,1611 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Under 3.5 Panel</title>
+<meta name="description" content="Manual checklist and stake tracker for betting soccer goal lines (Under and Over) at any platform's odds, with optional live stats from your own API-Sports key.">
+<meta name="theme-color" content="#080c0f" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#e5eaed" media="(prefers-color-scheme: light)">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Under 3.5">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<link rel="icon" type="image/png" href="data:image/png;base64,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">
+<link rel="apple-touch-icon" href="data:image/png;base64,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">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600;700&display=swap">
+<style>
+/* Page reset (a published artifact gets this from its host; a standalone file needs its own) */
+:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0;font:14px system-ui}
+img{max-width:100%}
+[hidden]{display:none!important}
+</style>
+<style>
+:root{
+ /* Layout: one 360px control panel in the style of the reference. Stake on top, a numbered chip for every bet in the session, match inputs that turn green or red as they pass or fail, a big verdict box, six rule rows, session stats with a goal check, then open bets and actions. */
+ --bg:#080c0f;--panel:#10151a;--card:#161c22;--line:#232b33;--tx:#edf1f3;--mut:#8693a0;
+ --grn:#34d17f;--grnbg:#0e2a1c;--red:#ff5b60;--redbg:#2d1316;--amb:#f2b23d;--ambbg:#2a2110;--chip:#1b222a;
+ --display:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;
+ --body:"Barlow",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+ color-scheme:dark;
+}
+@media (prefers-color-scheme: light){
+ :root:not([data-theme="dark"]){--bg:#e5eaed;--panel:#ffffff;--card:#f0f3f5;--line:#d8dee3;--tx:#12181d;--mut:#5f6e7c;--grn:#0b8a4b;--grnbg:#dff4e8;--red:#cf2f35;--redbg:#fce7e8;--amb:#94600c;--ambbg:#fbf0d9;--chip:#e2e7eb;color-scheme:light}
+}
+:root[data-theme="light"]{--bg:#e5eaed;--panel:#ffffff;--card:#f0f3f5;--line:#d8dee3;--tx:#12181d;--mut:#5f6e7c;--grn:#0b8a4b;--grnbg:#dff4e8;--red:#cf2f35;--redbg:#fce7e8;--amb:#94600c;--ambbg:#fbf0d9;--chip:#e2e7eb;color-scheme:light}
+
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:14px/1.4 var(--body);padding-block:20px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;justify-content:center}
+button{font:inherit;color:inherit;cursor:pointer}
+input,select{font:inherit}
+input:focus-visible,select:focus-visible,button:focus-visible{outline:2px solid var(--grn);outline-offset:2px}
+
+.panel{width:100%;max-width:360px;min-width:0;background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden;align-self:flex-start}
+header{display:flex;align-items:center;gap:8px;padding:12px 14px}
+.brand{flex:1;min-width:0;display:flex;align-items:center;gap:8px;font:700 20px/1 var(--display);letter-spacing:.03em}
+.brand select{flex:0 1 auto;min-width:0;max-width:100%;-webkit-appearance:none;appearance:none;background-color:transparent;border:1px solid var(--line);border-radius:8px;color:var(--tx);font:700 20px/1 var(--display);letter-spacing:.03em;padding:5px 24px 5px 8px;background-image:linear-gradient(45deg,transparent 50%,var(--mut) 50%),linear-gradient(135deg,var(--mut) 50%,transparent 50%);background-position:calc(100% - 13px) 52%,calc(100% - 8px) 52%;background-size:5px 5px,5px 5px;background-repeat:no-repeat}
+.brand select option{color:var(--tx);background:var(--panel)}
+.brand.ov .logo{background:var(--amb)}
+.logo{flex:none}
+.brand select{text-overflow:ellipsis;min-width:6.7em}
+.rmk{display:block;margin:0 0 10px;font-size:11px;color:var(--mut)}
+.rmk select{display:block;width:100%;margin-top:3px;padding:8px 10px;background:var(--card);color:var(--tx);border:1px solid var(--line);border-radius:8px;font:600 14px var(--body)}
+.logo{width:22px;height:22px;border-radius:6px;background:var(--grn);color:var(--panel);display:grid;place-items:center;font:700 15px/1 var(--display)}
+.badge{font:700 11px/1 var(--body);letter-spacing:.05em;padding:5px 10px;border-radius:6px;border:1px solid var(--line);color:var(--mut);background:transparent;white-space:nowrap}
+.badge.go{color:var(--grn);border-color:var(--grn);background:var(--grnbg)}
+.badge.warn{color:var(--amb);border-color:var(--amb);background:var(--ambbg)}
+.badge.stop{color:var(--red);border-color:var(--red);background:var(--redbg)}
+#pause,#theme{background:var(--card);border:1px solid var(--line);border-radius:6px;width:28px;height:26px;font-size:10px;line-height:1;padding:0}
+#theme{font-size:14px}
+.tabs{display:flex;border-bottom:1px solid var(--line)}
+.tabs button{flex:1;padding:11px 0;background:none;border:0;border-bottom:2px solid transparent;color:var(--mut);font-weight:600}
+.tabs button.on{color:var(--grn);border-bottom-color:var(--grn)}
+section{padding:14px}
+
+.lbl{font-size:12px;color:var(--mut);text-align:center}
+.big{font:700 54px/1 var(--display);text-align:center;font-variant-numeric:tabular-nums;letter-spacing:-.01em;margin-top:2px}
+.sub{font-size:12px;color:var(--mut);text-align:center;margin:4px 0 12px}
+.chips{display:grid;grid-template-columns:repeat(var(--n,6),1fr);gap:6px;margin-bottom:12px}
+.chips i{font-style:normal;text-align:center;padding:6px 0;border-radius:6px;background:var(--chip);color:var(--mut);font-size:13px;font-weight:600;font-variant-numeric:tabular-nums}
+.chips i.x{opacity:.45}
+.chips i.w{background:var(--grn);color:var(--panel);font-weight:700}
+.chips i.l{background:var(--red);color:var(--panel);font-weight:700}
+.chips i.o{background:var(--amb);color:var(--panel);font-weight:700}
+.chips i.v{background:var(--mut);color:var(--panel);font-weight:700}
+
+.match{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px;margin-bottom:10px}
+.mg{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.grp{grid-column:1/-1;font:600 12px/1 var(--body);color:var(--mut);margin-top:4px}
+.grp:first-child{margin-top:0}
+.mg label{display:block;min-width:0;font-size:11px;color:var(--mut)}
+.mg input{display:block;width:100%;min-width:0;margin-top:3px;padding:7px 9px;background:var(--panel);color:var(--tx);border:1px solid var(--line);border-radius:7px;font:600 14px var(--body);font-variant-numeric:tabular-nums}
+.mg select{display:block;width:100%;min-width:0;margin-top:3px;padding:7px 9px;background:var(--panel);color:var(--tx);border:1px solid var(--line);border-radius:7px;font:600 14px var(--body)}
+.mg input.p{border-color:var(--grn);color:var(--grn);background:var(--grnbg)}
+.mg input.f{border-color:var(--red);color:var(--red);background:var(--redbg)}
+.mg input.a{border-color:var(--amb);color:var(--amb);background:var(--ambbg)}
+.exnote{margin:0 0 8px;font-size:11px;color:var(--amb)}
+.mg .mt{grid-column:1/-1}
+.tkt{margin:0 0 10px;font-size:12px;line-height:1.35;color:var(--mut);text-align:center}
+.tkt.am{color:var(--amb)}
+.tkt.bad{color:var(--red)}
+.live{margin:0 0 10px}
+.lvrow{display:flex;align-items:center;flex-wrap:wrap;gap:8px}
+.lvbtn{height:34px;padding:0 14px}
+.lvauto{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--mut)}
+.lvauto input{width:16px;height:16px;accent-color:var(--grn)}
+#lvlist{margin-top:8px;background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+#lvfilter{display:block;width:100%;padding:9px 10px;background:var(--panel);color:var(--tx);border:0;border-bottom:1px solid var(--line);font:500 13px var(--body)}
+#lvfilter:focus-visible{outline-offset:-2px}
+#lvrows{max-height:280px;overflow-y:auto;overscroll-behavior:contain}
+.lvr{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 10px;width:100%;padding:9px 10px;background:none;border:0;border-bottom:1px solid var(--line);color:var(--tx);text-align:left}
+.lvr:last-child{border-bottom:0}
+.lvr b{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600;font-size:13px}
+.lvr .lvs{font:700 13px var(--body);font-variant-numeric:tabular-nums;white-space:nowrap}
+.lvr small{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--mut);font-size:11px}
+.lvr .lvw{justify-self:end;font-size:10px;font-weight:700;letter-spacing:.05em;color:var(--grn)}
+.lvr.on{background:var(--grnbg)}
+.lvempty{padding:12px;font-size:12px;color:var(--mut);text-align:center}
+.keyl{display:block;font-size:12px;color:var(--mut);margin-bottom:10px}
+.keyl input{display:block;width:100%;margin-top:3px;padding:8px 10px;background:var(--card);color:var(--tx);border:1px solid var(--line);border-radius:8px}
+.snage{margin:-4px 0 10px;font-size:11px;color:var(--mut);text-align:center}
+.snage.am{color:var(--amb);font-weight:600}
+.snaps{margin-top:10px}
+.sn{display:grid;grid-template-columns:34px 38px minmax(0,1fr) minmax(0,1fr);gap:6px;padding:4px 0;border-top:1px solid var(--line);font-size:11px;color:var(--mut);font-variant-numeric:tabular-nums}
+.sn b{color:var(--tx)}
+.ckalert{margin:0;padding:9px 14px;font:700 13px/1.3 var(--body);background:var(--ambbg);color:var(--amb);border-bottom:1px solid var(--line)}
+.ckalert.go{background:var(--grnbg);color:var(--grn)}
+.clk{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px;margin-bottom:10px}
+.ckmain{display:flex;flex-direction:column;gap:3px;margin-bottom:8px}
+.ckmain b{font:700 24px/1.1 var(--display);letter-spacing:.02em;font-variant-numeric:tabular-nums}
+.ckmain b.pos{color:var(--grn)}
+.ckmain b.neg{color:var(--red)}
+.ckmain span{font-size:11px;color:var(--mut)}
+.ckbtns{display:grid;grid-template-columns:1fr 1fr auto;gap:6px;margin-bottom:8px}
+.ckbtns button{padding:8px 10px;border-radius:7px;background:var(--panel);border:1px solid var(--line);color:var(--tx);font-weight:600;font-size:12px}
+.ckrow{display:flex;align-items:center;flex-wrap:wrap;gap:8px 12px;font-size:11px;color:var(--mut)}
+.ckrow label{display:flex;align-items:center;gap:6px}
+.ckrow input[type=time]{padding:4px 6px;background:var(--panel);color:var(--tx);border:1px solid var(--line);border-radius:6px;font:600 12px var(--body)}
+.ckrow input[type=checkbox]{width:16px;height:16px;accent-color:var(--grn)}
+@keyframes ckflash{0%,100%{box-shadow:0 0 0 0 transparent}50%{box-shadow:0 0 0 3px var(--grn)}}
+.flash{animation:ckflash .8s ease-in-out 6}
+@media (prefers-reduced-motion:reduce){.flash{animation:none;outline:2px solid var(--grn)}}
+.paste{margin:0 0 10px}
+.prow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px;align-items:start}
+.paste textarea{display:block;width:100%;min-width:0;height:34px;resize:none;margin:0;padding:8px 9px;background:var(--panel);color:var(--tx);border:1px dashed var(--mut);border-radius:7px;font:500 13px/1.3 var(--body);overflow:hidden}
+.paste textarea:focus{height:92px;border-style:solid;border-color:var(--grn);overflow:auto;outline:none}
+.pgo{height:34px;padding:0 14px;border-radius:7px;background:var(--grnbg);border:1px solid var(--grn);color:var(--grn);font-weight:700}
+.pres{margin:6px 0 0;font-size:11px;color:var(--mut)}
+.pres.am{color:var(--amb)}
+.pres.bad{color:var(--red)}
+.pu{margin-left:6px;padding:1px 8px;border-radius:5px;background:var(--chip);border:1px solid var(--line);color:var(--tx);font-size:11px;font-weight:600}
+.tl{position:relative;height:6px;border-radius:3px;background:var(--chip);margin:10px 0 3px}
+.tl .w{position:absolute;top:0;bottom:0;background:var(--grnbg);border:1px solid var(--grn);border-radius:3px}
+.tl .n{position:absolute;top:-3px;width:3px;height:12px;border-radius:2px;background:var(--tx);margin-left:-1px}
+.tlx{display:flex;justify-content:space-between;font-size:10px;color:var(--mut)}
+.tlt{margin:4px 0 0;font-size:11px;font-weight:600;color:var(--mut);min-height:15px}
+.tlt.am{color:var(--amb)}
+
+.rules{display:grid;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-bottom:10px}
+.ru{display:grid;grid-template-columns:20px minmax(0,1fr) auto;gap:8px;align-items:center;padding:7px 10px;background:var(--card);font-size:12px}
+.ri{width:18px;height:18px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-size:11px;font-weight:700;background:var(--chip);color:var(--mut)}
+.rv{font-variant-numeric:tabular-nums;color:var(--mut);font-weight:600}
+.rs{display:none}
+.ru.p .ri{background:var(--grnbg);color:var(--grn)}
+.ru.p .rv{color:var(--grn)}
+.ru.f .ri{background:var(--redbg);color:var(--red)}
+.ru.f .rv{color:var(--red)}
+
+#sig,#rsig{padding:10px 12px;border-radius:10px;font-size:12px;margin-bottom:10px;background:var(--card);border:1.5px solid var(--line);color:var(--mut)}
+#sig b,#rsig b{display:block;font:700 22px/1.1 var(--display);letter-spacing:.05em;margin-bottom:3px}
+#sig p,#rsig p{margin:3px 0 0;color:var(--tx);opacity:.9}
+#sig.go,#rsig.go{background:var(--grnbg);border-color:var(--grn);color:var(--grn)}
+#sig.am,#rsig.am{background:var(--ambbg);border-color:var(--amb);color:var(--amb)}
+#sig.ok,#rsig.ok{background:var(--card);border-color:var(--grn);color:var(--grn)}
+#sig.bad,#rsig.bad{background:var(--redbg);border-color:var(--red);color:var(--red)}
+
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-bottom:10px}
+.grid div{background:var(--card);padding:9px 12px;min-width:0}
+.grid small{display:block;font-size:11px;color:var(--mut);margin-bottom:2px}
+.grid b{font:700 17px/1.1 var(--display);font-variant-numeric:tabular-nums;letter-spacing:.01em}
+.pos{color:var(--grn)}.neg{color:var(--red)}
+.pace{margin:0 0 12px;font-size:11px;color:var(--mut)}
+.pace.am{color:var(--amb)}
+#banner{font-size:12px;text-align:center;padding:8px 10px;border-radius:8px;margin-bottom:10px;background:var(--redbg);color:var(--red)}
+#banner.ok{background:var(--grnbg);color:var(--grn)}
+#banner.dy{background:var(--ambbg);color:var(--amb)}
+.acts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.acts p{grid-column:1/-1;margin:0;text-align:center;font-size:12px;color:var(--mut)}
+.buy,.sell,.neu{padding:12px 0;border-radius:10px;font:700 17px/1.2 var(--display);letter-spacing:.06em;border:1.5px solid}
+.buy{background:var(--grnbg);border-color:var(--grn);color:var(--grn)}
+.sell{background:var(--redbg);border-color:var(--red);color:var(--red)}
+.neu{background:var(--card);border-color:var(--line);color:var(--mut)}
+.buy:disabled,.sell:disabled{opacity:.35;cursor:not-allowed}
+.ob{grid-column:1/-1;display:grid;grid-template-columns:minmax(0,1fr) auto auto auto;gap:6px;align-items:center;padding:7px 8px;background:var(--card);border:1px solid var(--line);border-radius:10px}
+.oi{min-width:0;font-size:12px}
+.oi b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600}
+.oi small{color:var(--mut);font-size:11px}
+.mini{padding:6px 9px;border-radius:7px;border:1px solid var(--line);background:var(--panel);font-size:12px;font-weight:600;color:var(--mut)}
+.mini.w{border-color:var(--grn);color:var(--grn);background:var(--grnbg)}
+.mini.l{border-color:var(--red);color:var(--red);background:var(--redbg)}
+.wide{display:block;width:100%;padding:10px;margin-top:8px;background:var(--card);border:1px solid var(--line);border-radius:10px;color:var(--mut);font-weight:600}
+.wide:disabled{opacity:.4;cursor:not-allowed}
+.wide.pri{background:var(--grn);color:var(--panel);border-color:var(--grn)}
+.btns .wide:first-child{margin-top:0}
+#log{margin-top:10px}
+.row{display:grid;grid-template-columns:48px minmax(0,1fr) auto;gap:6px;padding:6px 0;border-bottom:1px solid var(--line);font-size:12px;font-variant-numeric:tabular-nums}
+.row span:first-child{color:var(--mut)}
+.row span:nth-child(2){overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sum{background:var(--card);border-radius:10px;padding:10px 12px;margin-bottom:8px;font-size:13px}
+.sum p{margin:2px 0;display:flex;justify-content:space-between}
+.mut{color:var(--mut);font-size:12px;text-align:center}
+
+#form label{display:block;font-size:12px;color:var(--mut);margin-bottom:10px}
+#form input,#form select{display:block;width:100%;margin-top:3px;padding:8px 10px;background:var(--card);color:var(--tx);border:1px solid var(--line);border-radius:8px}
+.fh{margin:14px 0 8px;font:600 12px/1 var(--body);color:var(--tx)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.two label{min-width:0}
+#risk{background:var(--card);border-radius:10px;padding:10px 12px;font-size:12px;margin-bottom:6px;color:var(--mut)}
+#risk b{color:var(--tx)}
+footer{padding:10px 14px 12px;font-size:11px;color:var(--mut);text-align:center;border-top:1px solid var(--line)}
+
+/* Folds: headers show in compact, and as plain headings in Settings */
+.fold{margin:0}
+.fb{min-width:0}
+.fhd{display:none}
+.chev{flex:none;width:8px;height:8px;border-right:2px solid var(--mut);border-bottom:2px solid var(--mut);transform:rotate(45deg);margin:-3px 3px 0 4px}
+.fhd[aria-expanded="true"] .chev{transform:rotate(225deg);margin-top:3px}
+.fs{flex:1;min-width:0;text-align:right;font-size:12px;font-weight:500;color:var(--mut);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fs.pos{color:var(--grn)}
+.fs.neg{color:var(--red)}
+.fs.am{color:var(--amb)}
+.sfold>.fhd{display:flex;align-items:center;width:100%;margin:14px 0 8px;padding:0;background:none;border:0;color:var(--tx);font:600 12px/1 var(--body);text-align:left;pointer-events:none}
+.sfold .chev{display:none}
+
+.scale{position:relative;height:36px;margin:2px 4px 0}
+.scale .trk{position:absolute;left:0;right:0;top:20px;height:6px;border-radius:3px;background:var(--chip)}
+.scale .band{position:absolute;top:20px;height:6px;border-radius:3px;background:var(--mut);opacity:.5}
+.scale .tick{position:absolute;top:14px;width:2px;height:18px;margin-left:-1px;background:var(--amb)}
+.scale .dot{position:absolute;top:17px;width:12px;height:12px;margin-left:-6px;border-radius:50%;border:2px solid var(--panel);background:var(--grn)}
+.scale .dot.neg{background:var(--red)}
+.scale .lb{position:absolute;top:0;transform:translateX(-50%);font-size:10px;color:var(--amb);white-space:nowrap}
+.scaleax{display:flex;justify-content:space-between;margin:2px 4px 10px;font-size:10px;color:var(--mut)}
+.scalecap{margin:0 0 12px;font-size:11px;color:var(--mut)}
+.rout{display:block;width:100%;height:96px;margin:0 0 10px;padding:8px 9px;background:var(--panel);color:var(--tx);border:1px solid var(--grn);border-radius:7px;font:500 12px/1.3 var(--body);resize:none}
+.rrest{margin-top:8px}
+.rrec{display:flex;flex-wrap:wrap;gap:4px;margin:0 0 6px}
+.rrec i{font:700 11px/1 var(--body);font-style:normal;padding:5px 8px;border-radius:5px;background:var(--grnbg);color:var(--grn)}
+.rrec i.l{background:var(--redbg);color:var(--red)}
+/* Compact: same text sizes, long sections collapse behind a header */
+body.compact{padding-block:10px}
+.compact header{padding:8px 14px}
+.compact .tabs button{padding:8px 0}
+.compact section{padding:10px 14px}
+.compact .stk{display:grid;grid-template-columns:auto 1fr;column-gap:14px;align-items:center;margin-bottom:10px}
+.compact .stk .big{grid-column:1;grid-row:1/3;text-align:left;margin:0}
+.compact .stk .lbl{grid-column:2;grid-row:1;text-align:left;align-self:end}
+.compact .stk .sub{grid-column:2;grid-row:2;text-align:left;margin:2px 0 0;align-self:start}
+.compact .tkt{margin-bottom:8px;text-align:left}
+.compact .chips{grid-template-columns:repeat(var(--nc,12),1fr);gap:4px;margin-bottom:10px}
+.compact .fold{margin-bottom:8px}
+.compact .fhd,.compact .sfold>.fhd{display:flex;align-items:center;gap:8px;width:100%;margin:0;padding:9px 12px;background:var(--card);border:1px solid var(--line);border-radius:10px;color:var(--tx);font:600 14px/1.2 var(--body);text-align:left;pointer-events:auto}
+.compact .sfold .chev{display:block;margin-left:auto}
+.compact .fold.c .fb{display:none}
+.compact .fold:not(.c) .fb{margin-top:6px}
+.compact .match{background:none;border:0;padding:0;margin-bottom:8px}
+.compact .match .fb{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px}
+.compact .rules{margin-bottom:0}
+.compact .grid{margin-bottom:8px}
+.compact .pace{margin-bottom:0}
+.compact #sig{margin-bottom:8px}
+.compact #banner{margin-bottom:8px}
+.compact .acts{margin-bottom:8px}
+.compact .btns{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.compact .wide{margin-top:0}
+.compact #log{margin-top:8px}
+.compact footer{display:none}
+/* Touch screens: 16px fields stop iPhone Safari zooming in when you tap a field, and the small buttons get bigger tap targets */
+body{touch-action:manipulation;-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent}
+@media (pointer:coarse),(hover:none){
+ body input:not([type=checkbox]),body select,body .mg select,body textarea,body .ckrow input[type=time],body .paste textarea,body #lvfilter{font-size:16px}
+ body .lvauto input{width:24px;height:24px}
+ body .lvauto{font-size:12px}
+ body .keyl input{min-height:44px}
+ body .lvr{padding:12px 10px}
+ body .lvbtn{height:38px}
+ body .brand select{font-size:20px}
+ body #pause,body #theme{width:42px;height:38px}
+ body .ckbtns button{padding:12px 10px;font-size:13px}
+ body .ckrow{gap:10px 16px;font-size:12px}
+ body .ckrow input[type=checkbox]{width:24px;height:24px}
+ body .pu{padding:9px 16px;font-size:12px}
+ body .pgo{height:38px}
+ body .paste textarea{height:38px}
+ body .paste textarea:focus{height:96px}
+ body #form select,body #form input{min-height:44px}
+}
+@media (max-width:399px){
+ header{gap:6px;padding-left:12px;padding-right:12px}
+ .badge{padding:5px 7px;font-size:10px}
+ body .brand select{font-size:18px;padding:5px 20px 5px 8px}
+ body #pause,body #theme{width:36px}
+}
+@media (max-width:359px){
+ header{padding-left:10px;padding-right:10px}
+ .brand{gap:0}
+ .brand .logo{display:none}
+ body .brand select{font-size:17px}
+}
+</style>
+</head>
+<body>
+<main class="panel">
+ <header>
+  <div class="brand" id="brand"><span class="logo" id="logo">U</span><select id="mkt" aria-label="Goal line market"><option value="u1.5">Under 1.5</option><option value="u2.5">Under 2.5</option><option value="u3.5">Under 3.5</option><option value="u4.5">Under 4.5</option><option value="o0.5">Over 0.5</option><option value="o1.5">Over 1.5</option><option value="o2.5">Over 2.5</option><option value="o3.5">Over 3.5</option><option value="o4.5">Over 4.5</option></select></div>
+  <span id="badge" class="badge">WAIT</span>
+  <button id="theme" type="button" aria-label="Switch between light and dark"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" style="display:block;margin:auto"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M8 2a6 6 0 0 1 0 12z" fill="currentColor"/></svg></button>
+  <button id="pause" type="button" aria-label="Pause or resume betting">❚❚</button>
+ </header>
+ <nav class="tabs"><button type="button" class="on" data-t="bet">Bet</button><button type="button" data-t="rec">Record</button><button type="button" data-t="set">Settings</button></nav>
+ <p class="ckalert" id="ckalert" role="status" hidden></p>
+
+ <section id="v-bet">
+  <div class="stk">
+   <div class="lbl" id="lbl">Next stake</div>
+   <div class="big" id="stake">$0.00</div>
+   <div class="sub" id="sub"></div>
+  </div>
+  <p class="tkt" id="tkt" hidden></p>
+  <div class="chips" id="chips"></div>
+
+  <div class="fold" id="fd-clock">
+   <button type="button" class="fhd" data-f="clock" aria-expanded="true"><span class="ft">Match clock</span><span class="fs" id="fs-clock">Off</span><i class="chev"></i></button>
+   <div class="fb">
+    <div class="clk" id="ckbox">
+     <div class="ckmain"><b id="ckt">Clock off</b><span id="cks">Tap Kicked off at kickoff, or enter the kickoff time.</span></div>
+     <div class="ckbtns"><button type="button" data-a="ckko">Kicked off</button><button type="button" data-a="ckh2">2nd half</button><button type="button" data-a="ckrs">Reset</button></div>
+     <div class="ckrow"><label>Kickoff at <input type="time" id="ck_t"></label><label><input type="checkbox" id="ck_snd" checked>Alerts</label><button type="button" class="pu" data-a="cktest">Test</button></div>
+    </div>
+   </div>
+  </div>
+
+  <div class="match fold" id="fd-match">
+   <button type="button" class="fhd" data-f="match" aria-expanded="true"><span class="ft">Match numbers</span><span class="fs" id="fs-match"></span><i class="chev"></i></button>
+   <div class="fb">
+   <p class="exnote" id="exnote">Example numbers are loaded. Overwrite them, or press Next match to clear.</p>
+   <div class="live" id="live">
+    <div class="lvrow">
+     <button type="button" class="pgo lvbtn" id="lvopen" data-a="lvopen">Live matches</button>
+     <button type="button" class="pu" id="lvrefresh" data-a="lvrefresh" hidden>Refresh</button>
+     <button type="button" class="pu" id="lvunlink" data-a="lvunlink" hidden>Unlink</button>
+     <label class="lvauto" id="lvautow" hidden><input type="checkbox" id="lvauto">Auto every 30 s</label>
+    </div>
+    <p class="pres" id="lvmsg" role="status" hidden></p>
+    <div id="lvlist" hidden>
+     <input id="lvfilter" type="text" placeholder="Filter by team or league" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Filter live matches">
+     <div id="lvrows"></div>
+    </div>
+   </div>
+   <div class="paste">
+    <div class="prow"><textarea id="paste" rows="1" placeholder="Paste stats here, or type a quick line" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Paste match stats"></textarea><button type="button" class="pgo" data-a="pfill">Fill</button></div>
+    <p class="pres" id="pres" hidden><span id="prt"></span><button type="button" class="pu" id="pundo" data-a="pundo" hidden>Undo</button></p>
+   </div>
+   <div class="mg">
+    <div class="grp">Before kick-off</div>
+    <label>Home avg goals (last 5)<input id="i_avgH" inputmode="decimal" autocomplete="off" value="0.8"></label>
+    <label>Away avg goals (last 5)<input id="i_avgA" inputmode="decimal" autocomplete="off" value="1.0"></label>
+    <div class="grp">Live now</div>
+    <label class="mt">Minute<input id="i_min" inputmode="numeric" autocomplete="off" value="60"></label>
+    <label>Home goals<input id="i_gh" inputmode="numeric" autocomplete="off" value="1"></label>
+    <label>Away goals<input id="i_ga" inputmode="numeric" autocomplete="off" value="0"></label>
+    <label>Home shots on target<input id="i_sotH" inputmode="numeric" autocomplete="off" value="2"></label>
+    <label>Away shots on target<input id="i_sotA" inputmode="numeric" autocomplete="off" value="1"></label>
+    <label>Home xG<input id="i_xgh" inputmode="decimal" autocomplete="off" value="0.7"></label>
+    <label>Away xG<input id="i_xga" inputmode="decimal" autocomplete="off" value="0.9"></label>
+    <div class="grp">Market</div>
+    <label><span id="lod">Odds (decimal)</span><input id="i_odds" inputmode="decimal" autocomplete="off" placeholder="e.g. 1.08" value="1.08"></label>
+    <label>Odds format<select id="fmt" aria-label="Odds format"><option value="dec">Decimal (1.08)</option><option value="us">American (-1200)</option><option value="frac">Fractional (1/12)</option></select></label>
+    <label class="mt">Match<input id="i_name" type="text" autocomplete="off" maxlength="40" value="Example match"></label>
+   </div>
+   <div class="tl"><i class="w" id="tw"></i><i class="n" id="tn" hidden></i></div>
+   <div class="tlx"><span>0'</span><span>45'</span><span>90'</span></div>
+   <p class="tlt" id="tlt"></p>
+   <div class="snaps" id="snaps" hidden><div class="grp">Updates</div><div id="snl"></div></div>
+   </div>
+  </div>
+
+  <div class="fold" id="fd-rules">
+   <button type="button" class="fhd" data-f="rules" aria-expanded="true"><span class="ft">Rules</span><span class="fs" id="fs-rules"></span><i class="chev"></i></button>
+   <div class="fb"><div class="rules" id="rules"></div></div>
+  </div>
+  <div id="sig" aria-live="polite"></div>
+  <p class="snage" id="snage" hidden></p>
+
+  <div class="fold" id="fd-stats">
+   <button type="button" class="fhd" data-f="stats" aria-expanded="true"><span class="ft">Session</span><span class="fs" id="fs-stats"></span><i class="chev"></i></button>
+   <div class="fb">
+  <div class="grid">
+   <div><small>Balance</small><b id="bal"></b></div>
+   <div><small>Target</small><b id="tgt"></b></div>
+   <div><small>P/L</small><b id="pl"></b></div>
+   <div><small>Bets today</small><b id="td"></b></div>
+   <div><small>Day</small><b id="dy"></b></div>
+   <div><small>Wins / left</small><b id="wl"></b></div>
+  </div>
+  <p class="pace" id="pace" hidden></p>
+   </div>
+  </div>
+  <div id="banner" hidden></div>
+  <div id="acts" class="acts"></div>
+  <div class="btns">
+   <button class="wide" id="endbtn" type="button" data-a="end">End session</button>
+   <button class="wide" type="button" data-a="log">Session log</button>
+  </div>
+  <div id="log" hidden></div>
+ </section>
+
+ <section id="v-rec" hidden>
+  <label class="rmk">Show results for<select id="r_mk"><option value="cur">This market</option><option value="all">All markets</option><option value="u1.5">Under 1.5</option><option value="u2.5">Under 2.5</option><option value="u3.5">Under 3.5</option><option value="u4.5">Under 4.5</option><option value="o0.5">Over 0.5</option><option value="o1.5">Over 1.5</option><option value="o2.5">Over 2.5</option><option value="o3.5">Over 3.5</option><option value="o4.5">Over 4.5</option></select></label>
+  <div id="rsig"><b id="rh"></b><p id="rt"></p></div>
+  <div class="grid">
+   <div><small>Settled bets (won-lost)</small><b id="r_n"></b></div>
+   <div><small>Net P/L, all sessions</small><b id="r_pl"></b></div>
+   <div><small>Your win rate</small><b id="r_rate"></b></div>
+   <div><small>Break-even rate</small><b id="r_be"></b></div>
+   <div><small>Likely true range (95%)</small><b id="r_ci"></b></div>
+   <div><small id="r_allk">All bets win in a row</small><b id="r_all"></b></div>
+  </div>
+  <div id="r_scale" hidden>
+   <div class="scale"><div class="trk"></div><div class="band" id="r_band"></div><div class="tick" id="r_tick"></div><span class="lb" id="r_lb"></span><div class="dot" id="r_dot"></div></div>
+   <div class="scaleax"><span>85%</span><span>90%</span><span>95%</span><span>100%</span></div>
+   <p class="scalecap">Dot: your win rate. Grey band: where your true rate probably sits. Amber line: the win rate you need to break even.</p>
+  </div>
+  <p class="pace" id="r_recl" hidden>Latest results, newest first</p>
+  <div class="rrec" id="r_rec"></div>
+  <p class="pace" id="r_note"></p>
+  <button class="wide" id="r_copy" type="button" data-a="rcopy">Copy my record</button>
+  <textarea id="r_out" class="rout" readonly hidden aria-label="Record text to copy"></textarea>
+  <p class="pace am" id="r_msg" role="status" hidden></p>
+  <div class="paste rrest"><div class="prow"><textarea id="r_in" rows="1" placeholder="Paste record" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Paste a copied record to restore it"></textarea><button type="button" class="pgo" data-a="rrestore">Restore</button></div></div>
+  <button class="wide" id="r_reset" type="button" data-a="rreset">Reset record</button>
+ </section>
+
+ <section id="v-set" hidden>
+  <div id="form"></div>
+  <div class="fold sfold" id="fd-sl">
+   <button type="button" class="fhd" data-f="sl" aria-expanded="true"><span class="ft">Live data (API-Sports)</span><i class="chev"></i></button>
+   <div class="fb">
+    <label class="keyl">API key<input id="apikey" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Paste your API-Sports key" aria-label="API-Sports key"></label>
+    <div class="two"><button type="button" class="wide" data-a="keysave">Save key</button><button type="button" class="wide" data-a="keytest">Test</button></div>
+    <button type="button" class="wide" data-a="keyforget" id="keyforget">Remove key</button>
+    <p class="pace" id="keymsg" role="status" hidden></p>
+    <p class="pace">Optional. With a key, Live matches on the Bet tab fills the minute, score, shots on target, xG and last-5 average goals for you. The key stays in this browser and is sent only to api-sports.io. It is never part of a copied record. Each refresh uses 2 requests.</p>
+   </div>
+  </div>
+  <div class="fold sfold" id="fd-sr"><button type="button" class="fhd" data-f="sr" aria-expanded="true"><span class="ft">Goal check</span><i class="chev"></i></button><div class="fb"><div id="risk"></div></div></div>
+  <button class="wide pri" type="button" data-a="apply">Apply and start new session</button>
+ </section>
+ <footer>Numbers are typed in, or pulled from your own API-Sports key if you add one. Not connected to a bookmaker. No bet is guaranteed.</footer>
+</main>
+
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+const esc=t=>String(t).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+const fmt=n=>(n<0?'-':'')+'$'+Math.abs(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+
+//<logic>
+const rnd=n=>Math.round(n*100)/100;
+const num=v=>{if(v==null)return null;const t=String(v).trim();if(t==='')return null;const x=parseFloat(t.replace(',','.'));return isNaN(x)?null:x};
+const dayKey=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
+const dayIdx=(a,b)=>Math.round((Date.parse(b+'T00:00:00Z')-Date.parse(a+'T00:00:00Z'))/864e5)+1;
+function judge(a,b,test,scope){
+ const ta=a==null?null:test(a),tb=b==null?null:test(b);
+ if(scope==='any'){if(ta===true||tb===true)return'p';if(ta===false&&tb===false)return'f';return'e'}
+ if(ta===false||tb===false)return'f';
+ if(ta===null||tb===null)return'e';
+ return'p';
+}
+// Goal-line markets. Under X wins with floor(X) goals or fewer; Over X wins with more.
+// Rule values are kept per market. Under 3.5 is your own rule set; every other market starts from my guesses scaled from it.
+const LINES_U=[1.5,2.5,3.5,4.5],LINES_O=[0.5,1.5,2.5,3.5,4.5];
+const UF=['avgMax','goalsBelow','sotMax','xgMax'],OF=['ovAvg','ovGoals','ovSot','ovXg'];
+const UNDER_PRE={'1.5':{avgMax:.7,goalsBelow:2,sotMax:1,xgMax:.5},'2.5':{avgMax:.9,goalsBelow:2,sotMax:2,xgMax:.9},'3.5':{avgMax:1,goalsBelow:3,sotMax:3,xgMax:1.2},'4.5':{avgMax:1.2,goalsBelow:3,sotMax:4,xgMax:1.5}};
+const OVER_PRE={'0.5':{ovAvg:1.3,ovGoals:0,ovSot:5,ovXg:1.2},'1.5':{ovAvg:1.4,ovGoals:1,ovSot:6,ovXg:1.8},'2.5':{ovAvg:1.5,ovGoals:2,ovSot:7,ovXg:2.4},'3.5':{ovAvg:1.5,ovGoals:3,ovSot:8,ovXg:3},'4.5':{ovAvg:1.6,ovGoals:4,ovSot:9,ovXg:3.6}};
+const lineOf=c=>c&&typeof c.line==='number'&&isFinite(c.line)?c.line:3.5;
+const mkKey=(side,line)=>(side==='over'?'o':'u')+line;
+const mkName=(side,line)=>(side==='over'?'Over ':'Under ')+line;
+const mkValid=(side,line)=>(side==='over'?LINES_O:LINES_U).indexOf(line)>=0;
+function presetRules(side,line){const t=side==='over'?OVER_PRE:UNDER_PRE;return Object.assign({},t[String(line)]||t['3.5'])}
+function switchMarket(c,side,line){
+ side=side==='over'?'over':'under';
+ if(!mkValid(side,line))return c;
+ const n=Object.assign({},c);n.m=Object.assign({},c.m||{});
+ const cur=c.side==='over'?OF:UF,saved={};
+ cur.forEach(k=>{saved[k]=c[k]});
+ n.m[mkKey(c.side==='over'?'over':'under',lineOf(c))]=saved;
+ const src=n.m[mkKey(side,line)]||presetRules(side,line);
+ (side==='over'?OF:UF).forEach(k=>{if(typeof src[k]==='number')n[k]=src[k]});
+ n.side=side;n.line=line;
+ return n;
+}
+const NUMW=['No','One','Two','Three','Four','Five','Six','Seven'];
+const gtxt=n=>n===1?'One goal is':(NUMW[n]||String(n))+' goals are';
+function evaluate(v,c){
+ const over=c.side==='over',L=lineOf(c),mg=Math.floor(L);
+ const each=c.scope==='any'?'at least one team':'each team';
+ const f=x=>x==null?'–':String(Math.round(x*100)/100);
+ const fs={};
+ const two=(ka,kb,a,b,test)=>{
+  const ra=a==null?'e':(test(a)?'p':'f'),rb=b==null?'e':(test(b)?'p':'f'),st=judge(a,b,test,c.scope);
+  fs[ka]=ra;fs[kb]=rb;
+  if(c.scope==='any'&&st==='p'){if(ra==='f')fs[ka]='e';if(rb==='f')fs[kb]='e'}
+  return st;
+ };
+ const one=(k,x,test)=>{const st=x==null?'e':(test(x)?'p':'f');fs[k]=st;return st};
+ const sum=(k1,k2,x,test)=>{const st=x==null?'e':(test(x)?'p':'f');fs[k1]=st;fs[k2]=st;return st};
+ const tot=(a,b)=>a==null||b==null?null:a+b;
+ const tv=(a,b)=>{const t=tot(a,b);return t==null?'–':f(t)+' ('+f(a)+' · '+f(b)+')'};
+ const timeR={s:'Time',lim:c.minFrom+'–'+c.minTo,d:'Minute '+c.minFrom+' to '+c.minTo,st:one('min',v.min,x=>x>=c.minFrom&&x<=c.minTo),val:v.min==null?'–':v.min+"'"};
+ const oddsR={s:'Odds',lim:'≥ '+c.minOdds,d:'Odds of '+c.minOdds+' or higher',st:one('odds',v.odds,x=>x>=c.minOdds),val:v.odds==null?'–':String(v.odds)};
+ const R=over?[
+  {s:'Avg',lim:'≥ '+c.ovAvg,d:'Last 5 avg goals ≥ '+c.ovAvg+' ('+each+')',st:two('avgH','avgA',v.avgH,v.avgA,x=>x>=c.ovAvg),val:f(v.avgH)+' · '+f(v.avgA)},
+  timeR,
+  {s:'Goals',lim:'≥ '+c.ovGoals,d:'Total goals so far ≥ '+c.ovGoals,st:sum('gh','ga',tot(v.gh,v.ga),x=>x>=c.ovGoals),val:tv(v.gh,v.ga)},
+  {s:'SoT',lim:'≥ '+c.ovSot,d:'Total shots on target ≥ '+c.ovSot,st:sum('sotH','sotA',tot(v.sotH,v.sotA),x=>x>=c.ovSot),val:tv(v.sotH,v.sotA)},
+  {s:'xG',lim:'≥ '+c.ovXg,d:'Total xG ≥ '+c.ovXg,st:sum('xgh','xga',tot(v.xgh,v.xga),x=>x>=c.ovXg),val:tv(v.xgh,v.xga)},
+  oddsR
+ ]:[
+  {s:'Avg',lim:'≤ '+c.avgMax,d:'Last 5 avg goals ≤ '+c.avgMax+' ('+each+')',st:two('avgH','avgA',v.avgH,v.avgA,x=>x<=c.avgMax),val:f(v.avgH)+' · '+f(v.avgA)},
+  timeR,
+  {s:'Goals',lim:'< '+c.goalsBelow,d:'Goals so far below '+c.goalsBelow+' ('+each+')',st:two('gh','ga',v.gh,v.ga,x=>x<c.goalsBelow),val:f(v.gh)+' – '+f(v.ga)},
+  {s:'SoT',lim:'≤ '+c.sotMax,d:'Shots on target ≤ '+c.sotMax+' ('+each+')',st:two('sotH','sotA',v.sotH,v.sotA,x=>x<=c.sotMax),val:f(v.sotH)+' · '+f(v.sotA)},
+  {s:'xG',lim:'≤ '+c.xgMax,d:'xG ≤ '+c.xgMax+' ('+each+')',st:two('xgh','xga',v.xgh,v.xga,x=>x<=c.xgMax),val:f(v.xgh)+' · '+f(v.xga)},
+  oddsR
+ ];
+ if(v.min!=null&&v.min<c.minFrom)fs.min='a';
+ const passed=R.filter(r=>r.st==='p').length;
+ const total=(v.gh||0)+(v.ga||0);
+ // dead: an Under already lost / an Over already won. risky: one more goal loses an Under. wins: one more goal wins an Over.
+ return{R:R,fs:fs,passed:passed,allPass:passed===R.length,total:total,dead:total>mg,risky:!over&&mg>=1&&total===mg,wins:over&&total===mg&&mg>=1,over:over,mg:mg};
+}
+// Straight-line pace: where xG and shots on target would be by the time the window opens.
+// Under: both only ever go up, so a value already over its limit can never come back under it. Over: they need to reach a minimum.
+const VOLATILE=['Odds'];
+function projection(v,c){
+ if(v.min==null||v.min<15||v.min>=c.minFrom)return null;
+ const f=c.minFrom/v.min,sc=x=>x==null?null:Math.round(x*f*100)/100;
+ const p={xgh:sc(v.xgh),xga:sc(v.xga),sotH:sc(v.sotH),sotA:sc(v.sotA)};
+ if(c.side==='over'){
+  const r2=x=>Math.round(x*100)/100,tx=p.xgh==null||p.xga==null?null:r2(p.xgh+p.xga),ts=p.sotH==null||p.sotA==null?null:r2(p.sotH+p.sotA);
+  const xg=tx==null?'e':(tx>=c.ovXg?'p':'f'),sot=ts==null?'e':(ts>=c.ovSot?'p':'f');
+  return{p:p,tx:tx,ts:ts,xg:xg,sot:sot,ok:xg!=='f'&&sot!=='f'};
+ }
+ const xg=judge(p.xgh,p.xga,x=>x<=c.xgMax,c.scope),sot=judge(p.sotH,p.sotA,x=>x<=c.sotMax,c.scope);
+ return{p:p,xg:xg,sot:sot,ok:xg!=='f'&&sot!=='f'};
+}
+function verdict(ev,v,c){
+ const n=ev.R.length,over=c.side==='over',nm=mkName(c.side,lineOf(c));
+ if(ev.R.every(r=>r.st==='e'))return{k:'idle',head:'Waiting for match numbers',text:'The rules update as you type.'};
+ if(ev.dead)return{k:'bad',head:'NOT A GOOD OPPORTUNITY',text:ev.total+(over?' goals are in, so '+nm+' has already won. Nothing is left to bet.':' goals are in, so '+nm+' has already lost.')};
+ const live=['min','gh','ga','sotH','sotA','xgh','xga'].some(k=>v[k]!=null);
+ if(!live){
+  const a=ev.R[0];
+  if(a.st==='f')return{k:'bad',head:'SKIP THIS MATCH',text:over?'Pre-match average goals '+a.val+' are under your minimum of '+c.ovAvg+'.':'Pre-match average goals '+a.val+' is over your limit of '+c.avgMax+'.'};
+  if(a.st==='p')return{k:'ok',head:'WATCH THIS MATCH',text:'Pre-match average goals pass ('+a.val+', '+(over?'minimum '+c.ovAvg:'limit '+c.avgMax)+'). Start the match clock at kickoff, then paste the live stats around 30, 45 and 55 minutes.'};
+ }
+ const early=v.min!=null&&v.min<c.minFrom,soon=v.min==null||early;
+ // Over minimums are things that still grow, so they are not final until the window opens.
+ const grow=over?['Goals','SoT','xG']:[];
+ const hard=ev.R.filter(r=>r.st==='f'&&!(r.s==='Time'&&early)&&!(soon&&(VOLATILE.indexOf(r.s)>=0||grow.indexOf(r.s)>=0)));
+ if(hard.length)return{k:'bad',head:'NOT A GOOD OPPORTUNITY',text:hard.map(r=>r.s+' '+r.val+' (needs '+r.lim+')').join('. ')+'.'+(early&&!over?' These only go up, so this match is out.':'')};
+ if(early){
+  const left=c.minFrom-v.min,pj=projection(v,c);
+  if(!pj)return{k:'am',head:'NOT YET',text:'The window opens at minute '+c.minFrom+', '+left+' min from now. '+(v.min<15?'Too early to project. Refresh the stats around 30, 45 and 55 minutes.':'Nothing is failing so far.')};
+  const fx=x=>x==null?'–':String(Math.round(x*10)/10);
+  const miss=[pj.xg==='e'?'xG':null,pj.sot==='e'?'shots on target':null].filter(Boolean);
+  if(miss.length)return{k:'am',head:'NOT YET',text:'Add '+miss.join(' and ')+' to project the pace to minute '+c.minFrom+'. The window opens in '+left+' min.'};
+  if(over){
+   const l2='At this pace by minute '+c.minFrom+': total xG '+fx(pj.tx)+' (needs ≥ '+c.ovXg+'), total shots on target '+fx(pj.ts)+' (needs ≥ '+c.ovSot+'). Goals so far '+((v.gh||0)+(v.ga||0))+' (needs ≥ '+c.ovGoals+').';
+   if(!pj.ok)return{k:'am',head:'AT RISK',text:l2+' Below a target, so it may fall short by the window.'};
+   return{k:'ok',head:'ON TRACK',text:l2+' The window opens in '+left+' min.'};
+  }
+  const line='At this pace by minute '+c.minFrom+': xG '+fx(pj.p.xgh)+' · '+fx(pj.p.xga)+' (limit '+c.xgMax+'), shots on target '+fx(pj.p.sotH)+' · '+fx(pj.p.sotA)+' (limit '+c.sotMax+').';
+  if(!pj.ok)return{k:'am',head:'AT RISK',text:line+' Over a limit, so it may fail by the window.'};
+  return{k:'ok',head:'ON TRACK',text:line+' The window opens in '+left+' min.'};
+ }
+ const em=ev.R.filter(r=>r.st==='e');
+ if(em.length)return{k:'am',head:'WAITING FOR NUMBERS',text:'Missing: '+em.map(r=>r.s).join(', ')+'. '+ev.passed+' of '+n+' rules pass so far.'};
+ return{k:'go',head:'GOOD OPPORTUNITY',text:'Goals, shots on target and xG all '+(over?'clear their minimums':'pass')+' at minute '+v.min+'.'+(ev.risky?' '+gtxt(ev.total)+' in, so one more goal loses the bet.':'')+(ev.wins?' '+gtxt(ev.total)+' in, so one more goal wins the bet.':'')};
+}
+function betsLeft(s,c){if(s.day>c.days)return 0;return Math.max(0,c.perDay-s.dayBets)+Math.max(0,c.days-s.day)*c.perDay}
+function pctUse(c){return c.staking==='flat'?Math.min(c.stakePct,c.stakeCap):c.stakeCap}
+function goal(c,bal,target,left,odds){
+ if(!(odds>1)||left<1||bal<=0||target<=bal)return null;
+ const f=(Math.pow(target/bal,1/left)-1)/(odds-1),pct=pctUse(c);
+ return{f:f,pct:pct,best:Math.pow(1+pct/100*(odds-1),left),over:f*100>c.stakeCap};
+}
+function stakeFor(v,c,bal,left,target){
+ let amt;
+ if(c.staking==='ladder'){
+  if(!(v.odds>1))return{amt:0,why:'Enter the odds to size a target-ladder stake.'};
+  const need=target/bal;
+  amt=need<=1?0:bal*((Math.pow(need,1/Math.max(1,left))-1)/(v.odds-1));
+ }else amt=bal*c.stakePct/100;
+ amt=Math.min(amt,bal*c.stakeCap/100);
+ return{amt:Math.max(1,Math.round(amt*100)/100),why:''};
+}
+function newState(bal,k){return{bal:bal,start:bal,pl:0,w:0,n:0,placed:0,st:0,maxSt:0,maxStake:0,res:[],sres:[],log:[],open:[],nid:0,paused:false,halt:'',dayMsg:'',ok:false,ended:false,startDate:k,dayDate:k,day:1,dayBets:0,dayLosses:0,lockUntil:0}}
+function checkState(s,c,k){
+ s.ok=false;s.dayMsg='';
+ if(s.dayDate!==k){s.dayDate=k;s.dayBets=0;s.dayLosses=0}
+ s.day=Math.max(1,dayIdx(s.startDate,k));
+ const tgt=rnd(s.start*c.targetMult),last=s.day>=c.days,idle=s.open.length===0;
+ if(s.bal>=tgt-0.005){s.halt='Target reached. Session complete.';s.ok=true}
+ else if(s.pl<=-c.stop)s.halt='Stop-loss hit. Stop betting this session.';
+ else if(s.st>=c.maxStreak)s.halt='Loss-streak limit reached. Take a break.';
+ else if(s.bal<1)s.halt='Bankroll is below the $1 minimum stake.';
+ else if(s.day>c.days)s.halt='The '+c.days+'-day window is over.';
+ else if(idle&&s.placed>=c.perDay*c.days)s.halt='All '+(c.perDay*c.days)+' bets are used.';
+ else{
+  s.halt='';
+  let dm='';
+  if(s.dayBets>=c.perDay)dm='Day '+s.day+' done: all '+c.perDay+' bets used.';
+  else if(c.dayLoss>0&&s.dayLosses>=c.dayLoss)dm='Stopped for today after '+s.dayLosses+(s.dayLosses===1?' loss.':' losses.');
+  if(dm){
+   if(last&&idle)s.halt=dm+' That was the last day.';
+   else s.dayMsg=dm+(last?' This is the last day.':' Come back tomorrow.');
+  }
+ }
+}
+function addBet(s,c,item,k){
+ if(!s.sres)s.sres=[];
+ s.nid++;item.id=s.nid;item.g=s.placed;item.day=s.day;
+ s.open.push(item);s.sres[item.g]='o';s.placed++;s.dayBets++;
+ checkState(s,c,k);
+}
+function settleBet(s,c,id,kind,k,now,t){
+ const i=s.open.findIndex(o=>String(o.id)===String(id));
+ if(i<0)return false;
+ if(!s.sres)s.sres=[];
+ const p=s.open.splice(i,1)[0];
+ let pnl=0;
+ if(kind==='won')pnl=rnd(p.stake*(p.odds-1));else if(kind==='lost')pnl=-p.stake;
+ s.log.unshift({t:t,name:p.name||'Match',stake:p.stake,odds:p.odds,res:kind,pnl:pnl,mk:p.mk});
+ const same=p.day===s.day;
+ if(kind!=='void'){
+  s.bal=rnd(s.bal+pnl);s.pl=rnd(s.pl+pnl);s.n++;s.res.push(kind==='won');
+  s.maxStake=Math.max(s.maxStake,p.stake);
+  if(kind==='won'){s.w++;s.st=0}
+  else{s.st++;s.maxSt=Math.max(s.maxSt,s.st);if(same)s.dayLosses++;s.lockUntil=c.cool>0?now+c.cool*60000:0}
+ }
+ s.sres[p.g]=kind==='won'?'w':kind==='lost'?'l':'v';
+ checkState(s,c,k);
+ return true;
+}
+// Match clock: when does the match clock reach a given minute, and where are we now?
+// After you tap "2nd half" the clock is exact. Before that it assumes about 2 min of first-half stoppage and a 15 min half-time.
+const CK_STOP=2,CK_HT=15;
+function atMin(cl,m){
+ if(m<=45)return cl.ko?cl.ko+m*60000:null;
+ if(cl.h2)return cl.h2+(m-45)*60000;
+ return cl.ko?cl.ko+(m+CK_STOP+CK_HT)*60000:null;
+}
+function clockInfo(cl,c,now){
+ if(!cl||(!cl.ko&&!cl.h2))return{k:'off'};
+ const opens=atMin(cl,c.minFrom),closes=atMin(cl,c.minTo);
+ if(opens==null||closes==null)return{k:'off'};
+ const est=!cl.h2;
+ let min,e=null;
+ if(cl.h2)min=45+(now-cl.h2)/60000;
+ else{e=(now-cl.ko)/60000;min=e<=45?e:(e<=45+CK_STOP+CK_HT?45:45+e-(CK_STOP+CK_HT))}
+ const k=now<opens?'wait':now<closes?'in':'past';
+ return{k:k,min:min,est:est,opens:opens,closes:closes,secs:k==='wait'?(opens-now)/1000:k==='in'?(closes-now)/1000:0,
+  kick:cl.ko&&now<cl.ko?(cl.ko-now)/1000:null,sync:est&&e!=null&&e>45+CK_STOP&&k!=='past'};
+}
+function mmss(s){const t=Math.max(0,Math.ceil(s));return Math.floor(t/60)+':'+String(t%60).padStart(2,'0')}
+// Odds as a platform quotes them (decimal 1.08, American -1200, fractional 1/12) become decimal odds after fees.
+// comm is the % a platform keeps from your winnings (0 for most sportsbooks, whose margin is already in the odds).
+// The result is rounded down to 3 decimals so the break-even rate is never understated.
+function toDecimal(fmt,raw,comm){
+ const t=String(raw==null?'':raw).trim().replace(/[−–—]/g,'-').replace(/,/g,'.');
+ if(!t)return null;
+ let g=null;
+ if(fmt==='us'){
+  if(!/^[+-]?\d+(?:\.\d+)?$/.test(t))return null;
+  const x=parseFloat(t);
+  if(x>=100)g=1+x/100;else if(x<=-100)g=1+100/-x;else return null;
+ }else if(fmt==='frac'){
+  if(/^ev(?:en)?s?$/i.test(t))g=2;
+  else{const m=/^(\d+(?:\.\d+)?)\s*[\/:]\s*(\d+(?:\.\d+)?)$/.exec(t);if(!m||!(+m[2]>0))return null;g=1+(+m[1])/(+m[2])}
+ }else{
+  if(!/^\d+(?:\.\d+)?$/.test(t))return null;
+  g=parseFloat(t);
+ }
+ if(!(g>1&&g<=100))return null;
+ const f=Math.min(Math.max(+comm||0,0),50)/100;
+ return Math.floor((1+(g-1)*(1-f))*1000+1e-9)/1000;
+}
+const FMT_HELP={dec:'Enter decimal odds above 1, like 1.08.',us:'Enter American odds: -1200 for a favourite, +150 for an underdog. Type the minus sign.',frac:'Enter fractional odds like 1/12 or 5/6, or "evens".'};
+const FMT_LAB={dec:['Odds (decimal)','e.g. 1.08','decimal'],us:['Odds (American)','e.g. -1200','text'],frac:['Odds (fractional)','e.g. 1/12','text']};
+
+// ---- Live feed (optional): reads the JSON that API-Sports (v3.football.api-sports.io) sends and turns it into the panel's fields.
+// Everything here is pure, so it is tested without a network. A missing or null value stays blank: the panel never guesses a number.
+const API_BASE='https://v3.football.api-sports.io';
+const nOrNull=v=>{if(v==null||v==='')return null;const x=typeof v==='number'?v:parseFloat(String(v).replace(',','.'));return isFinite(x)?x:null};
+// API-Sports answers HTTP 200 even when something is wrong; the problem is in "errors" (an empty list when all is well).
+function apiErr(j){
+ const e=j&&j.errors;
+ if(!e)return null;
+ if(Array.isArray(e))return e.length?String(e[0]).slice(0,160):null;
+ const k=Object.keys(e);
+ if(!k.length)return null;
+ if(k.indexOf('token')>=0)return 'The API rejected your key. Check it in Settings.';
+ if(k.indexOf('requests')>=0)return 'Your daily request limit is used up.';
+ if(k.indexOf('rateLimit')>=0)return 'Too many requests in a minute. Wait a moment, then try again.';
+ if(k.indexOf('plan')>=0)return 'Your plan does not include this data.';
+ return String(e[k[0]]).slice(0,160);
+}
+function apiFixture(r){
+ try{
+  const f=r.fixture||{},st=f.status||{},t=r.teams||{},g=r.goals||{},l=r.league||{};
+  if(!f.id||!t.home||!t.away)return null;
+  return{id:f.id,short:String(st.short||''),min:nOrNull(st.elapsed),
+   home:{id:t.home.id,name:String(t.home.name||'Home')},away:{id:t.away.id,name:String(t.away.name||'Away')},
+   gh:nOrNull(g.home),ga:nOrNull(g.away),league:String(l.name||''),country:String(l.country||'')};
+ }catch(e){return null}
+}
+// Live list: only matches that are in play (they have a minute).
+function apiLive(j){
+ const a=j&&Array.isArray(j.response)?j.response:[];
+ return a.map(apiFixture).filter(f=>f&&f.min!=null);
+}
+const apiDone=f=>!!f&&['FT','AET','PEN','PST','CANC','ABD','AWD','WO'].indexOf(f.short)>=0;
+// Entry window first, then matches heading for it (closest first), then matches already past it.
+function apiSort(list,c){
+ const lo=c.minFrom,hi=c.minTo;
+ const d=f=>f.min>=lo&&f.min<=hi?-1:f.min<lo?lo-f.min:1000+(f.min-hi);
+ return list.slice().sort((a,b)=>d(a)-d(b)||(a.home.name+a.away.name).localeCompare(b.home.name+b.away.name));
+}
+const apiInWin=(f,c)=>f.min>=c.minFrom&&f.min<=c.minTo;
+function apiFilter(list,q){
+ const t=String(q||'').trim().toLowerCase();
+ if(!t)return list;
+ return list.filter(f=>(f.home.name+' '+f.away.name+' '+f.league+' '+f.country).toLowerCase().indexOf(t)>=0);
+}
+// One fixture from /fixtures?id=
+function apiOne(j){
+ const a=j&&Array.isArray(j.response)?j.response:[];
+ return a.length?apiFixture(a[0]):null;
+}
+// /fixtures/statistics: shots on target and xG per team. A null value stays null (unknown), never 0.
+function apiStats(j,homeId,awayId){
+ const out={sotH:null,sotA:null,xgh:null,xga:null,any:false};
+ const a=j&&Array.isArray(j.response)?j.response:[];
+ a.forEach(e=>{
+  const id=e&&e.team&&e.team.id,side=id===homeId?'H':id===awayId?'A':null;
+  if(!side||!Array.isArray(e.statistics))return;
+  out.any=true;
+  e.statistics.forEach(s=>{
+   if(!s)return;
+   if(s.type==='Shots on Goal')out['sot'+side]=nOrNull(s.value);
+   else if(s.type==='expected_goals')out[side==='H'?'xgh':'xga']=nOrNull(s.value);
+  });
+ });
+ return out;
+}
+// /fixtures?team=&last=5: average goals scored by that team in its finished games (needs at least 3).
+function apiAvg(j,teamId){
+ const a=j&&Array.isArray(j.response)?j.response:[];
+ let n=0,sum=0;
+ a.forEach(r=>{
+  const t=r&&r.teams,g=r&&r.goals,sh=r&&r.fixture&&r.fixture.status&&r.fixture.status.short;
+  if(!t||!g||!t.home||!t.away)return;
+  if(sh&&['FT','AET','PEN'].indexOf(sh)<0)return;
+  const x=t.home.id===teamId?nOrNull(g.home):t.away.id===teamId?nOrNull(g.away):null;
+  if(x==null)return;
+  n++;sum+=x;
+ });
+ return n>=3?Math.round(sum/n*100)/100:null;
+}
+// /status: plan and requests used today. Name and email in the answer are deliberately ignored.
+function apiStatus(j){
+ const r=j&&j.response;
+ if(!r||typeof r!=='object'||Array.isArray(r))return null;
+ const sub=r.subscription||{},rq=r.requests||{};
+ return{plan:String(sub.plan||'unknown').slice(0,30),active:sub.active!==false,used:nOrNull(rq.current),limit:nOrNull(rq.limit_day)};
+}
+// Fields to write into the panel, only for values the feed really gave.
+function apiVals(fx,st,av){
+ const v={},put=(k,x)=>{if(x!=null)v[k]=Math.round(x*100)/100};
+ if(fx){put('min',fx.min);put('gh',fx.gh);put('ga',fx.ga)}
+ if(st){put('sotH',st.sotH);put('sotA',st.sotA);put('xgh',st.xgh);put('xga',st.xga)}
+ if(av){put('avgH',av.h);put('avgA',av.a)}
+ return v;
+}
+function apiMissing(v,wantAvg){
+ const m=[];
+ if(v.min==null||v.gh==null||v.ga==null)m.push('minute or score');
+ if(v.sotH==null||v.sotA==null)m.push('shots on target');
+ if(v.xgh==null||v.xga==null)m.push('xG');
+ if(wantAvg&&(v.avgH==null||v.avgA==null))m.push('average goals');
+ return m;
+}
+// Reads copied stats text or a typed quick line and returns the panel fields it found.
+function parseStats(raw,side,fmt){
+ const vals={},got=[],NUMS=/\d+(?:\.\d+)?/g;
+ const t=String(raw==null?'':raw).replace(/\u00a0/g,' ').replace(/[\u2013\u2014\u2212]/g,'-').replace(/[\u2032\u2019\u02b9]/g,"'").replace(/(\d),(\d{1,2})(?!\d)/g,'$1.$2').replace(/\t+/g,' ');
+ const L=t.split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
+ const isN=s=>s!=null&&/^\d+(?:\.\d+)?$/.test(s);
+ const dp=v=>String(Math.round(v*100)/100);
+ const put=(k,v)=>{vals[k]=v};
+ const okInt=v=>v>=0&&v<=40&&v%1===0, okXg=v=>v>=0&&v<=8, okAvg=v=>v>=0&&v<=8;
+
+ // Stat rows: value, label, value (most sites), label, value, value, or all on one line
+ const XG=/expected\s+goals(?!\s*(?:on\s+target|against|conceded|prevented))(?:\s*\(\s*xg\s*\))?|\bxg\b(?!\s*(?:against|conceded))/i;
+ const SOT=/shots?\s+on\s+(?:target|goal)s?(?:\s*\(\s*sot\s*\))?|\bsot\b/i;
+ const defs=[
+  {re:SOT,skip:/expected|\bxg/i,k:['sotH','sotA'],ok:okInt,name:'shots on target'},
+  {re:XG,skip:null,k:['xgh','xga'],ok:okXg,name:'xG'}
+ ];
+ const pend=[];
+ defs.forEach(d=>{
+  for(let i=0;i<L.length;i++){
+   if(vals[d.k[0]]!=null)break;
+   if(!d.re.test(L[i])||(d.skip&&d.skip.test(L[i])))continue;
+   const rest=L[i].replace(d.re,' ').replace(/\(\s*\)/g,' ');
+   const n=rest.match(NUMS)||[];
+   if(n.length>=2){const a=+n[0],b=+n[1];if(d.ok(a)&&d.ok(b)){put(d.k[0],a);put(d.k[1],b);break}}
+   else if(n.length===0)pend.push({def:d,i:i});
+  }
+ });
+ // Which way are rows laid out? Every non-number line votes when only one reading fits it.
+ const isV=s=>s!=null&&/^\d+(?:\.\d+)?%?$/.test(s);
+ let cv=0,dv=0;
+ L.forEach((x,j)=>{if(isV(x))return;const c1=isV(L[j-1])&&isV(L[j+1]),d1=isV(L[j+1])&&isV(L[j+2]);if(c1&&!d1)cv++;else if(d1&&!c1)dv++});
+ const lay=dv>cv?['d','c']:['c','d'];
+ pend.forEach(p=>{
+  if(vals[p.def.k[0]]!=null)return;
+  for(const m of lay){
+   const i=p.i,a=m==='c'?L[i-1]:L[i+1],b=m==='c'?L[i+1]:L[i+2];
+   if(isN(a)&&isN(b)&&p.def.ok(+a)&&p.def.ok(+b)){put(p.def.k[0],+a);put(p.def.k[1],+b);break}
+  }
+ });
+
+ // Score
+ let sc=null;
+ for(let i=0;i<L.length&&!sc;i++){
+  const m=L[i].match(/^(\d{1,2})\s*[-:]\s*(\d{1,2})$/);
+  if(m&&+m[1]<=12&&+m[2]<=12)sc=[+m[1],+m[2]];
+  else if(isN(L[i])&&L[i+1]==='-'&&isN(L[i+2])&&+L[i]<=12&&+L[i+2]<=12)sc=[+L[i],+L[i+2]];
+ }
+ for(let i=0;i<L.length&&!sc;i++){
+  const m=L[i].match(/(^|[^\d:.-])(\d{1,2})\s*-\s*(\d{1,2})(?![\d:.-])/);
+  if(m&&+m[2]<=12&&+m[3]<=12&&!/\d\s*-\s*\d\s*-\s*\d/.test(L[i]))sc=[+m[2],+m[3]];
+ }
+ if(sc){put('gh',sc[0]);put('ga',sc[1])}
+
+ // Minute: the highest time mark such as 60' or 45+2' (goal times are never later than the clock)
+ let mn=null,marks=0,mm;
+ const re1=/(\d{1,3})\s*(?:\+\s*(\d{1,2}))?\s*'/g;
+ while((mm=re1.exec(t))){const v=+mm[1]+(mm[2]?+mm[2]:0);if(v>=1&&v<=130){marks++;if(mn==null||v>mn)mn=v}}
+ if(mn!=null)put('min',mn);
+
+ // Quick line, typed by hand. This wins over anything read from copied text.
+ const N='(\\d+(?:\\.\\d+)?)',S='[ \\t,/|\\u00b7-]+';
+ const q=(re)=>{const m=t.match(re);return m||null};
+ let m;
+ if((m=q(/\bmin(?:ute)?s?[ \t:=]*(\d{1,3})\b/i)||q(/\b(\d{1,3})[ \t]*min(?:ute)?s?\b/i))&&+m[1]<=130)put('min',+m[1]);
+ if((m=q(/\bscore[ \t:=]*(\d{1,2})[ \t]*[-:][ \t]*(\d{1,2})/i))){put('gh',+m[1]);put('ga',+m[2])}
+ if((m=q(new RegExp('\\bsot[ \\t:=]*(\\d+)'+S+'(\\d+)','i')))&&okInt(+m[1])&&okInt(+m[2])){put('sotH',+m[1]);put('sotA',+m[2])}
+ if((m=q(new RegExp('\\bxg\\b\\)?[ \\t:=]*'+N+S+N,'i')))&&okXg(+m[1])&&okXg(+m[2])){put('xgh',+m[1]);put('xga',+m[2])}
+ if((m=q(new RegExp('\\bavg[ \\t:=]*'+N+S+N,'i')))&&okAvg(+m[1])&&okAvg(+m[2])){put('avgH',+m[1]);put('avgA',+m[2])}
+ // Odds are read in the format chosen on the panel: decimal 1.08, American -1200, fractional 1/12.
+ if(fmt==='us'){
+  if((m=q(/\bodds[ \t:=]*([+-]?\d{3,6})\b/i))&&toDecimal('us',m[1],0)!=null)put('odds',m[1]);
+ }else if(fmt==='frac'){
+  if((m=q(/\bodds[ \t:=]*(\d+(?:\.\d+)?[ \t]*[\/:][ \t]*\d+(?:\.\d+)?|ev(?:en)?s?)\b/i))&&toDecimal('frac',m[1],0)!=null)put('odds',m[1].replace(/[ \t]+/g,''));
+ }else if((m=q(/\bodds[ \t:=]*(\d+(?:\.\d+)?)/i))&&+m[1]>=1.01&&+m[1]<=50)put('odds',+m[1]);
+
+ // Summary lines
+ const v=vals,has=k=>v[k]!=null;
+ if(has('min'))got.push('minute '+v.min+(marks>1&&!/\bmin/i.test(t)?' (highest time mark)':''));
+ if(has('gh'))got.push('score '+v.gh+'\u2013'+v.ga);
+ if(has('sotH'))got.push('shots on target '+v.sotH+' \u00b7 '+v.sotA);
+ if(has('xgh'))got.push('xG '+dp(v.xgh)+' \u00b7 '+dp(v.xga));
+ if(has('avgH'))got.push('avg goals '+dp(v.avgH)+' \u00b7 '+dp(v.avgA));
+ if(has('odds'))got.push('odds '+v.odds);
+ const miss=[['min','minute'],['gh','score'],['sotH','shots on target'],['xgh','xG']].filter(x=>!has(x[0])).map(x=>x[1]);
+ return {vals:vals,got:got,miss:miss};
+}
+const REC_MIN=30,WZ=1.96;
+const pct1=x=>(Math.round(x*1000)/10).toFixed(1)+'%';
+function wilson(w,n){if(!n)return{lo:null,hi:null};const p=w/n,z2=WZ*WZ,d=1+z2/n,m=(p+z2/(2*n))/d,h=WZ*Math.sqrt(p*(1-p)/n+z2/(4*n*n))/d;return{lo:Math.max(0,m-h),hi:Math.min(1,m+h)}}
+// Settled bets vs the win rate they needed. odds are the fee-adjusted odds, so 1/odds is the break-even win rate for that bet.
+function recordStats(book,plan,mk){
+ const b=(Array.isArray(book)?book:[]).filter(x=>x&&(x.res==='won'||x.res==='lost')&&x.odds>1&&(!mk||mk==='all'||(x.mk||'u3.5')===mk));
+ const n=b.length,w=b.filter(x=>x.res==='won').length;
+ const o={n:n,w:w,l:n-w,rate:null,be:null,lo:null,hi:null,pl:0,recent:[],all:null,perfect:null,need95:null,kind:'idle',head:'NO RECORD YET',text:'Settle bets on the Bet tab and they count here. Log every pick, even at small stakes.'};
+ if(!n)return o;
+ o.rate=w/n;o.be=b.reduce((a,x)=>a+1/x.odds,0)/n;
+ const ci=wilson(w,n);o.lo=ci.lo;o.hi=ci.hi;
+ o.pl=rnd(b.reduce((a,x)=>a+(x.pnl||0),0));
+ o.recent=b.slice(-12).reverse().map(x=>x.res==='won'?'w':'l');
+ o.all=Math.pow(o.rate,Math.max(1,plan|0));
+ if(o.be<1)o.perfect=Math.ceil(o.be*WZ*WZ/(1-o.be));
+ if(o.be<.95)o.need95=Math.ceil(Math.pow(WZ*Math.sqrt(.95*.05)/(.95-o.be),2));
+ const rec=w+' of '+n+' won ('+pct1(o.rate)+')';
+ if(n<REC_MIN){o.kind='am';o.head='TOO FEW TO TELL';o.text=rec+'. Below '+REC_MIN+' settled bets the win rate is mostly luck: '+(REC_MIN-n)+' to go.'}
+ else if(o.hi<o.be){o.kind='bad';o.head='BELOW BREAK-EVEN';o.text=rec+'. Even the generous end of the range ('+pct1(o.hi)+') is under the '+pct1(o.be)+' you need. After fees these picks lose money.'}
+ else if(o.lo>o.be){o.kind='go';o.head='ABOVE BREAK-EVEN';o.text=rec+'. Even the cautious end ('+pct1(o.lo)+') beats the '+pct1(o.be)+' you need. That is a sample, not a promise.'}
+ else{o.kind='am';o.head="CAN'T TELL YET";o.text=rec+' against '+pct1(o.be)+' needed. The true rate could be anywhere from '+pct1(o.lo)+' to '+pct1(o.hi)+'. '+(o.rate<o.be?'Right now you are below break-even.':'Right now you are above break-even, but that could be luck.')}
+ return o;
+}
+const REC_TAG='U35DATA ';
+// Text you can paste into Notes or a message: a short summary plus one data line that recordImport can read back.
+function recordExport(book,stamp){
+ const b=(Array.isArray(book)?book:[]).filter(x=>x&&(x.res==='won'||x.res==='lost')&&x.odds>1);
+ const r=recordStats(b,1);
+ const lines=['Goal-line record'+(stamp?' ('+stamp+')':'')];
+ lines.push(r.n?'Settled '+r.n+' ('+r.w+'-'+r.l+'), win rate '+pct1(r.rate)+', break-even '+pct1(r.be)+', P/L '+(r.pl<0?'-$':'+$')+Math.abs(r.pl).toFixed(2):'No settled bets yet.');
+ lines.push('To restore: open the Record tab, paste this whole message into the restore box and tap Restore.');
+ lines.push(REC_TAG+JSON.stringify(b.map(x=>({a:x.at||0,o:x.odds,s:x.stake,r:x.res==='won'?'w':'l',p:x.pnl||0,m:x.mk||'u3.5'}))));
+ return lines.join('\n');
+}
+function recordImport(text){
+ if(typeof text!=='string')return null;
+ const i=text.indexOf(REC_TAG);if(i<0)return null;
+ const j=text.slice(i+REC_TAG.length).split(/\r?\n/)[0].trim().replace(/[\u201c\u201d]/g,'"');
+ let a;try{a=JSON.parse(j)}catch(e){return null}
+ if(!Array.isArray(a))return null;
+ const out=[];
+ for(const x of a.slice(-2000)){
+  if(!x||typeof x!=='object')continue;
+  const o=Number(x.o),s=Number(x.s),p=Number(x.p),at=Number(x.a);
+  if(!(o>1&&o<=100)||!isFinite(s)||s<0||!isFinite(p)||(x.r!=='w'&&x.r!=='l'))continue;
+  out.push({at:isFinite(at)?at:0,odds:o,stake:s,res:x.r==='w'?'won':'lost',pnl:p,mk:/^[uo][0-9]\.5$/.test(String(x.m))?String(x.m):'u3.5'});
+ }
+ return out.length?out:null;
+}
+//</logic>
+
+const D={start:50,targetMult:1.07,days:2,perDay:6,minOdds:1.06,dayLoss:1,cool:15,maxStreak:2,stop:10,stakePct:10,stakeCap:10,avgMax:1,minFrom:60,minTo:65,goalsBelow:3,sotMax:3,xgMax:1.2,side:'under',line:3.5,m:{},ovAvg:1.5,ovGoals:3,ovSot:8,ovXg:3,scope:'both',staking:'flat',gate:'block',carry:'reset',fmt:'dec',comm:0};
+const FD={
+ days:['Days in challenge',1],perDay:['Max bets per day',1],minOdds:['Minimum odds (after fees)',.01],comm:['Platform fee on winnings (%)',.1],dayLoss:['Stop for day after losses (0 = off)',1],cool:['Cool-off after a loss (min)',1],maxStreak:['Max loss streak',1],stop:['Session stop-loss ($)',1],
+ start:['Start bankroll ($)',1],targetMult:['Target (× bankroll)',.05],stakePct:['Flat stake (% of bankroll)',.1],stakeCap:['Max stake (% of bankroll)',.5],
+ avgMax:['Max avg goals (last 5)',.1],minFrom:['Entry minute from',1],minTo:['Entry minute to',1],goalsBelow:['Goals per team below',1],sotMax:['Max shots on target per team',1],xgMax:['Max xG per team',.1],
+ ovAvg:['Min avg goals (last 5, each team)',.1],ovGoals:['Min total goals so far',1],ovSot:['Min total shots on target',1],ovXg:['Min total xG',.1]
+};
+const NUM=Object.keys(FD);
+const KEY='u35_v2';
+const INP=['avgH','avgA','min','gh','ga','sotH','sotA','xgh','xga','odds'];
+let c={...D},s,hist=[],ses=1,showLog=false,size='normal',lastLock=-1;
+let fold={clock:true,match:true,rules:true,stats:true,sd:true,ss:true,sm:true,sr:true,sl:true};
+function applyFold(){
+ Object.keys(fold).forEach(k=>{
+  const el=$('fd-'+k);if(!el)return;
+  const col=!!fold[k]&&size==='compact';
+  el.classList.toggle('c',col);
+  const b=el.querySelector('.fhd');if(b)b.setAttribute('aria-expanded',col?'false':'true');
+ });
+}
+
+function save(){try{localStorage.setItem(KEY,JSON.stringify({v:2,c:c,s:s,h:hist,n:ses}))}catch(e){}}
+// A saved session that still holds the old untouched defaults (nothing logged) is dropped so the new defaults apply.
+function OLDDEF(d){try{const k=d.c,x=d.s;return k.start===1000&&k.targetMult===2&&k.stakePct===5&&k.stop===150&&x.bal===1000&&!x.placed&&!x.n&&!(x.log&&x.log.length)&&!x.open.length&&!(d.h&&d.h.length)&&(d.n||1)===1}catch(e){return false}}
+function load(){try{const d=JSON.parse(localStorage.getItem(KEY)||'null');if(d&&d.v===2&&d.c&&d.s&&typeof d.s.bal==='number'&&Array.isArray(d.s.open)&&!OLDDEF(d)){c={...D,...d.c};if(c.staking==='kelly')c.staking='flat';s=d.s;if(!Array.isArray(s.sres))s.sres=[];hist=Array.isArray(d.h)?d.h:[];ses=d.n||1}}catch(e){}}
+const HOST_THEME=document.documentElement.getAttribute('data-theme');
+let theme='auto';
+function effTheme(){if(theme!=='auto')return theme;if(HOST_THEME==='light'||HOST_THEME==='dark')return HOST_THEME;try{return matchMedia('(prefers-color-scheme: light)').matches?'light':'dark'}catch(e){return'dark'}}
+function setTheme(v,keep){theme=v==='light'||v==='dark'?v:'auto';const r=document.documentElement;if(theme==='auto'){if(HOST_THEME)r.setAttribute('data-theme',HOST_THEME);else r.removeAttribute('data-theme')}else r.setAttribute('data-theme',theme);if(!keep){try{localStorage.setItem('u35_theme',theme)}catch(e){}}const b=document.getElementById('theme');if(b){b.title=effTheme()==='light'?'Switch to dark mode':'Switch to light mode'}const sl=document.getElementById('f_theme');if(sl)sl.value=theme}
+function setSize(v){size=v==='compact'?'compact':'normal';document.body.classList.toggle('compact',size==='compact');applyFold();try{localStorage.setItem('u35_size',size)}catch(e){}}
+function fresh(b){s=newState(b||c.start,dayKey());showLog=false}
+function recheck(){checkState(s,c,dayKey())}
+const exposure=()=>rnd(s.open.reduce((a,o)=>a+o.stake,0));
+
+function rd(){
+ const v={};INP.forEach(k=>{v[k]=num($('i_'+k).value)});
+ v.odds=toDecimal(c.fmt,$('i_odds').value,c.comm);
+ v.name=($('i_name').value||'').trim().slice(0,40);
+ return v;
+}
+function gate(v,ev,stk){
+ if(s.ended)return'Session ended. Start a new session to keep betting.';
+ if(s.halt)return s.halt;
+ if(s.paused)return'Betting is paused.';
+ if(s.dayMsg)return s.dayMsg;
+ if(s.lockUntil>Date.now())return'Cool-off after a loss: '+Math.ceil((s.lockUntil-Date.now())/60000)+' min left.';
+ if(ev.dead)return c.side==='over'?mkName(c.side,lineOf(c))+' has already won, so there is nothing to bet.':mkName(c.side,lineOf(c))+' is already lost.';
+ if(!(v.odds>1))return'Enter the odds to log a bet.';
+ if(v.odds<c.minOdds)return'Odds are below your '+c.minOdds+' minimum.';
+ if(c.gate==='block'&&!ev.allPass)return'Only '+ev.passed+' of '+ev.R.length+' rules are met.';
+ if(stk.amt<=0)return stk.why;
+ if(stk.amt+exposure()>s.bal)return'Open bets plus this stake exceed your bankroll.';
+ return'';
+}
+
+function update(){
+ const v=rd(),ev=evaluate(v,c),vd=verdict(ev,v,c),left=betsLeft(s,c),tg=rnd(s.start*c.targetMult),stk=stakeFor(v,c,s.bal,left,tg),why=gate(v,ev,stk),fin=s.ended||!!s.halt,locked=s.lockUntil>Date.now();
+ $('lbl').textContent='Day '+Math.min(s.day,c.days)+' of '+c.days+': next stake';
+ $('stake').textContent=fmt(stk.amt);
+ $('sub').textContent=v.odds>1?('Wins '+fmt(rnd(stk.amt*(v.odds-1)))+' at odds '+v.odds):(stk.why||'Enter the odds to see the return');
+ const tk=$('tkt'),rawOdds=$('i_odds').value.trim();
+ if(!rawOdds)tk.hidden=true;
+ else if(!(v.odds>1)){tk.hidden=false;tk.className='tkt bad';tk.textContent=FMT_HELP[c.fmt]||FMT_HELP.dec}
+ else if(c.fmt!=='dec'||c.comm>0){tk.hidden=false;tk.className='tkt';tk.textContent='Decimal odds after fees: '+v.odds+(c.comm>0?' ('+c.comm+'% fee taken from winnings)':'')+'.'}
+ else tk.hidden=true;
+
+ const tot=Math.min(c.perDay*c.days,60),sr=s.sres||[],ch=$('chips');
+ ch.style.setProperty('--n',Math.min(c.perDay,10));
+ ch.style.setProperty('--nc',Math.min(tot,14));
+ ch.innerHTML=Array.from({length:tot},(_,i)=>'<i class="'+(sr[i]||(Math.floor(i/c.perDay)+1===s.day?'':'x'))+'">'+(i+1)+'</i>').join('');
+
+ INP.forEach(k=>{const st=ev.fs[k];$('i_'+k).className=st==='p'?'p':st==='f'?'f':st==='a'?'a':''});
+
+ $('tw').style.left=(c.minFrom/90*100)+'%';
+ $('tw').style.width=(Math.max(0,Math.min(90,c.minTo)-c.minFrom)/90*100)+'%';
+ const tn=$('tn');
+ if(v.min==null){tn.hidden=true}else{tn.hidden=false;tn.style.left=Math.max(0,Math.min(100,v.min/90*100))+'%'}
+ const tl=$('tlt');
+ if(v.min==null){tl.textContent='';tl.className='tlt'}
+ else if(v.min<c.minFrom){tl.textContent='Window opens in '+(c.minFrom-v.min)+' min';tl.className='tlt am'}
+ else if(v.min<=c.minTo){tl.textContent='In the window, '+(c.minTo-v.min)+' min left';tl.className='tlt pos'}
+ else{tl.textContent='Window closed at minute '+c.minTo;tl.className='tlt neg'}
+
+ $('rules').innerHTML=ev.R.map(r=>'<div class="ru '+r.st+'"><i class="ri">'+(r.st==='p'?'✓':r.st==='f'?'✕':'–')+'</i><span class="rd">'+esc(r.d)+'</span><span class="rs">'+r.s+'</span><b class="rv">'+esc(r.val)+'</b></div>').join('');
+
+ const cls=vd.k==='go'?'go':vd.k==='bad'?'bad':vd.k==='am'?'am':vd.k==='ok'?'ok':'';
+ let h='<b>'+vd.head+'</b><p>'+esc(vd.text)+'</p>';
+ if(!ev.dead){
+  if(v.odds>1)h+='<p>Odds '+v.odds+' mean you must win more than '+(100/v.odds).toFixed(1)+'% of these bets to break even.</p>';
+ }
+ const sg=$('sig');sg.className=cls;sg.innerHTML=h;
+
+ $('bal').textContent=fmt(s.bal);
+ $('tgt').textContent=fmt(tg);
+ $('pl').textContent=(s.pl>=0?'+':'')+fmt(s.pl);$('pl').className=s.pl>=0?'pos':'neg';
+ $('td').textContent=s.dayBets+' / '+c.perDay;
+ $('dy').textContent=Math.min(s.day,c.days)+' / '+c.days;
+ $('wl').textContent=s.w+' / '+left;
+
+ const po=v.odds>1?v.odds:c.minOdds,g=goal(c,s.bal,tg,left,po),pc=$('pace');
+ if(g&&!fin){
+  pc.hidden=false;pc.className='pace'+(g.over?' am':'');
+  pc.textContent='Goal ×'+c.targetMult+' ('+fmt(tg)+'): '+left+' bets left at odds '+po+' needs '+(g.f>=1?'more than your whole bankroll':Math.round(g.f*100)+'% of bankroll')+' on every bet'+(g.over?', and one loss ends it':'')+'. Your '+g.pct+'% '+(c.staking==='flat'?'stake':'max stake')+' reaches about ×'+g.best.toFixed(2)+' if every bet wins.';
+ }else pc.hidden=true;
+
+ const nm=[v.name||null,v.min!=null?v.min+"'":null,(v.gh!=null&&v.ga!=null)?v.gh+'–'+v.ga:null].filter(Boolean).join(' · ');
+ $('fs-match').textContent=nm||'Tap to enter';
+ const fr=$('fs-rules');fr.textContent=ev.passed+' of '+ev.R.length+' pass';
+ const wasEarly=v.min!=null&&v.min<c.minFrom;
+ fr.className='fs '+(ev.passed===ev.R.length?'pos':ev.R.some(r=>r.st==='f'&&!(wasEarly&&(r.s==='Time'||VOLATILE.indexOf(r.s)>=0)))?'neg':'am');
+ $('fs-stats').textContent=fmt(s.bal)+' · '+(s.pl>=0?'+':'')+fmt(s.pl);
+
+ let bt='WAIT',bk='';
+ if(s.ended){bt='ENDED';bk='stop'}
+ else if(s.halt){bt=s.ok?'TARGET':'STOPPED';bk=s.ok?'go':'stop'}
+ else if(s.paused){bt='PAUSED';bk='warn'}
+ else if(s.dayMsg){bt='DAY DONE';bk='warn'}
+ else if(locked){bt='COOL-OFF';bk='warn'}
+ else if(vd.k==='bad'){bt=ev.dead?(c.side==='over'?'WON':'DEAD'):'AVOID';bk='stop'}
+ else if(vd.k==='go'){bt='SIGNAL';bk='go'}
+ else if(vd.k==='ok'){bt='WATCH';bk='warn'}
+ $('badge').textContent=bt;$('badge').className='badge '+bk;
+
+ const bn=$('banner'),msg=s.ended?'Session ended.':(s.halt||s.dayMsg);
+ bn.hidden=!msg;bn.textContent=msg||'';bn.className=s.ok?'ok':(!s.ended&&!s.halt&&s.dayMsg?'dy':'');
+
+ let a='';
+ if(s.open.length){
+  a+='<p>'+s.open.length+' open, '+fmt(exposure())+' at risk. Mark each result when its match ends.</p>';
+  a+=s.open.map(o=>'<div class="ob"><span class="oi"><b>'+esc(o.name||'Match')+'</b><small>'+fmt(o.stake)+' at '+o.odds+'</small></span><button class="mini w" type="button" data-a="won" data-id="'+o.id+'">Won</button><button class="mini l" type="button" data-a="lost" data-id="'+o.id+'">Lost</button><button class="mini" type="button" data-a="void" data-id="'+o.id+'">Void</button></div>').join('');
+ }
+ a+='<button class="buy" type="button" data-a="logbet"'+(why?' disabled':'')+'>LOG '+mkName(c.side,lineOf(c)).toUpperCase()+'</button><button class="neu" type="button" data-a="next">NEXT MATCH</button><p>'+(why?esc(why):'Place the bet with your bookmaker, then log it here.')+'</p>';
+ $('acts').innerHTML=a;
+
+ const eb=$('endbtn');
+ eb.textContent=fin?'Start new session':'End session';
+ eb.dataset.a=fin?'new':'end';
+ eb.className='wide'+(fin?' pri':'');
+ eb.disabled=s.open.length>0;
+ renderLog();
+}
+
+function renderLog(){
+ const L=$('log'),fin=s.ended||!!s.halt;
+ L.hidden=!(showLog||fin);
+ if(L.hidden)return;
+ let h='';
+ if(fin){
+  const rate=s.n?Math.round(s.w/s.n*100):0;
+  h+='<div class="sum"><p><span>Bets settled</span><b>'+s.n+'</b></p><p><span>Won</span><b>'+s.w+' ('+rate+'%)</b></p><p><span>Net P/L</span><b class="'+(s.pl>=0?'pos':'neg')+'">'+(s.pl>=0?'+':'')+fmt(s.pl)+'</b></p><p><span>Largest stake</span><b>'+fmt(s.maxStake)+'</b></p><p><span>Longest loss streak</span><b>'+s.maxSt+'</b></p></div>';
+ }
+ h+=s.log.length
+  ?s.log.map(r=>'<div class="row"><span>'+esc(r.t)+'</span><span>'+esc(r.name)+', '+fmt(r.stake)+' at '+r.odds+'</span><b class="'+(r.res==='won'?'pos':r.res==='lost'?'neg':'')+'">'+(r.res==='void'?'refund':(r.pnl>=0?'+':'')+fmt(r.pnl))+'</b></div>').join('')
+  :'<p class="mut">No bets yet. Log one to start the log.</p>';
+ if(hist.length)h+='<p class="mut" style="margin-top:10px">Previous sessions</p>'+hist.map(x=>'<div class="row"><span>#'+x.ses+'</span><span>'+x.n+' bets, '+x.w+' won</span><b class="'+(x.pl>=0?'pos':'neg')+'">'+(x.pl>=0?'+':'')+fmt(x.pl)+'</b></div>').join('');
+ L.innerHTML=h;
+}
+
+function logBet(){
+ const v=rd(),ev=evaluate(v,c),left=betsLeft(s,c),stk=stakeFor(v,c,s.bal,left,rnd(s.start*c.targetMult));
+ if(gate(v,ev,stk))return;
+ const mk=mkKey(c.side,lineOf(c)),nm2=(v.name||'Match')+' · '+mkName(c.side,lineOf(c));
+ addBet(s,c,{stake:stk.amt,odds:v.odds,name:nm2,mk:mk},dayKey());
+ save();
+ nextMatch(false);
+}
+let book=[],rrArm=0,rrT=0;
+function bookSave(){try{localStorage.setItem('u35_book',JSON.stringify(book.slice(-2000)))}catch(e){}}
+function bookLoad(){try{const raw=localStorage.getItem('u35_book');if(raw===null){book=(s&&Array.isArray(s.log)?s.log.filter(x=>x.res==='won'||x.res==='lost').slice().reverse().map(x=>({at:0,odds:x.odds,stake:x.stake,res:x.res,pnl:x.pnl,mk:x.mk||'u3.5'})):[]);bookSave()}else{const b=JSON.parse(raw);book=Array.isArray(b)?b:[]}}catch(e){book=[]}}
+const pc0=x=>(x*100).toFixed(x>=.995||x<.01?1:0)+'%';
+function renderRec(){
+ const N=c.days*c.perDay,sel=$('r_mk'),cur=mkKey(c.side,lineOf(c));
+ sel.options[0].textContent='This market ('+mkName(c.side,lineOf(c))+')';
+ const mkf=sel.value==='cur'?cur:sel.value,r=recordStats(book,N,mkf==='all'?null:mkf);
+ const sg=$('rsig');sg.className=r.kind==='idle'?'':r.kind;$('rh').textContent=r.head;$('rt').textContent=r.text;
+ const has=r.n>0;
+ $('r_n').textContent=has?r.n+' ('+r.w+'-'+r.l+')':'0';
+ const pl=$('r_pl');pl.textContent=has?(r.pl<0?'-$':'+$')+Math.abs(r.pl).toFixed(2):'-';pl.className=has?(r.pl<0?'neg':r.pl>0?'pos':''):'';
+ $('r_rate').textContent=has?pct1(r.rate):'-';
+ $('r_be').textContent=has?pct1(r.be):'-';
+ $('r_ci').textContent=has?pct1(r.lo)+' to '+pct1(r.hi):'-';
+ $('r_allk').textContent='All '+N+' bets win in a row';
+ $('r_all').textContent=has?pc0(r.all):'-';
+ const sc=$('r_scale');sc.hidden=!has;
+ if(has){
+  const pos=x=>Math.max(0,Math.min(100,(x-.85)/.15*100));
+  $('r_band').style.left=pos(r.lo)+'%';$('r_band').style.width=Math.max(1,pos(r.hi)-pos(r.lo))+'%';
+  $('r_tick').style.left=pos(r.be)+'%';
+  const lb=$('r_lb');lb.textContent='Break-even '+pct1(r.be);lb.style.left=Math.max(14,Math.min(86,pos(r.be)))+'%';
+  const d=$('r_dot');d.style.left=pos(r.rate)+'%';d.className='dot'+(r.rate<r.be?' neg':'');
+ }
+ const rc=$('r_rec');rc.innerHTML='';r.recent.forEach(x=>{const i=document.createElement('i');i.textContent=x==='w'?'W':'L';if(x==='l')i.className='l';rc.appendChild(i)});
+ $('r_recl').hidden=!has;
+ let note='';
+ if(has){
+  if(r.perfect)note+='To be sure you beat '+pct1(r.be)+', a perfect run needs about '+r.perfect+' wins in a row. ';
+  if(r.need95)note+='If your true win rate is 95%, it takes about '+r.need95+' settled bets to show that.';
+ }else note=book.length?'No settled bets for this market yet. Change "Show results for" to see the others.':'Every settled bet is saved here and kept when you start a new session. Void bets do not count.';
+ $('r_note').textContent=note;
+ const bt=$('r_reset');bt.textContent=rrArm?'Tap again to erase the whole record':'Reset record (all markets)';bt.disabled=!book.length;$('r_copy').disabled=!book.length;
+}
+function applyMarket(){
+ const ov=c.side==='over';
+ $('mkt').value=mkKey(c.side,lineOf(c));
+ $('logo').textContent=ov?'O':'U';$('brand').classList.toggle('ov',ov);
+ applyFmt();
+}
+function applyFmt(){
+ const f=FMT_LAB[c.fmt]?c.fmt:'dec',L=FMT_LAB[f],i=$('i_odds');
+ $('fmt').value=f;$('lod').textContent=c.comm>0?L[0].replace(')',', before fee)'):L[0];
+ i.placeholder=L[1];i.setAttribute('inputmode',L[2]);
+}
+function setMarket(val){
+ const m=/^([uo])([0-9]\.5)$/.exec(val);if(!m)return;
+ const side=m[1]==='o'?'over':'under',line=parseFloat(m[2]);
+ if(!mkValid(side,line)||(side===c.side&&line===lineOf(c))){applyMarket();return}
+ c=switchMarket(c,side,line);save();applyMarket();
+ if(!$('v-set').hidden)buildForm();
+ update();
+}
+let rsT=0,rsArm=0;
+function rmsg(txt,bad){const m=$('r_msg');m.textContent=txt||'';m.hidden=!txt;m.className='pace'+(bad?' am':'')}
+function recCopy(){
+ const txt=recordExport(book,new Date().toLocaleDateString());
+ const out=$('r_out');out.hidden=true;
+ const fb=()=>{out.value=txt;out.hidden=false;out.focus();out.select();try{out.setSelectionRange(0,txt.length)}catch(e){}rmsg("Couldn't copy automatically. The text is selected below: press and hold it, then tap Copy.",true)};
+ try{
+  if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(txt).then(()=>rmsg('Copied '+book.length+' bets. Paste it into Notes or a message to keep it.')).catch(fb);
+  else fb();
+ }catch(e){fb()}
+}
+function recRestore(){
+ const inp=$('r_in'),a=recordImport(inp.value);
+ if(!a){rsArm=0;rmsg("That isn't a copied record. Paste the whole message, including the line that starts with U35DATA.",true);return}
+ if(book.length&&!rsArm){rsArm=1;clearTimeout(rsT);rsT=setTimeout(()=>{rsArm=0;rmsg('')},6000);rmsg('This replaces your current record of '+book.length+' bets with '+a.length+'. Tap Restore again to continue.',true);return}
+ book=a;bookSave();rsArm=0;clearTimeout(rsT);inp.value='';$('r_out').hidden=true;renderRec();rmsg('Restored '+a.length+' bets.');
+}
+function settle(id,kind){
+ const t=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+ if(!settleBet(s,c,id,kind,dayKey(),Date.now(),t))return;
+ const le=s.log[0];if(le&&(le.res==='won'||le.res==='lost')){book.push({at:Date.now(),odds:le.odds,stake:le.stake,res:le.res,pnl:le.pnl,mk:le.mk||'u3.5'});bookSave()}
+ if(s.halt)showLog=true;
+ save();update();
+}
+function newSession(){
+ if(s.open.length)return;
+ if(s.n)hist.unshift({ses:ses,n:s.n,w:s.w,pl:s.pl});
+ ses++;
+ fresh((c.carry==='carry'&&s.bal>=10)?s.bal:c.start);
+ recheck();save();update();
+}
+// ---- Match clock: countdown to the entry window, with alerts while the page is open ----
+let clk={ko:null,h2:null,snd:true},fired={pre:true,open:true,close:true},ac=null,wl=null,alertTimer=0;
+function clkSave(){try{localStorage.setItem('u35_clock',JSON.stringify(clk))}catch(e){}}
+function clkLoad(){
+ try{
+  const d=JSON.parse(localStorage.getItem('u35_clock')||'null');
+  if(d&&typeof d==='object'){
+   if(typeof d.snd==='boolean')clk.snd=d.snd;
+   const t=Date.now(),ok=x=>typeof x==='number'&&isFinite(x)&&Math.abs(t-x)<5*3600000;
+   if(ok(d.ko))clk.ko=d.ko;if(ok(d.h2))clk.h2=d.h2;
+  }
+ }catch(e){}
+ $('ck_snd').checked=clk.snd;
+}
+function clkTimes(I){
+ const T={pre:I.opens-120000,open:I.opens,close:I.closes-60000};
+ [['r1',30],['r2',45],['r3',55]].forEach(x=>{const t=atMin(clk,x[1]);if(t!=null&&t<I.opens-120000)T[x[0]]=t});
+ return T;
+}
+function clkArm(){
+ fired={};
+ const I=clockInfo(clk,c,Date.now());if(I.k==='off')return;
+ const T=clkTimes(I),n=Date.now();
+ Object.keys(T).forEach(k=>{fired[k]=n>=T[k]});
+}
+function ensureAudio(){
+ try{if(!ac){const A=window.AudioContext||window.webkitAudioContext;if(A)ac=new A()}if(ac&&ac.state==='suspended')ac.resume()}catch(e){ac=null}
+}
+function beep(n,f){
+ if(!ac)return;
+ try{
+  let t=ac.currentTime+0.02;
+  for(let i=0;i<n;i++){
+   const o=ac.createOscillator(),g=ac.createGain();
+   o.frequency.value=f;g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(0.3,t+0.015);g.gain.exponentialRampToValueAtTime(0.0001,t+0.2);
+   o.connect(g);g.connect(ac.destination);o.start(t);o.stop(t+0.22);t+=0.32;
+  }
+ }catch(e){}
+}
+function buzz(p){try{if(navigator.vibrate)navigator.vibrate(p)}catch(e){}}
+async function keepAwake(on){
+ try{
+  if(on&&!wl&&navigator.wakeLock&&!document.hidden){wl=await navigator.wakeLock.request('screen');wl.addEventListener('release',()=>{wl=null})}
+  else if(!on&&wl){const w=wl;wl=null;await w.release()}
+ }catch(e){wl=null}
+}
+function ckAlert(k){
+ const RF=['Refresh the stats: copy the latest from the stats tab and paste it here.',''];
+ const m={r1:RF,r2:RF,r3:RF,pre:['Window opens in 2 minutes. Open the stats and be ready.',''],open:['The window is open. Check the numbers now.','go'],close:['One minute left in the window.',''],test:['Test: this is what an alert looks like.','go']}[k];
+ const el=$('ckalert');el.textContent=m[0];el.className='ckalert'+(m[1]?' '+m[1]:'');el.hidden=false;
+ clearTimeout(alertTimer);alertTimer=setTimeout(()=>{el.hidden=true},15000);
+ ['ckbox'].forEach(id=>{const b=$(id);b.classList.remove('flash');void b.offsetWidth;b.classList.add('flash')});
+ const hd=document.querySelector('[data-f="clock"]');if(hd){hd.classList.remove('flash');void hd.offsetWidth;hd.classList.add('flash')}
+ if(clk.snd){
+  ensureAudio();
+  if(k==='open'||k==='test'){beep(3,880);buzz([250,120,250,120,250])}
+  else if(k==='close'){beep(2,660);buzz([200,100,200])}
+  else{beep(1,k==='pre'?660:520);buzz(150)}
+ }
+}
+function clockTick(){
+ const now=Date.now(),I=clockInfo(clk,c,now),fs=$('fs-clock'),tt=$('ckt'),ss=$('cks');
+ let a='Off',cl='fs',t='Clock off',tc='',s2='Tap Kicked off at kickoff, or enter the kickoff time.';
+ if(I.k!=='off'){
+  const m=Math.max(0,Math.floor(I.min));
+  if(I.k==='wait'){
+   a=(I.est?'~':'')+'Opens in '+mmss(I.secs);cl='fs am';t='Window opens in '+(I.est?'about ':'')+mmss(I.secs);
+   s2=I.kick!=null?'Kickoff in '+mmss(I.kick)+'.':(I.est?'About '+m+"' on the clock (estimate). ":'Clock is at '+m+"'. ")+(I.sync?'Tap 2nd half the moment play restarts to sync it.':(I.est?'Tap 2nd half when play restarts for an exact countdown.':''));
+  }else if(I.k==='in'){
+   a='In window · '+mmss(I.secs)+' left';cl='fs pos';t='In the window: '+mmss(I.secs)+' left';tc='pos';s2=(I.est?'About ':'Clock is at ')+m+"'"+(I.est?' (estimate). ':'. ')+'Check the numbers now.';
+  }else{
+   a='Window closed';cl='fs neg';t='Window closed';tc='neg';s2='Wait for the next match, or press Reset.';
+  }
+ }
+ if(fs.textContent!==a)fs.textContent=a;fs.className=cl;
+ tt.textContent=t;tt.className=tc;ss.textContent=s2;
+ const sa=$('snage');
+ if(!snaps.length)sa.hidden=true;
+ else{
+  const l=snaps[snaps.length-1],age=Math.floor((now-l.at)/60000),inw=I.k==='in'||(l.min>=c.minFrom&&l.min<=c.minTo);
+  const old=age>=(inw?2:8);
+  sa.hidden=false;sa.className='snage'+(old?' am':'');
+  sa.textContent=(old?'Stats are '+age+' min old (from minute '+l.min+'). Refresh them'+(inw?' before you bet.':'.'):'Stats from minute '+l.min+', '+(age<1?'just now.':age+' min ago.'));
+ }
+ if(I.k==='off')return;
+ const T=clkTimes(I);
+ Object.keys(T).forEach(k=>{if(!fired[k]&&now>=T[k]){fired[k]=true;if(now-T[k]<=90000)ckAlert(k)}});
+ if(I.k==='past')keepAwake(false);
+}
+function clkSet(ko,h2){
+ clk.ko=ko;clk.h2=h2;clkSave();clkArm();clockTick();
+ if(ko||h2){ensureAudio();keepAwake(true)}else keepAwake(false);
+}
+function clockReset(){clkSet(null,null);$('ck_t').value='';$('ckalert').hidden=true}
+function clkFromTime(v){
+ const m=/^(\d{1,2}):(\d{2})$/.exec(v||'');if(!m)return;
+ const d=new Date();d.setHours(+m[1],+m[2],0,0);let t=d.getTime(),n=Date.now();
+ if(t-n>12*3600000)t-=86400000;else if(n-t>12*3600000)t+=86400000;
+ clkSet(t,null);
+}
+// ---- Updates: each paste or edit of the live numbers is kept, so you can watch the trend ----
+let snaps=[];
+const SNK=['min','gh','ga','sotH','sotA','xgh','xga'];
+function snapLoad(){try{const d=JSON.parse(localStorage.getItem('u35_snaps')||'null');if(Array.isArray(d)&&d.every(x=>x&&typeof x.min==='number'&&typeof x.at==='number'))snaps=d.slice(-12)}catch(e){}}
+function snapSave(){try{localStorage.setItem('u35_snaps',JSON.stringify(snaps))}catch(e){}}
+function snap(){
+ const v=rd();if(v.min==null)return;
+ const o={at:Date.now()};SNK.forEach(k=>{o[k]=v[k]});
+ const l=snaps[snaps.length-1];
+ if(l&&SNK.every(k=>l[k]===o[k]))l.at=o.at;
+ else if(l&&l.min===o.min)snaps[snaps.length-1]=o;
+ else snaps.push(o);
+ snaps=snaps.slice(-12);snapSave();renderSnaps();clockTick();
+}
+function renderSnaps(){
+ const f=x=>x==null?'\u2013':String(Math.round(x*100)/100);
+ $('snaps').hidden=!snaps.length;
+ $('snl').innerHTML=snaps.slice(-6).reverse().map(x=>'<div class="sn"><b>'+x.min+"'</b><span>"+f(x.gh)+'\u2013'+f(x.ga)+'</span><span>SoT '+f(x.sotH)+' \u00b7 '+f(x.sotA)+'</span><span>xG '+f(x.xgh)+' \u00b7 '+f(x.xga)+'</span></div>').join('');
+}
+function snapReset(){snaps=[];snapSave();renderSnaps();clockTick()}
+let snapTimer=0;
+let undoSnap=null;
+function fillPaste(){
+ const ta=$('paste'),pr=$('pres'),pt=$('prt');
+ if(!ta.value.trim())return;
+ const r=parseStats(ta.value,c.side,c.fmt),ks=Object.keys(r.vals);
+ pr.hidden=false;
+ ta.blur();
+ if(!ks.length){
+  $('pundo').hidden=true;
+  pr.className='pres bad';pt.textContent='Could not find any numbers in that text. Try a quick line: min 60 score 1-0 sot 2 1 xg 0.7 0.9';
+  return;
+ }
+ undoSnap={};INP.forEach(k=>{undoSnap[k]=$('i_'+k).value});
+ ks.forEach(k=>{$('i_'+k).value=String(r.vals[k])});
+ $('exnote').hidden=true;ta.value='';
+ pr.className='pres'+(r.miss.length?' am':'');
+ pt.textContent='Filled: '+r.got.join(', ')+'.'+(r.miss.length?' Not found: '+r.miss.join(', ')+'.':'')+' Check them against the screen.';
+ $('pundo').hidden=false;
+ update();
+ snap();
+}
+function undoPaste(){
+ if(!undoSnap)return;
+ INP.forEach(k=>{$('i_'+k).value=undoSnap[k]});
+ if(undoSnap.name!==undefined)$('i_name').value=undoSnap.name;
+ if(live)lvUnlink(false);
+ undoSnap=null;$('pundo').hidden=true;
+ $('pres').className='pres';$('prt').textContent='Put your earlier numbers back.';
+ update();
+}
+// ---- Live feed (optional): your own API-Sports key. It stays in this browser and is sent only to api-sports.io. ----
+const KEYK='u35_apikey';
+let apiKey='',live=null,lvList=[],lvBusy=false,lvT=0;
+const avgCache={};
+function keyLoad(){try{apiKey=(localStorage.getItem(KEYK)||'').trim()}catch(e){apiKey=''}$('apikey').value=apiKey}
+function keyMsg(t,bad){const m=$('keymsg');m.textContent=t||'';m.hidden=!t;m.className='pace'+(bad?' am':'')}
+function lvMsg(t,lvl){const m=$('lvmsg');m.textContent=t||'';m.hidden=!t;m.className='pres'+(lvl===true?' bad':lvl==='am'?' am':'')}
+function keyTake(){
+ const k=$('apikey').value.trim();
+ if(!k){keyMsg('Paste your key first.',true);return false}
+ if(!/^[A-Za-z0-9_-]{8,80}$/.test(k)){keyMsg('That does not look like an API-Sports key. Keys are letters and numbers only.',true);return false}
+ apiKey=k;
+ try{localStorage.setItem(KEYK,k)}catch(e){keyMsg('This browser would not store the key, so it works for this visit only.',true)}
+ return true;
+}
+function keySave(){keyMsg('');if(keyTake()&&$('keymsg').hidden)keyMsg('Key saved on this device. Tap Test to check it.')}
+async function keyTest(){
+ if(!keyTake())return;
+ keyMsg('Checking…');
+ try{
+  const s=apiStatus(await apiGet('/status'));
+  if(!s){keyMsg('The API answered, but not in the shape I expected. Live matches may still work.',true);return}
+  keyMsg('Connected. Plan: '+s.plan+(s.active?'':' (not active)')+(s.used!=null&&s.limit!=null?'. Requests used today: '+s.used+' of '+s.limit:'')+'.',!s.active);
+ }catch(e){keyMsg(e.message,true)}
+}
+function keyForget(){
+ apiKey='';try{localStorage.removeItem(KEYK)}catch(e){}
+ $('apikey').value='';lvUnlink(true);lvList=[];$('lvlist').hidden=true;lvMsg('');
+ keyMsg('Key removed from this browser.');
+}
+async function apiGet(path){
+ if(!apiKey)throw new Error('Add your API-Sports key in Settings first.');
+ const ac=new AbortController(),tm=setTimeout(()=>ac.abort(),15000);
+ let r;
+ try{r=await fetch(API_BASE+path,{headers:{'x-apisports-key':apiKey},signal:ac.signal})}
+ catch(e){
+  clearTimeout(tm);
+  throw new Error(e&&e.name==='AbortError'?'The API took too long to answer. Try again.':"Couldn't reach api-sports.io. Check your connection. If you are online, the browser blocked the call. The claude.ai link always blocks outside calls; only the standalone file, opened in a browser, can reach the API.");
+ }
+ clearTimeout(tm);
+ if(r.status===401||r.status===403)throw new Error('The API rejected your key. Check it in Settings.');
+ if(r.status===429)throw new Error('Too many requests. Wait a moment, then try again.');
+ if(!r.ok)throw new Error('The API answered with an error ('+r.status+').');
+ let j;try{j=await r.json()}catch(e){throw new Error('The API sent an answer I could not read.')}
+ const em=apiErr(j);if(em)throw new Error(em);
+ return j;
+}
+function lvRender(){
+ const rows=apiFilter(apiSort(lvList,c),$('lvfilter').value);
+ $('lvrows').innerHTML=rows.length?rows.map(f=>'<button type="button" class="lvr'+(live&&live.id===f.id?' on':'')+'" data-a="lvpick" data-id="'+esc(f.id)+'"><b>'+esc(f.home.name)+' v '+esc(f.away.name)+'</b><span class="lvs">'+esc(f.min)+"' "+esc(f.gh==null?'-':f.gh)+'–'+esc(f.ga==null?'-':f.ga)+'</span><small>'+esc(f.league+(f.country?' · '+f.country:''))+'</small>'+(apiInWin(f,c)?'<span class="lvw">IN WINDOW</span>':'<span></span>')+'</button>').join(''):'<div class="lvempty">'+(lvList.length?'No live match fits that filter.':'No matches are live right now.')+'</div>';
+}
+async function lvOpen(){
+ if(lvBusy)return;
+ lvBusy=true;lvMsg('Loading live matches…');
+ try{
+  lvList=apiLive(await apiGet('/fixtures?live=all'));
+  $('lvlist').hidden=false;lvRender();
+  lvMsg(lvList.length+' live now.'+(lvList.length?' Matches inside your entry window are listed first.':''));
+ }catch(e){lvMsg(e.message,true)}
+ lvBusy=false;
+}
+function lvControls(on){$('lvrefresh').hidden=!on;$('lvunlink').hidden=!on;$('lvautow').hidden=!on}
+function lvAutoSync(){
+ clearInterval(lvT);lvT=0;
+ if(live&&$('lvauto').checked)lvT=setInterval(()=>{if(!document.hidden)lvRefresh(true)},30000);
+}
+function lvUnlink(quiet){
+ live=null;lvControls(false);$('lvauto').checked=false;lvAutoSync();
+ if(!quiet)lvMsg('Unlinked. The numbers stay as they are.');
+}
+async function lvAvg(id){
+ const k=dayKey()+':'+id;
+ if(avgCache[k]!==undefined)return avgCache[k];
+ const v=apiAvg(await apiGet('/fixtures?team='+encodeURIComponent(id)+'&last=5'),id);
+ avgCache[k]=v;return v;
+}
+function lvWrite(vals){
+ Object.keys(vals).forEach(k=>{const el=$('i_'+k);if(el)el.value=String(vals[k])});
+ $('exnote').hidden=true;
+}
+function lvSummary(v){
+ const d=x=>x==null?'–':String(x),p=[];
+ if(v.min!=null)p.push('minute '+v.min);
+ if(v.gh!=null&&v.ga!=null)p.push('score '+v.gh+'–'+v.ga);
+ if(v.sotH!=null||v.sotA!=null)p.push('shots on target '+d(v.sotH)+' · '+d(v.sotA));
+ if(v.xgh!=null||v.xga!=null)p.push('xG '+d(v.xgh)+' · '+d(v.xga));
+ if(v.avgH!=null||v.avgA!=null)p.push('avg goals '+d(v.avgH)+' · '+d(v.avgA));
+ return p.join(', ');
+}
+const hhmmss=()=>new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+async function lvPick(id){
+ if(lvBusy)return;
+ const f=lvList.find(x=>String(x.id)===String(id));
+ if(!f)return;
+ lvBusy=true;
+ // Keep what was on screen so Undo can put it back, then clear it so old numbers never mix with the new match.
+ undoSnap={};INP.concat(['name']).forEach(k=>{undoSnap[k]=$('i_'+k).value;$('i_'+k).value=''});
+ live={id:f.id,home:f.home,away:f.away};
+ $('i_name').value=(f.home.name+' v '+f.away.name).slice(0,40);
+ $('lvlist').hidden=true;lvControls(true);
+ lvMsg('Reading '+f.home.name+' v '+f.away.name+'…');
+ const errs=[],safe=p=>p.catch(e=>{errs.push(e.message);return null});
+ const r=await Promise.all([safe(apiGet('/fixtures/statistics?fixture='+encodeURIComponent(f.id))),safe(lvAvg(f.home.id)),safe(lvAvg(f.away.id))]);
+ const st=r[0]?apiStats(r[0],f.home.id,f.away.id):null;
+ const vals=apiVals(f,st,{h:r[1],a:r[2]});
+ lvWrite(vals);update();snap();
+ const miss=apiMissing(vals,true),pr=$('pres');
+ pr.hidden=false;pr.className='pres'+(miss.length?' am':'');
+ $('prt').textContent='Filled from API-Sports: '+lvSummary(vals)+'.'+(miss.length?' Not provided: '+miss.join(', ')+'. Type those in.':' Check them against the screen.');
+ $('pundo').hidden=false;
+ lvMsg('Linked to '+f.home.name+' v '+f.away.name+'. Updated '+hhmmss()+'.'+(errs.length?' Problem: '+errs[0]:''),errs.length?'am':false);
+ lvBusy=false;
+}
+async function lvRefresh(auto){
+ if(!live||lvBusy)return;
+ lvBusy=true;
+ const errs=[],safe=p=>p.catch(e=>{errs.push(e.message);return null});
+ const [fj,sj]=await Promise.all([safe(apiGet('/fixtures?id='+encodeURIComponent(live.id))),safe(apiGet('/fixtures/statistics?fixture='+encodeURIComponent(live.id)))]);
+ if(!fj&&!sj){
+  lvMsg(errs[0]||'Could not refresh.',true);
+  if(auto){$('lvauto').checked=false;lvAutoSync()}
+  lvBusy=false;return;
+ }
+ const fx=fj?apiOne(fj):null,st=sj?apiStats(sj,live.home.id,live.away.id):null;
+ const vals=apiVals(fx,st,null);
+ lvWrite(vals);update();snap();
+ const fin=apiDone(fx);
+ if(fin){$('lvauto').checked=false;lvAutoSync()}
+ lvMsg((fin?'Match finished ('+fx.short+'). ':'')+'Updated '+hhmmss()+': '+lvSummary(vals)+'.'+(errs.length?' Problem: '+errs[0]:''),errs.length?'am':false);
+ lvBusy=false;
+}
+function nextMatch(focus){
+ lvUnlink(true);lvMsg('');
+ INP.concat(['name']).forEach(k=>{$('i_'+k).value=''});
+ $('exnote').hidden=true;
+ undoSnap=null;$('pundo').hidden=true;$('pres').hidden=true;$('paste').value='';
+ clockReset();snapReset();
+ update();
+ if(focus!==false)$('i_avgH').focus();
+}
+
+function buildForm(){
+ const sel=(k,l,o)=>'<label>'+l+'<select id="f_'+k+'">'+o.map(x=>'<option value="'+x[0]+'"'+(String(c[k])===x[0]?' selected':'')+'>'+x[1]+'</option>').join('')+'</select></label>';
+ const nf=k=>'<label>'+FD[k][0]+'<input id="f_'+k+'" type="number" step="'+FD[k][1]+'" min="0" value="'+c[k]+'"></label>';
+ const grid=ks=>'<div class="two">'+ks.map(nf).join('')+'</div>';
+ const fg=(key,title,inner)=>'<div class="fold sfold" id="fd-'+key+'"><button type="button" class="fhd" data-f="'+key+'" aria-expanded="true"><span class="ft">'+title+'</span><i class="chev"></i></button><div class="fb">'+inner+'</div></div>';
+ $('form').innerHTML=
+  '<label>Theme<select id="f_theme"><option value="auto">Auto (follow device)</option><option value="light">Light</option><option value="dark">Dark</option></select></label>'+
+  '<label>Panel size<select id="f_size"><option value="normal"'+(size==='normal'?' selected':'')+'>Normal</option><option value="compact"'+(size==='compact'?' selected':'')+'>Compact</option></select></label>'+
+  fg('sd','Discipline',grid(['days','perDay','minOdds','dayLoss','cool','maxStreak','stop','comm'])+
+   '<p class="pace">Platform fee: the % your platform keeps from winnings (an exchange commission, say). Leave it at 0 for a normal sportsbook, where the margin is already in the odds. The panel works from odds after this fee.</p>'+
+   sel('gate','Betting gate',[['block','Only when all rules pass'],['warn','Warn only']]))+
+  fg('ss','Staking and target',sel('staking','Staking',[['flat','Flat percent of bankroll'],['ladder','Target ladder, capped']])+
+   grid(['start','targetMult','stakePct','stakeCap'])+
+   sel('carry','New session starts from',[['reset','Start bankroll'],['carry','Previous balance']]))+
+  fg('sm',mkName(c.side,lineOf(c))+' rules',(c.side==='over'?grid(['ovAvg','minFrom','minTo','ovGoals','ovSot','ovXg']):grid(['avgMax','minFrom','minTo','goalsBelow','sotMax','xgMax']))+
+   sel('scope','Team rules apply to',[['both','Each team (stricter)'],['any','At least one team']])+
+   '<p class="pace">Rules are saved separately for each market.'+(c.side==='over'||lineOf(c)!==3.5?' The starting values for this market are my guesses, scaled from your Under 3.5 rules. Test them and set your own.':'')+'</p>'+
+   '<button type="button" class="wide" data-a="rulereset">Reset '+mkName(c.side,lineOf(c))+' rules to the starting values</button>');
+ $('form').oninput=preview;
+ $('f_size').onchange=e=>setSize(e.target.value);
+ $('f_theme').value=theme;$('f_theme').onchange=e=>setTheme(e.target.value);
+ applyFold();
+ preview();
+}
+function read(){
+ const o={...c},k=(v,a,b)=>Math.min(b,Math.max(a,v));
+ NUM.forEach(n=>{const el=$('f_'+n);if(!el)return;const v=parseFloat(el.value);if(!isNaN(v))o[n]=v});
+ ['staking','scope','gate','carry'].forEach(n=>{o[n]=$('f_'+n).value});
+ o.start=Math.max(10,o.start);o.targetMult=k(o.targetMult,1.01,50);o.days=k(Math.round(o.days),1,14);o.perDay=k(Math.round(o.perDay),1,50);
+ o.minOdds=k(o.minOdds,1.01,20);o.comm=k(o.comm,0,50);o.fmt=FMT_LAB[o.fmt]?o.fmt:'dec';o.dayLoss=k(Math.round(o.dayLoss),0,50);o.cool=k(Math.round(o.cool),0,720);
+ o.maxStreak=k(Math.round(o.maxStreak),1,12);o.stop=Math.max(1,o.stop);
+ o.stakePct=k(o.stakePct,.1,100);o.stakeCap=k(o.stakeCap,.5,100);
+ o.avgMax=k(o.avgMax,0,6);o.minFrom=k(Math.round(o.minFrom),0,120);o.minTo=k(Math.round(o.minTo),o.minFrom,120);
+ o.goalsBelow=k(Math.round(o.goalsBelow),1,10);o.sotMax=k(Math.round(o.sotMax),0,30);o.xgMax=k(o.xgMax,0,6);
+ o.ovAvg=k(o.ovAvg,0,8);o.ovGoals=k(Math.round(o.ovGoals),0,10);o.ovSot=k(Math.round(o.ovSot),0,60);o.ovXg=k(o.ovXg,0,12);
+ return o;
+}
+function preview(){
+ const o=read(),odds=o.minOdds,left=o.perDay*o.days,g=goal(o,o.start,o.start*o.targetMult,left,odds),pct=pctUse(o);
+ let bal=o.start;
+ for(let i=0;i<o.maxStreak;i++)bal-=bal*pct/100;
+ const loss=o.start-bal,be=100/odds;
+ let h='';
+ if(g)h+='Goal <b>×'+o.targetMult+'</b> in <b>'+left+' bets</b> at odds <b>'+odds+'</b> needs <b>'+(g.f>=1?'more than your whole bankroll':Math.round(g.f*100)+'% of bankroll')+'</b> on every bet'+(g.over?', and any loss ends it. Your '+g.pct+'% stake reaches <b>×'+g.best.toFixed(2)+'</b> if all '+left+' win.':'.')+'<br>';
+ h+='At odds '+odds+' you must win <b>'+be.toFixed(1)+'%</b> of bets to break even. Winning all '+left+' happens <b>'+(Math.pow(.95,left)*100).toFixed(0)+'%</b> of the time at a 95% win rate and <b>'+(Math.pow(.97,left)*100).toFixed(0)+'%</b> at 97%.<br>';
+ h+='Worst case: <b>'+fmt(loss)+'</b> lost over '+o.maxStreak+' straight losses ('+(loss/o.start*100).toFixed(1)+'% of bankroll). The rules sharpen your picks. They do not remove the bookmaker margin.';
+ $('risk').innerHTML=h;
+}
+
+$('r_in').addEventListener('input',()=>{rsArm=0});
+$('lvfilter').addEventListener('input',lvRender);
+$('lvauto').addEventListener('change',lvAutoSync);
+$('mkt').addEventListener('change',e=>setMarket(e.target.value));
+$('r_mk').addEventListener('change',()=>renderRec());
+document.addEventListener('click',e=>{
+ const fb=e.target.closest('[data-f]');
+ if(fb){const k=fb.dataset.f;fold[k]=!fold[k];applyFold();try{localStorage.setItem('u35_fold',JSON.stringify(fold))}catch(err){}return}
+ const t=e.target.closest('[data-t]');
+ if(t){
+  document.querySelectorAll('.tabs button').forEach(x=>x.classList.toggle('on',x===t));
+  $('v-bet').hidden=t.dataset.t!=='bet';$('v-set').hidden=t.dataset.t!=='set';$('v-rec').hidden=t.dataset.t!=='rec';
+  if(t.dataset.t==='set')buildForm();else if(t.dataset.t==='rec'){rmsg('');$('r_out').hidden=true;renderRec()}else update();
+  return;
+ }
+ const a=e.target.closest('[data-a]');if(!a)return;
+ const k=a.dataset.a;
+ if(k==='logbet')logBet();
+ else if(k==='won'||k==='lost'||k==='void')settle(a.dataset.id,k);
+ else if(k==='next')nextMatch(true);
+ else if(k==='rulereset'){const pr=presetRules(c.side,lineOf(c));c=Object.assign({},c,pr);c.m=Object.assign({},c.m||{});delete c.m[mkKey(c.side,lineOf(c))];save();buildForm();update()}
+ else if(k==='rcopy')recCopy();
+ else if(k==='rrestore')recRestore();
+ else if(k==='rreset'){if(rrArm){book=[];bookSave();rrArm=0;clearTimeout(rrT)}else{rrArm=1;clearTimeout(rrT);rrT=setTimeout(()=>{rrArm=0;renderRec()},4000)}renderRec()}
+ else if(k==='lvopen')lvOpen();
+ else if(k==='lvpick')lvPick(a.dataset.id);
+ else if(k==='lvrefresh')lvRefresh(false);
+ else if(k==='lvunlink')lvUnlink();
+ else if(k==='keysave')keySave();
+ else if(k==='keytest')keyTest();
+ else if(k==='keyforget')keyForget();
+ else if(k==='pfill')fillPaste();
+ else if(k==='pundo')undoPaste();
+ else if(k==='ckko'){clkSet(Date.now(),null);$('ck_t').value=''}
+ else if(k==='ckh2')clkSet(clk.ko,Date.now());
+ else if(k==='ckrs')clockReset();
+ else if(k==='cktest'){ensureAudio();ckAlert('test')}
+ else if(k==='log'){showLog=!showLog;renderLog()}
+ else if(k==='end'){if(!s.open.length){s.ended=true;showLog=true;save();update()}}
+ else if(k==='new')newSession();
+ else if(k==='apply'){c=read();ses=1;hist=[];fresh();recheck();save();applyMarket();clkArm();clockTick();document.querySelector('[data-t="bet"]').click()}
+});
+document.addEventListener('input',e=>{
+ if(e.target.id&&e.target.id.indexOf('i_')===0){
+  $('exnote').hidden=true;update();
+ }
+});
+// Changing the odds format clears the odds box, because 1.08, -1200 and 1/12 mean different things.
+$('fmt').addEventListener('change',e=>{
+ c.fmt=FMT_LAB[e.target.value]?e.target.value:'dec';
+ $('i_odds').value='';$('exnote').hidden=true;
+ save();applyFmt();update();
+ $('i_odds').focus();
+});
+$('paste').addEventListener('paste',()=>setTimeout(fillPaste,0));
+$('theme').onclick=()=>setTheme(effTheme()==='light'?'dark':'light');
+$('pause').onclick=()=>{if(!s.ended){s.paused=!s.paused;save();update()}};
+
+try{const f=JSON.parse(localStorage.getItem('u35_fold')||'null');if(f&&typeof f==='object')Object.keys(fold).forEach(k=>{if(typeof f[k]==='boolean')fold[k]=f[k]})}catch(e){}
+try{const z=localStorage.getItem('u35_size');if(z)setSize(z)}catch(e){}
+try{setTheme(localStorage.getItem('u35_theme')||'auto',true)}catch(e){setTheme('auto',true)}
+applyFold();
+load();
+if(!s)fresh();
+keyLoad();
+bookLoad();
+applyMarket();
+recheck();
+update();
+snapLoad();renderSnaps();clkLoad();clkArm();clockTick();
+setInterval(clockTick,1000);
+$('ck_t').addEventListener('change',e=>clkFromTime(e.target.value));
+document.addEventListener('change',e=>{
+ if(e.target.id&&/^i_(min|gh|ga|sotH|sotA|xgh|xga)$/.test(e.target.id)){clearTimeout(snapTimer);snapTimer=setTimeout(snap,600)}
+});
+$('ck_snd').addEventListener('change',e=>{clk.snd=e.target.checked;clkSave();if(clk.snd)ensureAudio()});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden){clockTick();if(clockInfo(clk,c,Date.now()).k!=='off'&&!wl)keepAwake(true)}});
+setInterval(()=>{
+ if(dayKey()!==s.dayDate){recheck();save();update();return}
+ const m=s.lockUntil>Date.now()?Math.ceil((s.lockUntil-Date.now())/60000):0;
+ if(m!==lastLock&&(m>0||lastLock>0)){lastLock=m;update()}
+},2000);
+})();
+</script>
+</body>
+</html>
