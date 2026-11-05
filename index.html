@@ -129,6 +129,17 @@ section{padding:14px}
 .lvr small{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--mut);font-size:11px}
 .lvr .lvw{justify-self:end;font-size:10px;font-weight:700;letter-spacing:.05em;color:var(--grn)}
 .lvr.on{background:var(--grnbg)}
+.lvr.out{opacity:.65}
+.lvr .sct{justify-self:end;font-size:10px;font-weight:700;letter-spacing:.05em;color:var(--mut)}
+.lvr .sct.go{color:var(--grn)}
+.lvr .sct.am{color:var(--amb)}
+.lvr .sct.bad{color:var(--red)}
+#scrows{max-height:320px;overflow-y:auto;overscroll-behavior:contain}
+#scres{margin-top:8px}
+#scres .pu,.pu.chk{margin:6px 0 0}
+#scnote{margin:8px 0 0}
+.oi .osg{display:block;white-space:normal;color:var(--tx);margin-top:2px}
+.mini.sug{outline:2px solid currentColor;outline-offset:1px}
 .lvempty{padding:12px;font-size:12px;color:var(--mut);text-align:center}
 .keyl{display:block;font-size:12px;color:var(--mut);margin-bottom:10px}
 .keyl input{display:block;width:100%;margin-top:3px;padding:8px 10px;background:var(--card);color:var(--tx);border:1px solid var(--line);border-radius:8px}
@@ -363,12 +374,18 @@ body{touch-action:manipulation;-webkit-text-size-adjust:100%;-webkit-tap-highlig
    <div class="live" id="live">
     <div class="lvrow">
      <button type="button" class="pgo lvbtn" id="lvopen" data-a="lvopen">Live matches</button>
+     <button type="button" class="pgo lvbtn" id="lvscan" data-a="lvscan">Scan</button>
      <button type="button" class="pu" id="lvrefresh" data-a="lvrefresh" hidden>Refresh</button>
      <button type="button" class="pu" id="lvunlink" data-a="lvunlink" hidden>Unlink</button>
      <label class="lvauto" id="lvautow" hidden><input type="checkbox" id="lvauto">Auto every 30 s</label>
     </div>
     <p class="lk" id="lk" hidden><span>Check this match on</span><a id="lk_sofa" target="_blank" rel="noopener noreferrer">Sofascore</a> <a id="lk_fs" target="_blank" rel="noopener noreferrer">FootyStats</a><a id="lk_bm" target="_blank" rel="noopener noreferrer">BetMines</a><small>Opens a web search for the match name below.</small></p>
     <p class="pres" id="lvmsg" role="status" hidden></p>
+    <div id="scres" hidden>
+     <div id="scrows"></div>
+     <button type="button" class="pu" id="scout" data-a="scout" hidden></button>
+     <p class="pace" id="scnote">Scan checks every live match from 10 minutes before your window to its end: about 1 to 3 requests each. Tap a match to load it.</p>
+    </div>
     <div id="lvlist" hidden>
      <input id="lvfilter" type="text" placeholder="Filter by team or league" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Filter live matches">
      <div id="lvrows"></div>
@@ -425,6 +442,7 @@ body{touch-action:manipulation;-webkit-text-size-adjust:100%;-webkit-tap-highlig
   </div>
   <div id="banner" hidden></div>
   <div id="acts" class="acts"></div>
+  <p class="pace" id="chkmsg" role="status" hidden></p>
   <div class="btns">
    <button class="wide" id="endbtn" type="button" data-a="end">End session</button>
    <button class="wide" type="button" data-a="log">Session log</button>
@@ -1087,6 +1105,61 @@ function btSummary(rows,c){
  const bw=wins(base);
  return{cnt:cnt,odds:odds,rs:rs,baseN:base.length,baseW:bw,baseRate:base.length?bw/base.length:null,byGoals:byGoals,fair:rs.rate?Math.round(100/rs.rate)/100:null,fairSafe:rs.lo?Math.round(100/rs.lo)/100:null};
 }
+// ---- Scanner: which live matches near the entry window already pass the rules.
+// Matches from SCAN_LEAD minutes before the window to the end of it are checked, at most SCAN_MAX of them, closest to the window first.
+const SCAN_LEAD=10,SCAN_MAX=30,SCAN_RANK={go:0,soon:1,risk:2,nodata:3,out:4};
+function scanPick(list,c){
+ const lo=c.minFrom-SCAN_LEAD,hi=c.minTo;
+ return apiSort((Array.isArray(list)?list:[]).filter(f=>f&&f.min!=null&&f.min>=lo&&f.min<=hi&&!apiDone(f)),c).slice(0,SCAN_MAX);
+}
+// One match through the real rule engine, odds left for you. go: all five numbers pass. soon/risk: window not open yet (risk: the pace
+// would break a limit by then). nodata: in the window but a number is missing. out: a rule already fails, or nothing is left to bet.
+function scanClass(f,st,av,c){
+ const v=apiVals(f,st,av),ev=evaluate(v,c),over=c.side==='over';
+ const stOf=s=>{const r=ev.R.find(x=>x.s===s);return r?r.st:'e'};
+ const why=r=>r.s+' '+r.val+' (needs '+r.lim+')';
+ if(ev.dead)return{k:'out',why:ev.total+(ev.total===1?' goal':' goals')+' in: '+(over?'already won':'already lost')};
+ if(v.min!=null&&v.min>c.minTo)return{k:'out',why:'window closed at minute '+c.minTo};
+ const early=v.min!=null&&v.min<c.minFrom;
+ // Over minimums still grow before the window, so only the average can rule an Over match out early. Under limits only go up.
+ const hard=ev.R.filter(r=>['Avg','Goals','SoT','xG'].indexOf(r.s)>=0&&r.st==='f'&&!(over&&early&&r.s!=='Avg'));
+ if(hard.length)return{k:'out',why:hard.map(why).join('; ')};
+ if(early){
+  const pj=projection(v,c),left=c.minFrom-v.min;
+  if(pj&&!pj.ok)return{k:'risk',why:'opens in '+left+' min, pace may break a limit'};
+  return{k:'soon',why:'opens in '+left+' min, nothing failing yet'};
+ }
+ const miss=['Avg','Goals','SoT','xG'].filter(s=>stOf(s)==='e').map(s=>({Avg:'average goals',Goals:'score',SoT:'shots on target',xG:'xG'}[s]));
+ if(miss.length)return{k:'nodata',why:'missing '+miss.join(', ')};
+ return{k:'go',why:'all five pass, add your odds'};
+}
+function scanSort(items){return items.slice().sort((a,b)=>SCAN_RANK[a.k]-SCAN_RANK[b.k]||a.order-b.order)}
+function scanCounts(items){const n={go:0,soon:0,risk:0,nodata:0,out:0};items.forEach(x=>{if(n[x.k]!=null)n[x.k]++});return n}
+// ---- Auto-settle: the regular-time result of a fixture (/fixtures?id=), and how an open bet settles on it.
+// FT: the final score. AET and PEN: the 90-minute score, because goal lines settle on regular time. PST, CANC, ABD, AWD, WO: void.
+function apiFinal(j){
+ const r=j&&Array.isArray(j.response)?j.response[0]:null;
+ if(!r||!r.fixture||!r.fixture.status)return null;
+ const sh=String(r.fixture.status.short||''),g=r.goals||{},sc=(r.score&&r.score.fulltime)||{},t=r.teams||{};
+ const nm=x=>x&&x.name?String(x.name):'';
+ const base={short:sh,home:nm(t.home),away:nm(t.away)};
+ if(sh==='FT'||sh==='AET'||sh==='PEN'){
+  const src=sh==='FT'?g:sc,h=nOrNull(src.home),a=nOrNull(src.away);
+  return h==null||a==null?Object.assign(base,{k:'unclear'}):Object.assign(base,{k:'final',gh:h,ga:a});
+ }
+ if(['PST','CANC','ABD','AWD','WO'].indexOf(sh)>=0)return Object.assign(base,{k:'void'});
+ return Object.assign(base,{k:'live'});
+}
+function settleSuggest(mk,fin){
+ if(!fin)return null;
+ if(fin.k==='void')return{res:'void',text:'Match '+({PST:'postponed',CANC:'cancelled',ABD:'abandoned',AWD:'awarded by decision',WO:'a walkover'}[fin.short]||'not played')+'. Most platforms void the bet.'};
+ if(fin.k!=='final')return null;
+ const m=/^([uo])([0-9])\.5$/.exec(String(mk||'u3.5'));
+ if(!m)return null;
+ const over=m[1]==='o',n=+m[2],tot=fin.gh+fin.ga,won=over?tot>n:tot<=n;
+ const score=fin.home&&fin.away?fin.home+' '+fin.gh+'–'+fin.ga+' '+fin.away:fin.gh+'–'+fin.ga;
+ return{res:won?'won':'lost',total:tot,text:'Final '+(fin.short==='FT'?'':'after 90 min ')+score+' ('+tot+(tot===1?' goal':' goals')+'): '+(over?'Over ':'Under ')+n+'.5 '+(won?'won':'lost')+'.'};
+}
 // Look-up links: a web search limited to one stats site, for the match name on screen. Empty when there is no real match name.
 const LK_SITES={sofa:'sofascore.com',fs:'footystats.org',bm:'betmines.com'};
 function lookupQuery(name){
@@ -1132,7 +1205,7 @@ let theme='auto';
 function effTheme(){if(theme!=='auto')return theme;if(HOST_THEME==='light'||HOST_THEME==='dark')return HOST_THEME;try{return matchMedia('(prefers-color-scheme: light)').matches?'light':'dark'}catch(e){return'dark'}}
 function setTheme(v,keep){theme=v==='light'||v==='dark'?v:'auto';const r=document.documentElement;if(theme==='auto'){if(HOST_THEME)r.setAttribute('data-theme',HOST_THEME);else r.removeAttribute('data-theme')}else r.setAttribute('data-theme',theme);if(!keep){try{localStorage.setItem('u35_theme',theme)}catch(e){}}const b=document.getElementById('theme');if(b){b.title=effTheme()==='light'?'Switch to dark mode':'Switch to light mode'}const sl=document.getElementById('f_theme');if(sl)sl.value=theme}
 function setSize(v){size=v==='compact'?'compact':'normal';document.body.classList.toggle('compact',size==='compact');applyFold();try{localStorage.setItem('u35_size',size)}catch(e){}}
-function fresh(b){s=newState(b||c.start,dayKey());showLog=false}
+function fresh(b){s=newState(b||c.start,dayKey());showLog=false;sugs={}}
 function recheck(){checkState(s,c,dayKey())}
 const exposure=()=>rnd(s.open.reduce((a,o)=>a+o.stake,0));
 
@@ -1240,8 +1313,12 @@ function update(){
 
  let a='';
  if(s.open.length){
-  a+='<p>'+s.open.length+' open, '+fmt(exposure())+' at risk. Mark each result when its match ends.</p>';
-  a+=s.open.map(o=>'<div class="ob"><span class="oi"><b>'+esc(o.name||'Match')+'</b><small>'+fmt(o.stake)+' at '+o.odds+'</small></span><button class="mini w" type="button" data-a="won" data-id="'+o.id+'">Won</button><button class="mini l" type="button" data-a="lost" data-id="'+o.id+'">Lost</button><button class="mini" type="button" data-a="void" data-id="'+o.id+'">Void</button></div>').join('');
+  a+='<p>'+s.open.length+' open, '+fmt(exposure())+' at risk. Mark each result when its match ends.'+(s.open.some(o=>o.fx&&o.fx.id!=null)?'<br><button class="pu chk" type="button" data-a="chk">Check results</button>':'')+'</p>';
+  a+=s.open.map(o=>{
+   const sg=o.fx&&sugs[o.id]&&sugs[o.id].fid===o.fx.id?sugs[o.id]:null,pick=sg?sg.res:'';
+   const bt=(k,l,cl)=>'<button class="mini'+cl+(pick===k?' sug':'')+'" type="button" data-a="'+k+'" data-id="'+o.id+'">'+l+'</button>';
+   return '<div class="ob"><span class="oi"><b>'+esc(o.name||'Match')+'</b><small>'+fmt(o.stake)+' at '+o.odds+'</small>'+(sg?'<small class="osg">'+esc(sg.text)+' Tap '+(pick==='won'?'Won':pick==='lost'?'Lost':'Void')+' to confirm.</small>':'')+'</span>'+bt('won','Won',' w')+bt('lost','Lost',' l')+bt('void','Void','')+'</div>';
+  }).join('');
  }
  a+='<button class="buy" type="button" data-a="logbet"'+(why?' disabled':'')+'>LOG '+mkName(c.side,lineOf(c)).toUpperCase()+'</button><button class="neu" type="button" data-a="next">NEXT MATCH</button><p>'+(why?esc(why):'Place the bet with your bookmaker, then log it here.')+'</p>';
  $('acts').innerHTML=a;
@@ -1274,7 +1351,7 @@ function logBet(){
  const v=rd(),ev=evaluate(v,c),left=betsLeft(s,c),stk=stakeFor(v,c,s.bal,left,rnd(s.start*c.targetMult));
  if(gate(v,ev,stk))return;
  const mk=mkKey(c.side,lineOf(c)),nm2=(v.name||'Match')+' · '+mkName(c.side,lineOf(c));
- addBet(s,c,{stake:stk.amt,odds:v.odds,name:nm2,mk:mk},dayKey());
+ addBet(s,c,{stake:stk.amt,odds:v.odds,name:nm2,mk:mk,fx:live&&live.id!=null?{id:live.id}:null},dayKey());
  save();
  nextMatch(false);
 }
@@ -1352,6 +1429,7 @@ function recRestore(){
 function settle(id,kind){
  const t=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
  if(!settleBet(s,c,id,kind,dayKey(),Date.now(),t))return;
+ delete sugs[id];chkMsg('');
  const le=s.log[0];if(le&&(le.res==='won'||le.res==='lost')){book.push({at:Date.now(),odds:le.odds,stake:le.stake,res:le.res,pnl:le.pnl,mk:le.mk||'u3.5'});bookSave()}
  if(s.halt)showLog=true;
  save();update();
@@ -1517,6 +1595,8 @@ function undoPaste(){
 // ---- Live feed (optional): your own API-Sports key. It stays in this browser and is sent only to api-sports.io. ----
 const KEYK='u35_apikey';
 let apiKey='',live=null,lvList=[],lvBusy=false,lvT=0;
+let sugs={},chkBusy=false,chkLast=0,scItems=[],scShowOut=false;
+const SCAN_TAG={go:'PASSES',soon:'COMING',risk:'AT RISK',nodata:'NO DATA',out:'OUT'},SCAN_TAGC={go:'go',soon:'',risk:'am',nodata:'am',out:'bad'};
 const avgCache={};
 function keyLoad(){try{apiKey=(localStorage.getItem(KEYK)||'').trim()}catch(e){apiKey=''}$('apikey').value=apiKey}
 function keyMsg(t,bad){const m=$('keymsg');m.textContent=t||'';m.hidden=!t;m.className='pace'+(bad?' am':'')}
@@ -1573,6 +1653,7 @@ async function lvOpen(){
  lvBusy=true;lvMsg('Loading live matches…');
  try{
   lvList=apiLive(await apiGet('/fixtures?live=all'));
+  $('scres').hidden=true;
   $('lvlist').hidden=false;lvRender();
   lvMsg(lvList.length+' live now.'+(lvList.length?' Matches inside your entry window are listed first.':''));
  }catch(e){lvMsg(e.message,true)}
@@ -1587,10 +1668,10 @@ function lvUnlink(quiet){
  live=null;lvControls(false);$('lvauto').checked=false;lvAutoSync();
  if(!quiet)lvMsg('Unlinked. The numbers stay as they are.');
 }
-async function lvAvg(id){
+async function lvAvg(id,get){
  const k=dayKey()+':'+id;
  if(avgCache[k]!==undefined)return avgCache[k];
- const v=apiAvg(await apiGet('/fixtures?team='+encodeURIComponent(id)+'&last=5'),id);
+ const v=apiAvg(await (get||apiGet)('/fixtures?team='+encodeURIComponent(id)+'&last=5'),id);
  avgCache[k]=v;return v;
 }
 function lvWrite(vals){
@@ -1623,7 +1704,7 @@ async function lvPick(id){
  live={id:f.id,home:f.home,away:f.away};
  snapReset();
  $('i_name').value=(f.home.name+' v '+f.away.name).slice(0,40);
- $('lvlist').hidden=true;lvControls(true);
+ $('lvlist').hidden=true;$('scres').hidden=true;lvControls(true);
  lvMsg('Reading '+f.home.name+' v '+f.away.name+'…');
  const errs=[],safe=p=>p.catch(e=>{errs.push(e.message);return null});
  const r=await Promise.all([safe(apiGet('/fixtures/statistics?fixture='+encodeURIComponent(f.id))),safe(lvAvg(f.home.id)),safe(lvAvg(f.away.id))]);
@@ -1655,7 +1736,78 @@ async function lvRefresh(auto){
  lvMsg((fin?'Match finished ('+fx.short+'). ':'')+'Updated '+hhmmss()+': '+lvSummary(vals)+'.'+(errs.length?' Problem: '+errs[0]:''),errs.length?'am':false);
  lvBusy=false;
 }
+// ---- Scanner: loads the live list, then checks each match near your window (statistics plus both teams' last-5 averages).
+const SCAN_PAR=2;
+async function scGet(path){
+ for(let i=0;;i++){
+  try{return await apiGet(path)}
+  catch(e){
+   if(/Too many requests/.test(e.message)&&i<2){lvMsg('Waiting 20 seconds for the per-minute limit…','am');await sleep(20000);continue}
+   throw e;
+  }
+ }
+}
+function scRender(){
+ const all=scanSort(scItems),show=all.filter(x=>scShowOut||x.k!=='out'),nOut=all.filter(x=>x.k==='out').length;
+ $('scrows').innerHTML=show.length?show.map(x=>{
+  const f=x.f;
+  return '<button type="button" class="lvr'+(x.k==='out'?' out':'')+'" data-a="lvpick" data-id="'+esc(f.id)+'"><b>'+esc(f.home.name)+' v '+esc(f.away.name)+'</b><span class="lvs">'+esc(f.min)+"' "+esc(f.gh==null?'-':f.gh)+'–'+esc(f.ga==null?'-':f.ga)+'</span><small>'+esc(x.why)+'</small><span class="sct '+SCAN_TAGC[x.k]+'">'+SCAN_TAG[x.k]+'</span></button>';
+ }).join(''):'<div class="lvempty">'+(all.length?'Every match checked fails a rule.':'No live match is near your window right now.')+'</div>';
+ const bo=$('scout');bo.hidden=!nOut;bo.textContent=scShowOut?'Hide the '+nOut+' that failed a rule':'Show the '+nOut+' that failed a rule';
+ $('scres').hidden=false;
+}
+async function lvScan(){
+ if(lvBusy)return;
+ lvBusy=true;$('lvscan').disabled=true;
+ try{
+  lvMsg('Loading live matches…');
+  lvList=apiLive(await scGet('/fixtures?live=all'));
+  $('lvlist').hidden=true;
+  const cand=scanPick(lvList,c);
+  scItems=[];scShowOut=false;
+  if(!cand.length){scRender();lvMsg(lvList.length+' live now, none between minute '+(c.minFrom-SCAN_LEAD)+' and '+c.minTo+'. Try again in a few minutes.');return}
+  let firstErr='',bad=0;
+  const one=async(f,order)=>{
+   const errs=[],safe=p=>p.catch(e=>{errs.push(e.message);return null});
+   const r=await Promise.all([safe(scGet('/fixtures/statistics?fixture='+encodeURIComponent(f.id))),safe(lvAvg(f.home.id,scGet)),safe(lvAvg(f.away.id,scGet))]);
+   if(errs.length){bad++;firstErr=firstErr||errs[0]}
+   const x=scanClass(f,r[0]?apiStats(r[0],f.home.id,f.away.id):null,{h:r[1],a:r[2]},c);
+   scItems.push({f:f,k:x.k,why:x.why,order:order});
+  };
+  for(let i=0;i<cand.length;i+=SCAN_PAR){
+   lvMsg('Scanning '+Math.min(i+SCAN_PAR,cand.length)+' of '+cand.length+' matches…');
+   await Promise.all(cand.slice(i,i+SCAN_PAR).map((f,j)=>one(f,i+j)));
+  }
+  scRender();
+  const n=scanCounts(scItems);
+  lvMsg('Scanned '+cand.length+': '+n.go+' pass, '+n.soon+' coming, '+n.risk+' at risk, '+n.nodata+' missing data, '+n.out+' out. Updated '+hhmmss()+'.'+(bad?' Some lookups failed: '+firstErr:''),bad?'am':false);
+ }catch(e){lvMsg(e.message,true)}
+ finally{lvBusy=false;$('lvscan').disabled=false}
+}
+// ---- Auto-settle: open bets logged while a match was linked remember its fixture. Once it has finished, the result is worked out
+// from the final score and shown on the bet; you confirm with one tap. Nothing is settled without that tap.
+function chkMsg(t,bad){const m=$('chkmsg');m.textContent=t||'';m.hidden=!t;m.className='pace'+(bad?' am':'')}
+async function chkOpen(manual){
+ if(chkBusy)return;
+ const withFx=s.open.filter(o=>o.fx&&o.fx.id!=null),todo=withFx.filter(o=>!(sugs[o.id]&&sugs[o.id].fid===o.fx.id));
+ if(!withFx.length){if(manual)chkMsg('None of your open bets is linked to a match. Log a bet while a live match is linked to get results automatically.');return}
+ if(!todo.length){if(manual)chkMsg('Every result is already ready. Tap the highlighted button on each bet.');return}
+ if(!apiKey){if(manual)chkMsg('Add your API-Sports key in Settings first.',true);return}
+ if(!manual&&inFrame())return;
+ chkBusy=true;chkLast=Date.now();
+ let err='',got=0;
+ for(const o of todo){
+  try{
+   const sg=settleSuggest(o.mk,apiFinal(await apiGet('/fixtures?id='+encodeURIComponent(o.fx.id))));
+   if(sg){sugs[o.id]=Object.assign({fid:o.fx.id},sg);got++}
+  }catch(e){err=err||e.message}
+ }
+ chkBusy=false;
+ if(got)update();
+ if(manual)chkMsg(err&&!got?err:got?got+(got>1?' results are':' result is')+' ready. Tap the highlighted button to confirm.':'Not finished yet. Check again after full time.',!!err&&!got);
+}
 function nextMatch(focus){
+ $('scres').hidden=true;scItems=[];
  lvUnlink(true);lvMsg('');
  INP.concat(['name']).forEach(k=>{$('i_'+k).value=''});
  $('exnote').hidden=true;
@@ -1849,6 +2001,9 @@ document.addEventListener('click',e=>{
  else if(k==='rcopy')recCopy();
  else if(k==='rrestore')recRestore();
  else if(k==='rreset'){if(rrArm){book=[];bookSave();rrArm=0;clearTimeout(rrT)}else{rrArm=1;clearTimeout(rrT);rrT=setTimeout(()=>{rrArm=0;renderRec()},4000)}renderRec()}
+ else if(k==='lvscan')lvScan();
+ else if(k==='scout'){scShowOut=!scShowOut;scRender()}
+ else if(k==='chk')chkOpen(true);
  else if(k==='btgo')btStart();
  else if(k==='btstop'){btStop=true;btMsg('Stopping after the current step…')}
  else if(k==='lvopen')lvOpen();
@@ -1903,7 +2058,9 @@ document.addEventListener('change',e=>{
  if(e.target.id&&/^i_(min|gh|ga|sotH|sotA|xgh|xga)$/.test(e.target.id)){clearTimeout(snapTimer);snapTimer=setTimeout(snap,600)}
 });
 $('ck_snd').addEventListener('change',e=>{clk.snd=e.target.checked;clkSave();if(clk.snd)ensureAudio()});
-document.addEventListener('visibilitychange',()=>{if(!document.hidden){clockTick();if(clockInfo(clk,c,Date.now()).k!=='off'&&!wl)keepAwake(true)}});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden){clockTick();if(clockInfo(clk,c,Date.now()).k!=='off'&&!wl)keepAwake(true);if(Date.now()-chkLast>30000)chkOpen(false)}});
+setTimeout(()=>chkOpen(false),1500);
+setInterval(()=>{if(!document.hidden)chkOpen(false)},120000);
 setInterval(()=>{
  if(dayKey()!==s.dayDate){recheck();save();update();return}
  const m=s.lockUntil>Date.now()?Math.ceil((s.lockUntil-Date.now())/60000):0;
