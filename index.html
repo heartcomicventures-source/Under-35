@@ -1392,6 +1392,9 @@ function keyForget(){
  $('apikey').value='';lvUnlink(true);lvList=[];$('lvlist').hidden=true;lvMsg('');
  keyMsg('Key removed from this browser.');
 }
+const HOSTED_URL='https://heartcomicventures-source.github.io/Under-35/';
+// The claude.ai copy runs inside a frame; the hosted page and the standalone file do not.
+function inFrame(){try{return window.self!==window.top}catch(e){return true}}
 async function apiGet(path){
  if(!apiKey)throw new Error('Add your API-Sports key in Settings first.');
  const ac=new AbortController(),tm=setTimeout(()=>ac.abort(),15000);
@@ -1399,7 +1402,7 @@ async function apiGet(path){
  try{r=await fetch(API_BASE+path,{headers:{'x-apisports-key':apiKey},signal:ac.signal})}
  catch(e){
   clearTimeout(tm);
-  throw new Error(e&&e.name==='AbortError'?'The API took too long to answer. Try again.':"Couldn't reach api-sports.io. Check your connection. If you are online, the browser blocked the call. The claude.ai link always blocks outside calls; only the standalone file, opened in a browser, can reach the API.");
+  throw new Error(e&&e.name==='AbortError'?'The API took too long to answer. Try again.':inFrame()?'This is the claude.ai copy, which blocks calls to other sites, so live data cannot work here. Open your hosted page instead: '+HOSTED_URL:"Couldn't reach api-sports.io. Check your connection, and turn off any VPN or content blocker. Live data works only in your hosted page or the standalone file, never in the claude.ai copy.");
  }
  clearTimeout(tm);
  if(r.status===401||r.status===403)throw new Error('The API rejected your key. Check it in Settings.');
