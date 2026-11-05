@@ -1407,6 +1407,8 @@ function setMarket(val){
  if(!mkValid(side,line)||(side===c.side&&line===lineOf(c))){applyMarket();return}
  c=switchMarket(c,side,line);save();applyMarket();
  if(!$('v-set').hidden)buildForm();
+ if(!$('v-rec').hidden)renderRec();
+ if(!$('v-bt').hidden)btOpen();
  update();
 }
 let rsT=0,rsArm=0;
