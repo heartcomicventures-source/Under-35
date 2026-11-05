@@ -307,6 +307,7 @@ footer{padding:10px 14px 12px;font-size:11px;color:var(--mut);text-align:center;
 .fs.pos{color:var(--grn)}
 .fs.neg{color:var(--red)}
 .fs.am{color:var(--amb)}
+body.nomkt .mbox{display:none}
 .sfold>.fhd{display:flex;align-items:center;width:100%;margin:14px 0 8px;padding:0;background:none;border:0;color:var(--tx);font:600 12px/1 var(--body);text-align:left;pointer-events:none}
 .sfold .chev{display:none}
 
@@ -460,10 +461,10 @@ body{touch-action:manipulation;-webkit-text-size-adjust:100%;-webkit-tap-highlig
     <label>Away shots on target<input id="i_sotA" inputmode="numeric" autocomplete="off" value="1"></label>
     <label>Home xG<input id="i_xgh" inputmode="decimal" autocomplete="off" value="0.7"></label>
     <label>Away xG<input id="i_xga" inputmode="decimal" autocomplete="off" value="0.9"></label>
-    <div class="grp">Market</div>
-    <label><span id="lod">Odds (decimal)</span><input id="i_odds" inputmode="decimal" autocomplete="off" placeholder="e.g. 1.08" value="1.08"></label>
-    <label>Odds format<select id="fmt" aria-label="Odds format"><option value="dec">Decimal (1.08)</option><option value="us">American (-1200)</option><option value="frac">Fractional (1/12)</option></select></label>
-    <label class="mt">Match<input id="i_name" type="text" autocomplete="off" maxlength="40" value="Example match"></label>
+    <div class="grp mbox">Market</div>
+    <label class="mbox"><span id="lod">Odds (decimal)</span><input id="i_odds" inputmode="decimal" autocomplete="off" placeholder="e.g. 1.08" value="1.08"></label>
+    <label class="mbox">Odds format<select id="fmt" aria-label="Odds format"><option value="dec">Decimal (1.08)</option><option value="us">American (-1200)</option><option value="frac">Fractional (1/12)</option></select></label>
+    <label class="mt mbox">Match<input id="i_name" type="text" autocomplete="off" maxlength="40" value="Example match"></label>
    </div>
    <div class="tl"><i class="w" id="tw"></i><i class="n" id="tn" hidden></i></div>
    <div class="tlx"><span>0'</span><span>45'</span><span>90'</span></div>
@@ -667,8 +668,8 @@ function evaluate(v,c){
  const tot=(a,b)=>a==null||b==null?null:a+b;
  const tv=(a,b)=>{const t=tot(a,b);return t==null?'–':f(t)+' ('+f(a)+' · '+f(b)+')'};
  const timeR={s:'Time',lim:c.minFrom+'–'+c.minTo,d:'Minute '+c.minFrom+' to '+c.minTo,st:one('min',v.min,x=>x>=c.minFrom&&x<=c.minTo),val:v.min==null?'–':v.min+"'"};
- const oddsR={s:'Odds',lim:'≥ '+c.minOdds,d:'Odds of '+c.minOdds+' or higher',st:one('odds',v.odds,x=>x>=c.minOdds),val:v.odds==null?'–':String(v.odds)};
- const R=over?[
+ const oddsR=v.noOdds?null:{s:'Odds',lim:'≥ '+c.minOdds,d:'Odds of '+c.minOdds+' or higher',st:one('odds',v.odds,x=>x>=c.minOdds),val:v.odds==null?'–':String(v.odds)};
+ const R=(over?[
   {s:'Avg',lim:'≥ '+c.ovAvg,d:'Last 5 avg goals ≥ '+c.ovAvg+' ('+each+')',st:two('avgH','avgA',v.avgH,v.avgA,x=>x>=c.ovAvg),val:f(v.avgH)+' · '+f(v.avgA)},
   timeR,
   {s:'Goals',lim:'≥ '+c.ovGoals,d:'Total goals so far ≥ '+c.ovGoals,st:sum('gh','ga',tot(v.gh,v.ga),x=>x>=c.ovGoals),val:tv(v.gh,v.ga)},
@@ -682,7 +683,7 @@ function evaluate(v,c){
   {s:'SoT',lim:'≤ '+c.sotMax,d:'Shots on target ≤ '+c.sotMax+' ('+each+')',st:two('sotH','sotA',v.sotH,v.sotA,x=>x<=c.sotMax),val:f(v.sotH)+' · '+f(v.sotA)},
   {s:'xG',lim:'≤ '+c.xgMax,d:'xG ≤ '+c.xgMax+' ('+each+')',st:two('xgh','xga',v.xgh,v.xga,x=>x<=c.xgMax),val:f(v.xgh)+' · '+f(v.xga)},
   oddsR
- ];
+ ]).filter(Boolean);
  if(v.min!=null&&v.min<c.minFrom)fs.min='a';
  const passed=R.filter(r=>r.st==='p').length;
  const total=(v.gh||0)+(v.ga||0);
@@ -1399,6 +1400,8 @@ const HOST_THEME=document.documentElement.getAttribute('data-theme');
 let theme='auto';
 function effTheme(){if(theme!=='auto')return theme;if(HOST_THEME==='light'||HOST_THEME==='dark')return HOST_THEME;try{return matchMedia('(prefers-color-scheme: light)').matches?'light':'dark'}catch(e){return'dark'}}
 function setTheme(v,keep){theme=v==='light'||v==='dark'?v:'auto';const r=document.documentElement;if(theme==='auto'){if(HOST_THEME)r.setAttribute('data-theme',HOST_THEME);else r.removeAttribute('data-theme')}else r.setAttribute('data-theme',theme);if(!keep){try{localStorage.setItem('u35_theme',theme)}catch(e){}}const b=document.getElementById('theme');if(b){b.title=effTheme()==='light'?'Switch to dark mode':'Switch to light mode'}const sl=document.getElementById('f_theme');if(sl)sl.value=theme}
+let mktOn=false;
+function setMkt(v,keep){mktOn=v==='show';document.body.classList.toggle('nomkt',!mktOn);if(!keep){try{localStorage.setItem('u35_mkt',mktOn?'show':'hide')}catch(e){}}}
 function setSize(v){size=v==='compact'?'compact':'normal';document.body.classList.toggle('compact',size==='compact');applyFold();try{localStorage.setItem('u35_size',size)}catch(e){}}
 function fresh(b){s=newState(b||c.start,dayKey());showLog=false;sugs={}}
 function recheck(){checkState(s,c,dayKey())}
@@ -1406,8 +1409,10 @@ const exposure=()=>rnd(s.open.reduce((a,o)=>a+o.stake,0));
 
 function rd(){
  const v={};INP.forEach(k=>{v[k]=num($('i_'+k).value)});
- v.odds=toDecimal(c.fmt,$('i_odds').value,c.comm);
- v.name=($('i_name').value||'').trim().slice(0,40);
+ v.noOdds=!mktOn;
+ // With the Market box hidden, every bet is sized and logged at the minimum odds (already after fees).
+ v.odds=mktOn?toDecimal(c.fmt,$('i_odds').value,c.comm):(c.minOdds>1?c.minOdds:null);
+ v.name=mktOn||(live&&live.id!=null)?($('i_name').value||'').trim().slice(0,40):'';
  return v;
 }
 function gate(v,ev,stk){
@@ -1439,9 +1444,9 @@ function update(){
  lkSync(v.name);
  $('lbl').textContent='Day '+Math.min(s.day,c.days)+' of '+c.days+': next stake';
  $('stake').textContent=fmt(stk.amt);
- $('sub').textContent=v.odds>1?('Wins '+fmt(rnd(stk.amt*(v.odds-1)))+' at odds '+v.odds):(stk.why||'Enter the odds to see the return');
+ $('sub').textContent=v.odds>1?('Wins '+fmt(rnd(stk.amt*(v.odds-1)))+' at '+(v.noOdds?'your minimum odds ':'odds ')+v.odds):(stk.why||'Enter the odds to see the return');
  const tk=$('tkt'),rawOdds=$('i_odds').value.trim();
- if(!rawOdds)tk.hidden=true;
+ if(v.noOdds||!rawOdds)tk.hidden=true;
  else if(!(v.odds>1)){tk.hidden=false;tk.className='tkt bad';tk.textContent=FMT_HELP[c.fmt]||FMT_HELP.dec}
  else if(c.fmt!=='dec'||c.comm>0){tk.hidden=false;tk.className='tkt';tk.textContent='Decimal odds after fees: '+v.odds+(c.comm>0?' ('+c.comm+'% fee taken from winnings)':'')+'.'}
  else tk.hidden=true;
@@ -1468,7 +1473,7 @@ function update(){
  const cls=vd.k==='go'?'go':vd.k==='bad'?'bad':vd.k==='am'?'am':vd.k==='ok'?'ok':'';
  let h='<b>'+vd.head+'</b><p>'+esc(vd.text)+'</p>';
  if(!ev.dead){
-  if(v.odds>1)h+='<p>Odds '+v.odds+' mean you must win more than '+(100/v.odds).toFixed(1)+'% of these bets to break even.</p>';
+  if(v.odds>1)h+=v.noOdds?'<p>At your minimum odds of '+v.odds+', you must win more than '+(100/v.odds).toFixed(1)+'% of these bets to break even.</p>':'<p>Odds '+v.odds+' mean you must win more than '+(100/v.odds).toFixed(1)+'% of these bets to break even.</p>';
  }
  const sg=$('sig');sg.className=cls;sg.innerHTML=h;
 
@@ -1516,7 +1521,7 @@ function update(){
    return '<div class="ob"><span class="oi"><b>'+esc(o.name||'Match')+'</b><small>'+fmt(o.stake)+' at '+o.odds+'</small>'+(sg?'<small class="osg">'+esc(sg.text)+' Tap '+(pick==='won'?'Won':pick==='lost'?'Lost':'Void')+' to confirm.</small>':'')+'</span>'+bt('won','Won',' w')+bt('lost','Lost',' l')+bt('void','Void','')+'</div>';
   }).join('');
  }
- a+='<button class="buy" type="button" data-a="logbet"'+(why?' disabled':'')+'>LOG '+mkName(c.side,lineOf(c)).toUpperCase()+'</button><button class="neu" type="button" data-a="next">NEXT MATCH</button><p>'+(why?esc(why):'Place the bet with your bookmaker, then log it here.')+'</p>'+(live&&live.id!=null?'<p class="pace" id="asnote">This match is linked. After you log the bet, its final result is checked for you and Won, Lost or Void is suggested.</p>':apiKey?'<p class="pace" id="asnote">Tip: pick the match with Live matches or Scan first. A linked match gets its result checked for you after you log the bet.</p>':'');
+ a+='<button class="buy" type="button" data-a="logbet"'+(why?' disabled':'')+'>LOG '+mkName(c.side,lineOf(c)).toUpperCase()+'</button><button class="neu" type="button" data-a="next">NEXT MATCH</button><p>'+(why?esc(why):'Place the bet with your bookmaker, then log it here.')+'</p>'+(v.noOdds?'<p class="pace" id="mknote">The Market box is off, so this bet is logged at your minimum odds of '+c.minOdds+'. If the real price is different, the profit shown is an estimate. Settings, Market box, turns real odds back on.</p>':'')+(live&&live.id!=null?'<p class="pace" id="asnote">This match is linked. After you log the bet, its final result is checked for you and Won, Lost or Void is suggested.</p>':apiKey?'<p class="pace" id="asnote">Tip: pick the match with Live matches or Scan first. A linked match gets its result checked for you after you log the bet.</p>':'');
  $('acts').innerHTML=a;
 
  const eb=$('endbtn');
@@ -1952,7 +1957,9 @@ let undoSnap=null;
 function fillPaste(){
  const ta=$('paste'),pr=$('pres'),pt=$('prt');
  if(!ta.value.trim())return;
- const r=parseStats(ta.value,c.side,c.fmt),ks=Object.keys(r.vals);
+ const r=parseStats(ta.value,c.side,c.fmt);
+ if(!mktOn){delete r.vals.odds;r.got=r.got.filter(x=>!/^odds /.test(x))}
+ const ks=Object.keys(r.vals);
  pr.hidden=false;
  ta.blur();
  if(!ks.length){
@@ -2137,7 +2144,7 @@ function scRender(){
  const all=scanSort(scItems),show=all.filter(x=>scShowOut||x.k!=='out'),nOut=all.filter(x=>x.k==='out').length;
  $('scrows').innerHTML=show.length?show.map(x=>{
   const f=x.f;
-  return '<button type="button" class="lvr'+(x.k==='out'?' out':'')+'" data-a="lvpick" data-id="'+esc(f.id)+'"><b>'+esc(f.home.name)+' v '+esc(f.away.name)+'</b><span class="lvs">'+esc(f.min)+"' "+esc(f.gh==null?'-':f.gh)+'–'+esc(f.ga==null?'-':f.ga)+'</span><small>'+esc(x.why)+'</small><span class="sct '+SCAN_TAGC[x.k]+'">'+SCAN_TAG[x.k]+'</span></button>';
+  return '<button type="button" class="lvr'+(x.k==='out'?' out':'')+'" data-a="lvpick" data-id="'+esc(f.id)+'"><b>'+esc(f.home.name)+' v '+esc(f.away.name)+'</b><span class="lvs">'+esc(f.min)+"' "+esc(f.gh==null?'-':f.gh)+'–'+esc(f.ga==null?'-':f.ga)+'</span><small>'+esc(mktOn?x.why:x.why.replace(', add your odds',''))+'</small><span class="sct '+SCAN_TAGC[x.k]+'">'+SCAN_TAG[x.k]+'</span></button>';
  }).join(''):'<div class="lvempty">'+(all.length?'Every match checked fails a rule.':'No live match is near your window right now.')+'</div>';
  const bo=$('scout');bo.hidden=!nOut;bo.textContent=scShowOut?'Hide the '+nOut+' that failed a rule':'Show the '+nOut+' that failed a rule';
  $('scres').hidden=false;
@@ -2322,7 +2329,9 @@ function buildForm(){
  $('form').innerHTML=
   '<label>Theme<select id="f_theme"><option value="auto">Auto (follow device)</option><option value="light">Light</option><option value="dark">Dark</option></select></label>'+
   '<label>Panel size<select id="f_size"><option value="normal"'+(size==='normal'?' selected':'')+'>Normal</option><option value="compact"'+(size==='compact'?' selected':'')+'>Compact</option></select></label>'+
+  '<label>Market box (odds and match name)<select id="f_mkt"><option value="hide"'+(mktOn?'':' selected')+'>Hidden: bets use your minimum odds</option><option value="show"'+(mktOn?' selected':'')+'>Shown: type the real odds</option></select></label>'+
   fg('sd','Discipline',grid(['days','perDay','minOdds','dayLoss','cool','maxStreak','stop','comm'])+
+   '<p class="pace">Minimum odds is also the price used for every bet while the Market box is hidden.</p>'+
    '<p class="pace">Platform fee: the % your platform keeps from winnings (an exchange commission, say). Leave it at 0 for a normal sportsbook, where the margin is already in the odds. The panel works from odds after this fee.</p>'+
    sel('gate','Betting gate',[['block','Only when all rules pass'],['warn','Warn only']]))+
   fg('ss','Staking and target',sel('staking','Staking',[['flat','Flat percent of bankroll'],['ladder','Target ladder, capped']])+
@@ -2334,6 +2343,7 @@ function buildForm(){
    '<button type="button" class="wide" data-a="rulereset">Reset '+mkName(c.side,lineOf(c))+' rules to the starting values</button>');
  $('form').oninput=preview;
  $('f_size').onchange=e=>setSize(e.target.value);
+ $('f_mkt').onchange=e=>{setMkt(e.target.value);update()};
  $('f_theme').value=theme;$('f_theme').onchange=e=>setTheme(e.target.value);
  applyFold();
  preview();
@@ -2429,6 +2439,7 @@ $('pause').onclick=()=>{if(!s.ended){s.paused=!s.paused;save();update()}};
 
 try{const f=JSON.parse(localStorage.getItem('u35_fold')||'null');if(f&&typeof f==='object')Object.keys(fold).forEach(k=>{if(typeof f[k]==='boolean')fold[k]=f[k]})}catch(e){}
 try{const z=localStorage.getItem('u35_size');if(z)setSize(z)}catch(e){}
+try{setMkt(localStorage.getItem('u35_mkt')==='show'?'show':'hide',true)}catch(e){setMkt('hide',true)}
 try{setTheme(localStorage.getItem('u35_theme')||'auto',true)}catch(e){setTheme('auto',true)}
 applyFold();
 load();
