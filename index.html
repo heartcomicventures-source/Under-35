@@ -742,7 +742,7 @@ function apiOne(j){
 }
 // /fixtures/statistics: shots on target and xG per team. A null value stays null (unknown), never 0.
 function apiStats(j,homeId,awayId){
- const out={sotH:null,sotA:null,xgh:null,xga:null,any:false};
+ const out={sotH:null,sotA:null,xgh:null,xga:null,any:false,types:[]};
  const a=j&&Array.isArray(j.response)?j.response:[];
  a.forEach(e=>{
   const id=e&&e.team&&e.team.id,side=id===homeId?'H':id===awayId?'A':null;
@@ -750,6 +750,7 @@ function apiStats(j,homeId,awayId){
   out.any=true;
   e.statistics.forEach(s=>{
    if(!s)return;
+   if(typeof s.type==='string'&&out.types.indexOf(s.type)<0&&out.types.length<30)out.types.push(s.type);
    if(s.type==='Shots on Goal')out['sot'+side]=nOrNull(s.value);
    else if(s.type==='expected_goals')out[side==='H'?'xgh':'xga']=nOrNull(s.value);
   });
@@ -1422,6 +1423,12 @@ function lvSummary(v){
  if(v.avgH!=null||v.avgA!=null)p.push('avg goals '+d(v.avgH)+' · '+d(v.avgA));
  return p.join(', ');
 }
+function lvWhy(st){
+ if(!st)return '';
+ if(!st.any)return ' The API has no live statistics for this match (common in smaller leagues).';
+ if(st.sotH==null&&st.sotA==null)return ' The API sent statistics ('+st.types.slice(0,6).join(', ')+') but no "Shots on Goal" value.';
+ return '';
+}
 const hhmmss=()=>new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'});
 async function lvPick(id){
  if(lvBusy)return;
@@ -1431,6 +1438,7 @@ async function lvPick(id){
  // Keep what was on screen so Undo can put it back, then clear it so old numbers never mix with the new match.
  undoSnap={};INP.concat(['name']).forEach(k=>{undoSnap[k]=$('i_'+k).value;$('i_'+k).value=''});
  live={id:f.id,home:f.home,away:f.away};
+ snapReset();
  $('i_name').value=(f.home.name+' v '+f.away.name).slice(0,40);
  $('lvlist').hidden=true;lvControls(true);
  lvMsg('Reading '+f.home.name+' v '+f.away.name+'…');
@@ -1441,7 +1449,7 @@ async function lvPick(id){
  lvWrite(vals);update();snap();
  const miss=apiMissing(vals,true),pr=$('pres');
  pr.hidden=false;pr.className='pres'+(miss.length?' am':'');
- $('prt').textContent='Filled from API-Sports: '+lvSummary(vals)+'.'+(miss.length?' Not provided: '+miss.join(', ')+'. Type those in.':' Check them against the screen.');
+ $('prt').textContent='Filled from API-Sports: '+lvSummary(vals)+'.'+(miss.length?' Not provided: '+miss.join(', ')+'. Type those in.'+lvWhy(st):' Check them against the screen.');
  $('pundo').hidden=false;
  lvMsg('Linked to '+f.home.name+' v '+f.away.name+'. Updated '+hhmmss()+'.'+(errs.length?' Problem: '+errs[0]:''),errs.length?'am':false);
  lvBusy=false;
