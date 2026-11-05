@@ -367,7 +367,7 @@ body{touch-action:manipulation;-webkit-text-size-adjust:100%;-webkit-tap-highlig
      <button type="button" class="pu" id="lvunlink" data-a="lvunlink" hidden>Unlink</button>
      <label class="lvauto" id="lvautow" hidden><input type="checkbox" id="lvauto">Auto every 30 s</label>
     </div>
-    <p class="lk" id="lk" hidden><span>Check this match on</span><a id="lk_sofa" target="_blank" rel="noopener noreferrer">Sofascore</a> <a id="lk_fs" target="_blank" rel="noopener noreferrer">FootyStats</a><small>Opens a web search for the match name below.</small></p>
+    <p class="lk" id="lk" hidden><span>Check this match on</span><a id="lk_sofa" target="_blank" rel="noopener noreferrer">Sofascore</a> <a id="lk_fs" target="_blank" rel="noopener noreferrer">FootyStats</a><a id="lk_bm" target="_blank" rel="noopener noreferrer">BetMines</a><small>Opens a web search for the match name below.</small></p>
     <p class="pres" id="lvmsg" role="status" hidden></p>
     <div id="lvlist" hidden>
      <input id="lvfilter" type="text" placeholder="Filter by team or league" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Filter live matches">
@@ -1088,7 +1088,7 @@ function btSummary(rows,c){
  return{cnt:cnt,odds:odds,rs:rs,baseN:base.length,baseW:bw,baseRate:base.length?bw/base.length:null,byGoals:byGoals,fair:rs.rate?Math.round(100/rs.rate)/100:null,fairSafe:rs.lo?Math.round(100/rs.lo)/100:null};
 }
 // Look-up links: a web search limited to one stats site, for the match name on screen. Empty when there is no real match name.
-const LK_SITES={sofa:'sofascore.com',fs:'footystats.org'};
+const LK_SITES={sofa:'sofascore.com',fs:'footystats.org',bm:'betmines.com'};
 function lookupQuery(name){
  if(typeof name!=='string')return '';
  const t=name.replace(/\s+/g,' ').trim();
@@ -1158,10 +1158,13 @@ function gate(v,ev,stk){
 }
 
 function lkSync(name){
- const a=lookupUrl('sofa',name),b=lookupUrl('fs',name);
- $('lk').hidden=!a;
- if(a){$('lk_sofa').href=a;$('lk_fs').href=b}
- else{$('lk_sofa').removeAttribute('href');$('lk_fs').removeAttribute('href')}
+ const ids={sofa:'lk_sofa',fs:'lk_fs',bm:'lk_bm'};
+ let any=false;
+ Object.keys(ids).forEach(k=>{
+  const u=lookupUrl(k,name),el=$(ids[k]);
+  if(u){el.href=u;any=true}else el.removeAttribute('href');
+ });
+ $('lk').hidden=!any;
 }
 function update(){
  const v=rd(),ev=evaluate(v,c),vd=verdict(ev,v,c),left=betsLeft(s,c),tg=rnd(s.start*c.targetMult),stk=stakeFor(v,c,s.bal,left,tg),why=gate(v,ev,stk),fin=s.ended||!!s.halt,locked=s.lockUntil>Date.now();
