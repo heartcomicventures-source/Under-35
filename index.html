@@ -25,7 +25,7 @@ img{max-width:100%}
 </style>
 <style>
 :root{
- /* Layout: one 360px control panel in the style of the reference. Stake on top, a numbered chip for every bet in the session, match inputs that turn green or red as they pass or fail, a big verdict box, six rule rows, session stats with a goal check, then open bets and actions. */
+ /* Layout: one 360px control panel in the style of the reference. Bets left on top, a numbered chip for every bet in the session, match inputs that turn green or red as they pass or fail, a big verdict box, six rule rows, session stats with a goal check, then open bets and actions. */
  --xg1:#3987e5;--xg2:#d95926;
  --bg:#080c0f;--panel:#10151a;--card:#161c22;--line:#232b33;--tx:#edf1f3;--mut:#8693a0;
  --grn:#34d17f;--grnbg:#0e2a1c;--red:#ff5b60;--redbg:#2d1316;--amb:#f2b23d;--ambbg:#2a2110;--chip:#1b222a;
@@ -89,9 +89,6 @@ section{padding:14px}
 .mg input.a{border-color:var(--amb);color:var(--amb);background:var(--ambbg)}
 .exnote{margin:0 0 8px;font-size:11px;color:var(--amb)}
 .mg .mt{grid-column:1/-1}
-.tkt{margin:0 0 10px;font-size:12px;line-height:1.35;color:var(--mut);text-align:center}
-.tkt.am{color:var(--amb)}
-.tkt.bad{color:var(--red)}
 .live{margin:0 0 10px}
 .lvrow{display:flex;align-items:center;flex-wrap:wrap;gap:8px}
 .lvbtn{height:34px;padding:0 14px}
@@ -304,8 +301,6 @@ section{padding:14px}
 .fh{margin:14px 0 8px;font:600 12px/1 var(--body);color:var(--tx)}
 .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .two label{min-width:0}
-#risk{background:var(--card);border-radius:10px;padding:10px 12px;font-size:12px;margin-bottom:6px;color:var(--mut)}
-#risk b{color:var(--tx)}
 footer{padding:10px 14px 12px;font-size:11px;color:var(--mut);text-align:center;border-top:1px solid var(--line)}
 
 /* Folds: headers show in compact, and as plain headings in Settings */
@@ -325,10 +320,8 @@ body.nomkt .mbox{display:none}
 .scale{position:relative;height:36px;margin:2px 4px 0}
 .scale .trk{position:absolute;left:0;right:0;top:20px;height:6px;border-radius:3px;background:var(--chip)}
 .scale .band{position:absolute;top:20px;height:6px;border-radius:3px;background:var(--mut);opacity:.5}
-.scale .tick{position:absolute;top:14px;width:2px;height:18px;margin-left:-1px;background:var(--amb)}
 .scale .dot{position:absolute;top:17px;width:12px;height:12px;margin-left:-6px;border-radius:50%;border:2px solid var(--panel);background:var(--grn)}
 .scale .dot.neg{background:var(--red)}
-.scale .lb{position:absolute;top:0;transform:translateX(-50%);font-size:10px;color:var(--amb);white-space:nowrap}
 .scaleax{display:flex;justify-content:space-between;margin:2px 4px 10px;font-size:10px;color:var(--mut)}
 .scalecap{margin:0 0 12px;font-size:11px;color:var(--mut)}
 .rout{display:block;width:100%;height:96px;margin:0 0 10px;padding:8px 9px;background:var(--panel);color:var(--tx);border:1px solid var(--grn);border-radius:7px;font:500 12px/1.3 var(--body);resize:none}
@@ -345,7 +338,6 @@ body.compact{padding-block:10px}
 .compact .stk .big{grid-column:1;grid-row:1/3;text-align:left;margin:0}
 .compact .stk .lbl{grid-column:2;grid-row:1;text-align:left;align-self:end}
 .compact .stk .sub{grid-column:2;grid-row:2;text-align:left;margin:2px 0 0;align-self:start}
-.compact .tkt{margin-bottom:8px;text-align:left}
 .compact .chips{grid-template-columns:repeat(var(--nc,12),1fr);gap:4px;margin-bottom:10px}
 .compact .fold{margin-bottom:8px}
 .compact .fhd,.compact .sfold>.fhd{display:flex;align-items:center;gap:8px;width:100%;margin:0;padding:9px 12px;background:var(--card);border:1px solid var(--line);border-radius:10px;color:var(--tx);font:600 14px/1.2 var(--body);text-align:left;pointer-events:auto}
@@ -414,11 +406,10 @@ body{touch-action:manipulation;-webkit-text-size-adjust:100%;-webkit-tap-highlig
 
  <section id="v-bet">
   <div class="stk">
-   <div class="lbl" id="lbl">Next stake</div>
-   <div class="big" id="stake">$0.00</div>
+   <div class="lbl" id="lbl">Bets left today</div>
+   <div class="big" id="bleft">0</div>
    <div class="sub" id="sub"></div>
   </div>
-  <p class="tkt" id="tkt" hidden></p>
   <div class="chips" id="chips"></div>
 
   <div class="fold" id="fd-clock">
@@ -473,10 +464,7 @@ body{touch-action:manipulation;-webkit-text-size-adjust:100%;-webkit-tap-highlig
     <label>Away shots on target<input id="i_sotA" inputmode="numeric" autocomplete="off" value="1"></label>
     <label>Home xG<input id="i_xgh" inputmode="decimal" autocomplete="off" value="0.7"></label>
     <label>Away xG<input id="i_xga" inputmode="decimal" autocomplete="off" value="0.9"></label>
-    <div class="grp mbox">Market</div>
-    <label class="mbox"><span id="lod">Odds (decimal)</span><input id="i_odds" inputmode="decimal" autocomplete="off" placeholder="e.g. 1.08" value="1.08"></label>
-    <label class="mbox">Odds format<select id="fmt" aria-label="Odds format"><option value="dec">Decimal (1.08)</option><option value="us">American (-1200)</option><option value="frac">Fractional (1/12)</option></select></label>
-    <label class="mt mbox">Match<input id="i_name" type="text" autocomplete="off" maxlength="40" value="Example match"></label>
+    <label class="mt mbox">Match name (optional)<input id="i_name" type="text" autocomplete="off" maxlength="40" value="Example match"></label>
    </div>
    <div class="tl"><i class="w" id="tw"></i><i class="n" id="tn" hidden></i></div>
    <div class="tlx"><span>0'</span><span>45'</span><span>90'</span></div>
@@ -527,14 +515,13 @@ body{touch-action:manipulation;-webkit-text-size-adjust:100%;-webkit-tap-highlig
    <button type="button" class="fhd" data-f="stats" aria-expanded="true"><span class="ft">Session</span><span class="fs" id="fs-stats"></span><i class="chev"></i></button>
    <div class="fb">
   <div class="grid">
-   <div><small>Balance</small><b id="bal"></b></div>
-   <div><small>Target</small><b id="tgt"></b></div>
-   <div><small>P/L</small><b id="pl"></b></div>
+   <div><small>Won / lost</small><b id="wl"></b></div>
+   <div><small>Win rate</small><b id="wr"></b></div>
    <div><small>Bets today</small><b id="td"></b></div>
    <div><small>Day</small><b id="dy"></b></div>
-   <div><small>Wins / left</small><b id="wl"></b></div>
+   <div><small>Loss streak</small><b id="ls"></b></div>
+   <div><small>Bets left</small><b id="bl"></b></div>
   </div>
-  <p class="pace" id="pace" hidden></p>
    </div>
   </div>
   <div id="banner" hidden></div>
@@ -552,16 +539,16 @@ body{touch-action:manipulation;-webkit-text-size-adjust:100%;-webkit-tap-highlig
   <div id="rsig"><b id="rh"></b><p id="rt"></p></div>
   <div class="grid">
    <div><small>Settled bets (won-lost)</small><b id="r_n"></b></div>
-   <div><small>Net P/L, all sessions</small><b id="r_pl"></b></div>
    <div><small>Your win rate</small><b id="r_rate"></b></div>
-   <div><small>Break-even rate</small><b id="r_be"></b></div>
    <div><small>Likely true range (95%)</small><b id="r_ci"></b></div>
+   <div><small>Odds needed to profit</small><b id="r_fair"></b></div>
+   <div><small>Longest losing run</small><b id="r_run"></b></div>
    <div><small id="r_allk">All bets win in a row</small><b id="r_all"></b></div>
   </div>
   <div id="r_scale" hidden>
-   <div class="scale"><div class="trk"></div><div class="band" id="r_band"></div><div class="tick" id="r_tick"></div><span class="lb" id="r_lb"></span><div class="dot" id="r_dot"></div></div>
+   <div class="scale"><div class="trk"></div><div class="band" id="r_band"></div><div class="dot" id="r_dot"></div></div>
    <div class="scaleax"><span>85%</span><span>90%</span><span>95%</span><span>100%</span></div>
-   <p class="scalecap">Dot: your win rate. Grey band: where your true rate probably sits. Amber line: the win rate you need to break even.</p>
+   <p class="scalecap">Dot: your win rate. Grey band: where your true rate probably sits.</p>
   </div>
   <p class="pace" id="r_recl" hidden>Latest results, newest first</p>
   <div class="rrec" id="r_rec"></div>
@@ -639,7 +626,6 @@ body{touch-action:manipulation;-webkit-text-size-adjust:100%;-webkit-tap-highlig
     <p class="pace">Optional. With a key, Live matches on the Bet tab fills the minute, score, shots on target, xG and last-5 average goals for you. The key stays in this browser and is sent only to api-sports.io. It is never part of a copied record. Each refresh uses 2 requests. The Backtest tab uses the same key.</p>
    </div>
   </div>
-  <div class="fold sfold" id="fd-sr"><button type="button" class="fhd" data-f="sr" aria-expanded="true"><span class="ft">Goal check</span><i class="chev"></i></button><div class="fb"><div id="risk"></div></div></div>
   <button class="wide pri" type="button" data-a="apply">Apply and start new session</button>
  </section>
  <footer>Numbers are typed in, or pulled from your own API-Sports key if you add one. Not connected to a bookmaker. No bet is guaranteed.</footer>
@@ -649,7 +635,6 @@ body{touch-action:manipulation;-webkit-text-size-adjust:100%;-webkit-tap-highlig
 (function(){
 const $=id=>document.getElementById(id);
 const esc=t=>String(t).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
-const fmt=n=>(n<0?'-':'')+'$'+Math.abs(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
 
 //<logic>
 const rnd=n=>Math.round(n*100)/100;
@@ -706,22 +691,19 @@ function evaluate(v,c){
  const timeR={s:'Time',lim:c.minFrom+'–'+c.minTo,d:'Minute '+c.minFrom+' to '+c.minTo,st:one('min',v.min,x=>x>=c.minFrom&&x<=c.minTo),val:v.min==null?'–':v.min+"'"};
  // Setting "If the feed sends no xG: skip the rule": applies only when no xG is entered for either team.
  const skipXg=c.xgSkip==='skip'&&v.xgh==null&&v.xga==null;
- const oddsR=v.noOdds?null:{s:'Odds',lim:'≥ '+c.minOdds,d:'Odds of '+c.minOdds+' or higher',st:one('odds',v.odds,x=>x>=c.minOdds),val:v.odds==null?'–':String(v.odds)};
  const R=(over?[
   {s:'Avg',lim:'≥ '+c.ovAvg,d:'Last 5 avg goals ≥ '+c.ovAvg+' ('+each+')',st:two('avgH','avgA',v.avgH,v.avgA,x=>x>=c.ovAvg),val:f(v.avgH)+' · '+f(v.avgA)},
   timeR,
   {s:'Goals',lim:'≥ '+c.ovGoals,d:'Total goals so far ≥ '+c.ovGoals,st:sum('gh','ga',tot(v.gh,v.ga),x=>x>=c.ovGoals),val:tv(v.gh,v.ga)},
   {s:'SoT',lim:'≥ '+c.ovSot,d:'Total shots on target ≥ '+c.ovSot,st:sum('sotH','sotA',tot(v.sotH,v.sotA),x=>x>=c.ovSot),val:tv(v.sotH,v.sotA)},
-  {s:'xG',lim:'≥ '+c.ovXg,d:'Total xG ≥ '+c.ovXg,st:sum('xgh','xga',tot(v.xgh,v.xga),x=>x>=c.ovXg),val:tv(v.xgh,v.xga)},
-  oddsR
+  {s:'xG',lim:'≥ '+c.ovXg,d:'Total xG ≥ '+c.ovXg,st:sum('xgh','xga',tot(v.xgh,v.xga),x=>x>=c.ovXg),val:tv(v.xgh,v.xga)}
  ]:[
   {s:'Avg',lim:'≤ '+c.avgMax,d:'Last 5 avg goals ≤ '+c.avgMax+' ('+each+')',st:two('avgH','avgA',v.avgH,v.avgA,x=>x<=c.avgMax),val:f(v.avgH)+' · '+f(v.avgA)},
   timeR,
   {s:'Goals',lim:'< '+c.goalsBelow,d:'Goals so far below '+c.goalsBelow+' ('+each+')',st:two('gh','ga',v.gh,v.ga,x=>x<c.goalsBelow),val:f(v.gh)+' – '+f(v.ga)},
   {s:'SoT',lim:'≤ '+c.sotMax,d:'Shots on target ≤ '+c.sotMax+' ('+each+')',st:two('sotH','sotA',v.sotH,v.sotA,x=>x<=c.sotMax),val:f(v.sotH)+' · '+f(v.sotA)},
-  {s:'xG',lim:'≤ '+c.xgMax,d:'xG ≤ '+c.xgMax+' ('+each+')',st:two('xgh','xga',v.xgh,v.xga,x=>x<=c.xgMax),val:f(v.xgh)+' · '+f(v.xga)},
-  oddsR
- ]).filter(r=>r&&!(skipXg&&r.s==='xG'));
+  {s:'xG',lim:'≤ '+c.xgMax,d:'xG ≤ '+c.xgMax+' ('+each+')',st:two('xgh','xga',v.xgh,v.xga,x=>x<=c.xgMax),val:f(v.xgh)+' · '+f(v.xga)}
+ ]).filter(r=>!(skipXg&&r.s==='xG'));
  if(v.min!=null&&v.min<c.minFrom)fs.min='a';
  const passed=R.filter(r=>r.st==='p').length;
  const total=(v.gh||0)+(v.ga||0);
@@ -730,7 +712,6 @@ function evaluate(v,c){
 }
 // Straight-line pace: where xG and shots on target would be by the time the window opens.
 // Under: both only ever go up, so a value already over its limit can never come back under it. Over: they need to reach a minimum.
-const VOLATILE=['Odds'];
 function projection(v,c){
  if(v.min==null||v.min<15||v.min>=c.minFrom)return null;
  const f=c.minFrom/v.min,sc=x=>x==null?null:Math.round(x*f*100)/100;
@@ -756,7 +737,7 @@ function verdict(ev,v,c){
  const early=v.min!=null&&v.min<c.minFrom,soon=v.min==null||early;
  // Over minimums are things that still grow, so they are not final until the window opens.
  const grow=over?['Goals','SoT','xG']:[];
- const hard=ev.R.filter(r=>r.st==='f'&&!(r.s==='Time'&&early)&&!(soon&&(VOLATILE.indexOf(r.s)>=0||grow.indexOf(r.s)>=0)));
+ const hard=ev.R.filter(r=>r.st==='f'&&!(r.s==='Time'&&early)&&!(soon&&grow.indexOf(r.s)>=0));
  if(hard.length)return{k:'bad',head:'NOT A GOOD OPPORTUNITY',text:hard.map(r=>r.s+' '+r.val+' (needs '+r.lim+')').join('. ')+'.'+(early&&!over?' These only go up, so this match is out.':'')};
  if(early){
   const left=c.minFrom-v.min,pj=projection(v,c);
@@ -778,32 +759,13 @@ function verdict(ev,v,c){
  return{k:'go',head:'GOOD OPPORTUNITY',text:(sk?'Goals and shots on target both ':'Goals, shots on target and xG all ')+(over?'clear their minimums':'pass')+' at minute '+v.min+'.'+(sk?' xG was not checked: none was sent, and your setting skips it.':'')+(ev.risky?' '+gtxt(ev.total)+' in, so one more goal loses the bet.':'')+(ev.wins?' '+gtxt(ev.total)+' in, so one more goal wins the bet.':'')};
 }
 function betsLeft(s,c){if(s.day>c.days)return 0;return Math.max(0,c.perDay-s.dayBets)+Math.max(0,c.days-s.day)*c.perDay}
-function pctUse(c){return c.staking==='flat'?Math.min(c.stakePct,c.stakeCap):c.stakeCap}
-function goal(c,bal,target,left,odds){
- if(!(odds>1)||left<1||bal<=0||target<=bal)return null;
- const f=(Math.pow(target/bal,1/left)-1)/(odds-1),pct=pctUse(c);
- return{f:f,pct:pct,best:Math.pow(1+pct/100*(odds-1),left),over:f*100>c.stakeCap};
-}
-function stakeFor(v,c,bal,left,target){
- let amt;
- if(c.staking==='ladder'){
-  if(!(v.odds>1))return{amt:0,why:'Enter the odds to size a target-ladder stake.'};
-  const need=target/bal;
-  amt=need<=1?0:bal*((Math.pow(need,1/Math.max(1,left))-1)/(v.odds-1));
- }else amt=bal*c.stakePct/100;
- amt=Math.min(amt,bal*c.stakeCap/100);
- return{amt:Math.max(1,Math.round(amt*100)/100),why:''};
-}
-function newState(bal,k){return{bal:bal,start:bal,pl:0,w:0,n:0,placed:0,st:0,maxSt:0,maxStake:0,res:[],sres:[],log:[],open:[],nid:0,paused:false,halt:'',dayMsg:'',ok:false,ended:false,startDate:k,dayDate:k,day:1,dayBets:0,dayLosses:0,lockUntil:0}}
+function newState(k){return{w:0,n:0,placed:0,st:0,maxSt:0,res:[],sres:[],log:[],open:[],nid:0,paused:false,halt:'',dayMsg:'',ended:false,startDate:k,dayDate:k,day:1,dayBets:0,dayLosses:0,lockUntil:0}}
 function checkState(s,c,k){
- s.ok=false;s.dayMsg='';
+ s.dayMsg='';
  if(s.dayDate!==k){s.dayDate=k;s.dayBets=0;s.dayLosses=0}
  s.day=Math.max(1,dayIdx(s.startDate,k));
- const tgt=rnd(s.start*c.targetMult),last=s.day>=c.days,idle=s.open.length===0;
- if(s.bal>=tgt-0.005){s.halt='Target reached. Session complete.';s.ok=true}
- else if(s.pl<=-c.stop)s.halt='Stop-loss hit. Stop betting this session.';
- else if(s.st>=c.maxStreak)s.halt='Loss-streak limit reached. Take a break.';
- else if(s.bal<1)s.halt='Bankroll is below the $1 minimum stake.';
+ const last=s.day>=c.days,idle=s.open.length===0;
+ if(s.st>=c.maxStreak)s.halt='Loss-streak limit reached. Take a break.';
  else if(s.day>c.days)s.halt='The '+c.days+'-day window is over.';
  else if(idle&&s.placed>=c.perDay*c.days)s.halt='All '+(c.perDay*c.days)+' bets are used.';
  else{
@@ -828,13 +790,10 @@ function settleBet(s,c,id,kind,k,now,t){
  if(i<0)return false;
  if(!s.sres)s.sres=[];
  const p=s.open.splice(i,1)[0];
- let pnl=0;
- if(kind==='won')pnl=rnd(p.stake*(p.odds-1));else if(kind==='lost')pnl=-p.stake;
- s.log.unshift({t:t,name:p.name||'Match',stake:p.stake,odds:p.odds,res:kind,pnl:pnl,mk:p.mk});
+ s.log.unshift({t:t,name:p.name||'Match',res:kind,mk:p.mk});
  const same=p.day===s.day;
  if(kind!=='void'){
-  s.bal=rnd(s.bal+pnl);s.pl=rnd(s.pl+pnl);s.n++;s.res.push(kind==='won');
-  s.maxStake=Math.max(s.maxStake,p.stake);
+  s.n++;s.res.push(kind==='won');
   if(kind==='won'){s.w++;s.st=0}
   else{s.st++;s.maxSt=Math.max(s.maxSt,s.st);if(same)s.dayLosses++;s.lockUntil=c.cool>0?now+c.cool*60000:0}
  }
@@ -880,31 +839,6 @@ function clockFromLive(fx,cl,c,at){
  return w;
 }
 function mmss(s){const t=Math.max(0,Math.ceil(s));return Math.floor(t/60)+':'+String(t%60).padStart(2,'0')}
-// Odds as a platform quotes them (decimal 1.08, American -1200, fractional 1/12) become decimal odds after fees.
-// comm is the % a platform keeps from your winnings (0 for most sportsbooks, whose margin is already in the odds).
-// The result is rounded down to 3 decimals so the break-even rate is never understated.
-function toDecimal(fmt,raw,comm){
- const t=String(raw==null?'':raw).trim().replace(/[−–—]/g,'-').replace(/,/g,'.');
- if(!t)return null;
- let g=null;
- if(fmt==='us'){
-  if(!/^[+-]?\d+(?:\.\d+)?$/.test(t))return null;
-  const x=parseFloat(t);
-  if(x>=100)g=1+x/100;else if(x<=-100)g=1+100/-x;else return null;
- }else if(fmt==='frac'){
-  if(/^ev(?:en)?s?$/i.test(t))g=2;
-  else{const m=/^(\d+(?:\.\d+)?)\s*[\/:]\s*(\d+(?:\.\d+)?)$/.exec(t);if(!m||!(+m[2]>0))return null;g=1+(+m[1])/(+m[2])}
- }else{
-  if(!/^\d+(?:\.\d+)?$/.test(t))return null;
-  g=parseFloat(t);
- }
- if(!(g>1&&g<=100))return null;
- const f=Math.min(Math.max(+comm||0,0),50)/100;
- return Math.floor((1+(g-1)*(1-f))*1000+1e-9)/1000;
-}
-const FMT_HELP={dec:'Enter decimal odds above 1, like 1.08.',us:'Enter American odds: -1200 for a favourite, +150 for an underdog. Type the minus sign.',frac:'Enter fractional odds like 1/12 or 5/6, or "evens".'};
-const FMT_LAB={dec:['Odds (decimal)','e.g. 1.08','decimal'],us:['Odds (American)','e.g. -1200','text'],frac:['Odds (fractional)','e.g. 1/12','text']};
-
 // ---- Live feed (optional): reads the JSON that API-Sports (v3.football.api-sports.io) sends and turns it into the panel's fields.
 // Everything here is pure, so it is tested without a network. A missing or null value stays blank: the panel never guesses a number.
 const API_BASE='https://v3.football.api-sports.io';
@@ -1009,7 +943,7 @@ function apiMissing(v,wantAvg){
  return m;
 }
 // Reads copied stats text or a typed quick line and returns the panel fields it found.
-function parseStats(raw,side,fmt){
+function parseStats(raw,side){
  const vals={},got=[],NUMS=/\d+(?:\.\d+)?/g;
  const t=String(raw==null?'':raw).replace(/\u00a0/g,' ').replace(/[\u2013\u2014\u2212]/g,'-').replace(/[\u2032\u2019\u02b9]/g,"'").replace(/(\d),(\d{1,2})(?!\d)/g,'$1.$2').replace(/\t+/g,' ');
  const L=t.split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
@@ -1077,13 +1011,6 @@ function parseStats(raw,side,fmt){
  if((m=q(new RegExp('\\bsot[ \\t:=]*(\\d+)'+S+'(\\d+)','i')))&&okInt(+m[1])&&okInt(+m[2])){put('sotH',+m[1]);put('sotA',+m[2])}
  if((m=q(new RegExp('\\bxg\\b\\)?[ \\t:=]*'+N+S+N,'i')))&&okXg(+m[1])&&okXg(+m[2])){put('xgh',+m[1]);put('xga',+m[2])}
  if((m=q(new RegExp('\\bavg[ \\t:=]*'+N+S+N,'i')))&&okAvg(+m[1])&&okAvg(+m[2])){put('avgH',+m[1]);put('avgA',+m[2])}
- // Odds are read in the format chosen on the panel: decimal 1.08, American -1200, fractional 1/12.
- if(fmt==='us'){
-  if((m=q(/\bodds[ \t:=]*([+-]?\d{3,6})\b/i))&&toDecimal('us',m[1],0)!=null)put('odds',m[1]);
- }else if(fmt==='frac'){
-  if((m=q(/\bodds[ \t:=]*(\d+(?:\.\d+)?[ \t]*[\/:][ \t]*\d+(?:\.\d+)?|ev(?:en)?s?)\b/i))&&toDecimal('frac',m[1],0)!=null)put('odds',m[1].replace(/[ \t]+/g,''));
- }else if((m=q(/\bodds[ \t:=]*(\d+(?:\.\d+)?)/i))&&+m[1]>=1.01&&+m[1]<=50)put('odds',+m[1]);
-
  // Summary lines
  const v=vals,has=k=>v[k]!=null;
  if(has('min'))got.push('minute '+v.min+(marks>1&&!/\bmin/i.test(t)?' (highest time mark)':''));
@@ -1091,44 +1018,44 @@ function parseStats(raw,side,fmt){
  if(has('sotH'))got.push('shots on target '+v.sotH+' \u00b7 '+v.sotA);
  if(has('xgh'))got.push('xG '+dp(v.xgh)+' \u00b7 '+dp(v.xga));
  if(has('avgH'))got.push('avg goals '+dp(v.avgH)+' \u00b7 '+dp(v.avgA));
- if(has('odds'))got.push('odds '+v.odds);
  const miss=[['min','minute'],['gh','score'],['sotH','shots on target'],['xgh','xG']].filter(x=>!has(x[0])).map(x=>x[1]);
  return {vals:vals,got:got,miss:miss};
 }
 const REC_MIN=30,WZ=1.96;
 const pct1=x=>(Math.round(x*1000)/10).toFixed(1)+'%';
 function wilson(w,n){if(!n)return{lo:null,hi:null};const p=w/n,z2=WZ*WZ,d=1+z2/n,m=(p+z2/(2*n))/d,h=WZ*Math.sqrt(p*(1-p)/n+z2/(4*n*n))/d;return{lo:Math.max(0,m-h),hi:Math.min(1,m+h)}}
-// Settled bets vs the win rate they needed. odds are the fee-adjusted odds, so 1/odds is the break-even win rate for that bet.
+// Settled bets and the win rate they show. No price is stored: "odds needed" comes from the win rate alone.
 function recordStats(book,plan,mk){
- const b=(Array.isArray(book)?book:[]).filter(x=>x&&(x.res==='won'||x.res==='lost')&&x.odds>1&&(!mk||mk==='all'||(x.mk||'u3.5')===mk));
+ const b=(Array.isArray(book)?book:[]).filter(x=>x&&(x.res==='won'||x.res==='lost')&&(!mk||mk==='all'||(x.mk||'u3.5')===mk));
  const n=b.length,w=b.filter(x=>x.res==='won').length;
- const o={n:n,w:w,l:n-w,rate:null,be:null,lo:null,hi:null,pl:0,recent:[],all:null,perfect:null,need95:null,kind:'idle',head:'NO RECORD YET',text:'Settle bets on the Bet tab and they count here. Log every pick, even at small stakes.'};
+ const o={n:n,w:w,l:n-w,rate:null,lo:null,hi:null,fair:null,fairSafe:null,run:0,recent:[],all:null,kind:'idle',head:'NO RECORD YET',text:'Settle bets on the Bet tab and they count here. Log every pick.'};
  if(!n)return o;
- o.rate=w/n;o.be=b.reduce((a,x)=>a+1/x.odds,0)/n;
+ o.rate=w/n;
  const ci=wilson(w,n);o.lo=ci.lo;o.hi=ci.hi;
- o.pl=rnd(b.reduce((a,x)=>a+(x.pnl||0),0));
+ o.fair=o.rate?Math.round(100/o.rate)/100:null;o.fairSafe=ci.lo?Math.round(100/ci.lo)/100:null;
+ let run=0;b.forEach(x=>{if(x.res==='lost'){run++;if(run>o.run)o.run=run}else run=0});
  o.recent=b.slice(-12).reverse().map(x=>x.res==='won'?'w':'l');
  o.all=Math.pow(o.rate,Math.max(1,plan|0));
- if(o.be<1)o.perfect=Math.ceil(o.be*WZ*WZ/(1-o.be));
- if(o.be<.95)o.need95=Math.ceil(Math.pow(WZ*Math.sqrt(.95*.05)/(.95-o.be),2));
  const rec=w+' of '+n+' won ('+pct1(o.rate)+')';
  if(n<REC_MIN){o.kind='am';o.head='TOO FEW TO TELL';o.text=rec+'. Below '+REC_MIN+' settled bets the win rate is mostly luck: '+(REC_MIN-n)+' to go.'}
- else if(o.hi<o.be){o.kind='bad';o.head='BELOW BREAK-EVEN';o.text=rec+'. Even the generous end of the range ('+pct1(o.hi)+') is under the '+pct1(o.be)+' you need. After fees these picks lose money.'}
- else if(o.lo>o.be){o.kind='go';o.head='ABOVE BREAK-EVEN';o.text=rec+'. Even the cautious end ('+pct1(o.lo)+') beats the '+pct1(o.be)+' you need. That is a sample, not a promise.'}
- else{o.kind='am';o.head="CAN'T TELL YET";o.text=rec+' against '+pct1(o.be)+' needed. The true rate could be anywhere from '+pct1(o.lo)+' to '+pct1(o.hi)+'. '+(o.rate<o.be?'Right now you are below break-even.':'Right now you are above break-even, but that could be luck.')}
+ else{
+  o.kind='info';o.head='WIN RATE '+pct1(o.rate);
+  o.text=rec+'. The true rate is probably between '+pct1(o.lo)+' and '+pct1(o.hi)+'. '+(o.fair==null?'None won, so no price would have broken even.':'To profit you would need odds of at least '+o.fair.toFixed(2)+(o.fairSafe==null?'':' (up to '+o.fairSafe.toFixed(2)+' to be safe)')+'. Compare that with the real price on your platform.');
+ }
  return o;
 }
 const REC_TAG='U35DATA ';
 // Text you can paste into Notes or a message: a short summary plus one data line that recordImport can read back.
 function recordExport(book,stamp){
- const b=(Array.isArray(book)?book:[]).filter(x=>x&&(x.res==='won'||x.res==='lost')&&x.odds>1);
+ const b=(Array.isArray(book)?book:[]).filter(x=>x&&(x.res==='won'||x.res==='lost'));
  const r=recordStats(b,1);
  const lines=['Goal-line record'+(stamp?' ('+stamp+')':'')];
- lines.push(r.n?'Settled '+r.n+' ('+r.w+'-'+r.l+'), win rate '+pct1(r.rate)+', break-even '+pct1(r.be)+', P/L '+(r.pl<0?'-$':'+$')+Math.abs(r.pl).toFixed(2):'No settled bets yet.');
+ lines.push(r.n?'Settled '+r.n+' ('+r.w+'-'+r.l+'), win rate '+pct1(r.rate):'No settled bets yet.');
  lines.push('To restore: open the Record tab, paste this whole message into the restore box and tap Restore.');
- lines.push(REC_TAG+JSON.stringify(b.map(x=>({a:x.at||0,o:x.odds,s:x.stake,r:x.res==='won'?'w':'l',p:x.pnl||0,m:x.mk||'u3.5'}))));
+ lines.push(REC_TAG+JSON.stringify(b.map(x=>({a:x.at||0,r:x.res==='won'?'w':'l',m:x.mk||'u3.5'}))));
  return lines.join('\n');
 }
+// Reads both the current format and older copies that also carried odds, stake and profit (those three are ignored).
 function recordImport(text){
  if(typeof text!=='string')return null;
  const i=text.indexOf(REC_TAG);if(i<0)return null;
@@ -1138,9 +1065,9 @@ function recordImport(text){
  const out=[];
  for(const x of a.slice(-2000)){
   if(!x||typeof x!=='object')continue;
-  const o=Number(x.o),s=Number(x.s),p=Number(x.p),at=Number(x.a);
-  if(!(o>1&&o<=100)||!isFinite(s)||s<0||!isFinite(p)||(x.r!=='w'&&x.r!=='l'))continue;
-  out.push({at:isFinite(at)?at:0,odds:o,stake:s,res:x.r==='w'?'won':'lost',pnl:p,mk:/^[uo][0-9]\.5$/.test(String(x.m))?String(x.m):'u3.5'});
+  const at=Number(x.a);
+  if(x.r!=='w'&&x.r!=='l')continue;
+  out.push({at:isFinite(at)?at:0,res:x.r==='w'?'won':'lost',mk:/^[uo][0-9]\.5$/.test(String(x.m))?String(x.m):'u3.5'});
  }
  return out.length?out:null;
 }
@@ -1202,10 +1129,10 @@ function btGoalsAt(j,homeId,awayId,fh,fa,minute){
  }
  return null;
 }
-// One match at the entry minute, run through the real rule engine with shots on target, xG and odds left unknown.
+// One match at the entry minute, run through the real rule engine with shots on target and xG left unknown.
 // state: dead (nothing left to bet), noavg (no last-5 average yet), out (a testable rule fails), in (all testable rules pass).
 function btRow(m,c,minute){
- const ev=evaluate({avgH:m.avgH==null?null:m.avgH,avgA:m.avgA==null?null:m.avgA,min:minute,gh:m.gh,ga:m.ga,sotH:null,sotA:null,xgh:null,xga:null,odds:null},c);
+ const ev=evaluate({avgH:m.avgH==null?null:m.avgH,avgA:m.avgA==null?null:m.avgA,min:minute,gh:m.gh,ga:m.ga,sotH:null,sotA:null,xgh:null,xga:null},c);
  const tot=m.fh+m.fa,won=ev.over?tot>ev.mg:tot<=ev.mg;
  const st=['Avg','Time','Goals'].map(s=>{const r=ev.R.find(x=>x.s===s);return r?r.st:'e'});
  const state=ev.dead?'dead':st.indexOf('f')>=0?'out':st.indexOf('e')>=0?'noavg':'in';
@@ -1252,7 +1179,7 @@ function scanPick(list,c){
  const lo=c.minFrom-SCAN_LEAD,hi=c.minTo;
  return apiSort((Array.isArray(list)?list:[]).filter(f=>f&&f.min!=null&&f.min>=lo&&f.min<=hi&&!apiDone(f)),c).slice(0,SCAN_MAX);
 }
-// One match through the real rule engine, odds left for you. go: all five numbers pass. soon/risk: window not open yet (risk: the pace
+// One match through the real rule engine. go: all five numbers pass. soon/risk: window not open yet (risk: the pace
 // would break a limit by then). nodata: in the window but a number is missing. out: a rule already fails, or nothing is left to bet.
 function scanClass(f,st,av,c){
  const v=apiVals(f,st,av),ev=evaluate(v,c),over=c.side==='over';
@@ -1272,7 +1199,7 @@ function scanClass(f,st,av,c){
  const sk=!!(ev.skip&&ev.skip.length);
  const miss=['Avg','Goals','SoT','xG'].filter(s=>stOf(s)==='e'&&!(sk&&s==='xG')).map(s=>({Avg:'average goals',Goals:'score',SoT:'shots on target',xG:'xG'}[s]));
  if(miss.length)return{k:'nodata',why:'missing '+miss.join(', ')};
- return{k:'go',why:sk?'all four rules pass (xG skipped), add your odds':'all five pass, add your odds'};
+ return{k:'go',why:sk?'all four rules pass (xG skipped)':'all five rules pass'};
 }
 // ---- Data coverage: which leagues have sent shots on target and xG before. Learned from the matches you open, refresh or scan.
 const COV_KEEP=12,COV_LEAGUES=60;
@@ -1328,7 +1255,7 @@ function rateVerdict(n,w){
  return{kind:'',head:'WON '+pct1(w/n)};
 }
 function fwVals(r){
- const v={noOdds:true},put=(k,x)=>{if(x!=null)v[k]=x};
+ const v={},put=(k,x)=>{if(x!=null)v[k]=x};
  put('min',r.m);put('gh',r.gh);put('ga',r.ga);put('sotH',r.sh);put('sotA',r.sa);put('xgh',r.xh);put('xga',r.xa);put('avgH',r.ah);put('avgA',r.aa);
  return v;
 }
@@ -1337,7 +1264,7 @@ function fwVals(r){
 function fwNote(list,f,vals,c,at){
  if(!Array.isArray(list)||!f||f.id==null||!vals||vals.min==null||vals.gh==null||vals.ga==null)return false;
  if(vals.min<c.minFrom||vals.min>c.minTo)return false;
- const ev=evaluate(Object.assign({noOdds:true},vals),c);
+ const ev=evaluate(vals,c);
  if(ev.dead)return false;
  const i=list.findIndex(x=>x.id===f.id),old=i>=0?list[i]:null;
  if(old&&(old.r||old.p))return false;
@@ -1550,18 +1477,19 @@ function momNearest(M,G,x){
 }
 //</logic>
 
-const D={start:50,targetMult:1.07,days:2,perDay:6,minOdds:1.06,dayLoss:1,cool:15,maxStreak:2,stop:10,stakePct:10,stakeCap:10,avgMax:1,minFrom:60,minTo:65,goalsBelow:3,sotMax:3,xgMax:1.2,side:'under',line:3.5,m:{},ovAvg:1.5,ovGoals:3,ovSot:8,ovXg:3,scope:'both',staking:'flat',gate:'block',carry:'reset',fmt:'dec',comm:0,xgSkip:'wait'};
+const D={days:2,perDay:6,dayLoss:1,cool:15,maxStreak:2,avgMax:1,minFrom:60,minTo:65,goalsBelow:3,sotMax:3,xgMax:1.2,side:'under',line:3.5,m:{},ovAvg:1.5,ovGoals:3,ovSot:8,ovXg:3,scope:'both',gate:'block',xgSkip:'wait'};
+// Settings that older versions saved for money and odds. They are dropped when a saved session loads.
+const GONE=['start','targetMult','minOdds','stop','stakePct','stakeCap','staking','carry','fmt','comm'];
 const FD={
- days:['Days in challenge',1],perDay:['Max bets per day',1],minOdds:['Minimum odds (after fees)',.01],comm:['Platform fee on winnings (%)',.1],dayLoss:['Stop for day after losses (0 = off)',1],cool:['Cool-off after a loss (min)',1],maxStreak:['Max loss streak',1],stop:['Session stop-loss ($)',1],
- start:['Start bankroll ($)',1],targetMult:['Target (× bankroll)',.05],stakePct:['Flat stake (% of bankroll)',.1],stakeCap:['Max stake (% of bankroll)',.5],
+ days:['Days in challenge',1],perDay:['Max bets per day',1],dayLoss:['Stop for day after losses (0 = off)',1],cool:['Cool-off after a loss (min)',1],maxStreak:['Max loss streak',1],
  avgMax:['Max avg goals (last 5)',.1],minFrom:['Entry minute from',1],minTo:['Entry minute to',1],goalsBelow:['Goals per team below',1],sotMax:['Max shots on target per team',1],xgMax:['Max xG per team',.1],
  ovAvg:['Min avg goals (last 5, each team)',.1],ovGoals:['Min total goals so far',1],ovSot:['Min total shots on target',1],ovXg:['Min total xG',.1]
 };
 const NUM=Object.keys(FD);
 const KEY='u35_v2';
-const INP=['avgH','avgA','min','gh','ga','sotH','sotA','xgh','xga','odds'];
+const INP=['avgH','avgA','min','gh','ga','sotH','sotA','xgh','xga'];
 let c={...D},s,hist=[],ses=1,showLog=false,size='normal',lastLock=-1;
-let fold={clock:true,match:true,rules:true,xg:true,mom:true,stats:true,sd:true,ss:true,sm:true,sr:true,sl:true};
+let fold={clock:true,match:true,rules:true,xg:true,mom:true,stats:true,sd:true,sm:true,sl:true};
 function applyFold(){
  Object.keys(fold).forEach(k=>{
   const el=$('fd-'+k);if(!el)return;
@@ -1574,7 +1502,7 @@ function applyFold(){
 function save(){try{localStorage.setItem(KEY,JSON.stringify({v:2,c:c,s:s,h:hist,n:ses}))}catch(e){}}
 // A saved session that still holds the old untouched defaults (nothing logged) is dropped so the new defaults apply.
 function OLDDEF(d){try{const k=d.c,x=d.s;return k.start===1000&&k.targetMult===2&&k.stakePct===5&&k.stop===150&&x.bal===1000&&!x.placed&&!x.n&&!(x.log&&x.log.length)&&!x.open.length&&!(d.h&&d.h.length)&&(d.n||1)===1}catch(e){return false}}
-function load(){try{const d=JSON.parse(localStorage.getItem(KEY)||'null');if(d&&d.v===2&&d.c&&d.s&&typeof d.s.bal==='number'&&Array.isArray(d.s.open)&&!OLDDEF(d)){c={...D,...d.c};if(c.staking==='kelly')c.staking='flat';s=d.s;if(!Array.isArray(s.sres))s.sres=[];hist=Array.isArray(d.h)?d.h:[];ses=d.n||1}}catch(e){}}
+function load(){try{const d=JSON.parse(localStorage.getItem(KEY)||'null');if(d&&d.v===2&&d.c&&d.s&&Array.isArray(d.s.open)&&!OLDDEF(d)){c={...D,...d.c};GONE.forEach(k=>{delete c[k]});s=d.s;if(!Array.isArray(s.sres))s.sres=[];hist=Array.isArray(d.h)?d.h:[];ses=d.n||1}}catch(e){}}
 const HOST_THEME=document.documentElement.getAttribute('data-theme');
 let theme='auto';
 function effTheme(){if(theme!=='auto')return theme;if(HOST_THEME==='light'||HOST_THEME==='dark')return HOST_THEME;try{return matchMedia('(prefers-color-scheme: light)').matches?'light':'dark'}catch(e){return'dark'}}
@@ -1582,30 +1510,22 @@ function setTheme(v,keep){theme=v==='light'||v==='dark'?v:'auto';const r=documen
 let mktOn=false;
 function setMkt(v,keep){mktOn=v==='show';document.body.classList.toggle('nomkt',!mktOn);if(!keep){try{localStorage.setItem('u35_mkt',mktOn?'show':'hide')}catch(e){}}}
 function setSize(v){size=v==='compact'?'compact':'normal';document.body.classList.toggle('compact',size==='compact');applyFold();try{localStorage.setItem('u35_size',size)}catch(e){}}
-function fresh(b){s=newState(b||c.start,dayKey());showLog=false;sugs={}}
+function fresh(){s=newState(dayKey());showLog=false;sugs={}}
 function recheck(){checkState(s,c,dayKey())}
-const exposure=()=>rnd(s.open.reduce((a,o)=>a+o.stake,0));
 
 function rd(){
  const v={};INP.forEach(k=>{v[k]=num($('i_'+k).value)});
- v.noOdds=!mktOn;
- // With the Market box hidden, every bet is sized and logged at the minimum odds (already after fees).
- v.odds=mktOn?toDecimal(c.fmt,$('i_odds').value,c.comm):(c.minOdds>1?c.minOdds:null);
  v.name=mktOn||(live&&live.id!=null)?($('i_name').value||'').trim().slice(0,40):'';
  return v;
 }
-function gate(v,ev,stk){
+function gate(v,ev){
  if(s.ended)return'Session ended. Start a new session to keep betting.';
  if(s.halt)return s.halt;
  if(s.paused)return'Betting is paused.';
  if(s.dayMsg)return s.dayMsg;
  if(s.lockUntil>Date.now())return'Cool-off after a loss: '+Math.ceil((s.lockUntil-Date.now())/60000)+' min left.';
  if(ev.dead)return c.side==='over'?mkName(c.side,lineOf(c))+' has already won, so there is nothing to bet.':mkName(c.side,lineOf(c))+' is already lost.';
- if(!(v.odds>1))return'Enter the odds to log a bet.';
- if(v.odds<c.minOdds)return'Odds are below your '+c.minOdds+' minimum.';
  if(c.gate==='block'&&!ev.allPass)return'Only '+ev.passed+' of '+ev.R.length+' rules are met.';
- if(stk.amt<=0)return stk.why;
- if(stk.amt+exposure()>s.bal)return'Open bets plus this stake exceed your bankroll.';
  return'';
 }
 
@@ -1619,17 +1539,12 @@ function lkSync(name){
  $('lk').hidden=!any;
 }
 function update(){
- const v=rd(),ev=evaluate(v,c),vd=verdict(ev,v,c),left=betsLeft(s,c),tg=rnd(s.start*c.targetMult),stk=stakeFor(v,c,s.bal,left,tg),why=gate(v,ev,stk),fin=s.ended||!!s.halt,locked=s.lockUntil>Date.now();
+ const v=rd(),ev=evaluate(v,c),vd=verdict(ev,v,c),left=betsLeft(s,c),why=gate(v,ev),fin=s.ended||!!s.halt,locked=s.lockUntil>Date.now();
  lkSync(v.name);
- $('lbl').textContent='Day '+Math.min(s.day,c.days)+' of '+c.days+': next stake';
- $('stake').textContent=fmt(stk.amt);
- // With the Market box hidden there is no real price, so no return is quoted at an assumed one.
- $('sub').textContent=v.noOdds?(stk.why||''):v.odds>1?('Wins '+fmt(rnd(stk.amt*(v.odds-1)))+' at odds '+v.odds):(stk.why||'Enter the odds to see the return');
- const tk=$('tkt'),rawOdds=$('i_odds').value.trim();
- if(v.noOdds||!rawOdds)tk.hidden=true;
- else if(!(v.odds>1)){tk.hidden=false;tk.className='tkt bad';tk.textContent=FMT_HELP[c.fmt]||FMT_HELP.dec}
- else if(c.fmt!=='dec'||c.comm>0){tk.hidden=false;tk.className='tkt';tk.textContent='Decimal odds after fees: '+v.odds+(c.comm>0?' ('+c.comm+'% fee taken from winnings)':'')+'.'}
- else tk.hidden=true;
+ const todayLeft=(fin||s.dayMsg||s.day>c.days)?0:Math.max(0,c.perDay-s.dayBets);
+ $('lbl').textContent='Day '+Math.min(s.day,c.days)+' of '+c.days+': bets left today';
+ $('bleft').textContent=String(todayLeft);
+ $('sub').textContent=fin?'':'of '+c.perDay+' today, '+left+' left in all';
 
  const tot=Math.min(c.perDay*c.days,60),sr=s.sres||[],ch=$('chips');
  ch.style.setProperty('--n',Math.min(c.perDay,10));
@@ -1652,35 +1567,26 @@ function update(){
 
  const cls=vd.k==='go'?'go':vd.k==='bad'?'bad':vd.k==='am'?'am':vd.k==='ok'?'ok':'';
  let h='<b>'+vd.head+'</b><p>'+esc(vd.text)+'</p>';
- if(!ev.dead){
-  if(v.odds>1&&!v.noOdds)h+='<p>Odds '+v.odds+' mean you must win more than '+(100/v.odds).toFixed(1)+'% of these bets to break even.</p>';
- }
  const sg=$('sig');sg.className=cls;sg.innerHTML=h;
 
- $('bal').textContent=fmt(s.bal);
- $('tgt').textContent=fmt(tg);
- $('pl').textContent=(s.pl>=0?'+':'')+fmt(s.pl);$('pl').className=s.pl>=0?'pos':'neg';
+ $('wl').textContent=s.w+' / '+(s.n-s.w);
+ $('wr').textContent=s.n?Math.round(s.w/s.n*100)+'%':'–';
  $('td').textContent=s.dayBets+' / '+c.perDay;
  $('dy').textContent=Math.min(s.day,c.days)+' / '+c.days;
- $('wl').textContent=s.w+' / '+left;
-
- const po=v.odds>1?v.odds:c.minOdds,g=goal(c,s.bal,tg,left,po),pc=$('pace');
- if(g&&!fin){
-  pc.hidden=false;pc.className='pace'+(g.over?' am':'');
-  pc.textContent=v.noOdds?'Goal ×'+c.targetMult+' ('+fmt(tg)+'): '+left+' bets left.':'Goal ×'+c.targetMult+' ('+fmt(tg)+'): '+left+' bets left at odds '+po+' needs '+(g.f>=1?'more than your whole bankroll':Math.round(g.f*100)+'% of bankroll')+' on every bet'+(g.over?', and one loss ends it':'')+'. Your '+g.pct+'% '+(c.staking==='flat'?'stake':'max stake')+' reaches about ×'+g.best.toFixed(2)+' if every bet wins.';
- }else pc.hidden=true;
+ const lsEl=$('ls');lsEl.textContent=s.st+' / '+c.maxStreak;lsEl.className=s.st>=c.maxStreak?'neg':'';
+ $('bl').textContent=String(left);
 
  const nm=[v.name||null,v.min!=null?v.min+"'":null,(v.gh!=null&&v.ga!=null)?v.gh+'–'+v.ga:null].filter(Boolean).join(' · ');
  $('fs-match').textContent=nm||'Tap to enter';
  const fr=$('fs-rules');fr.textContent=ev.passed+' of '+ev.R.length+' pass';
  const wasEarly=v.min!=null&&v.min<c.minFrom;
- fr.className='fs '+(ev.passed===ev.R.length?'pos':ev.R.some(r=>r.st==='f'&&!(wasEarly&&(r.s==='Time'||VOLATILE.indexOf(r.s)>=0)))?'neg':'am');
- $('fs-stats').textContent=fmt(s.bal)+' · '+(s.pl>=0?'+':'')+fmt(s.pl);
+ fr.className='fs '+(ev.passed===ev.R.length?'pos':ev.R.some(r=>r.st==='f'&&!(wasEarly&&r.s==='Time'))?'neg':'am');
+ $('fs-stats').textContent=s.w+' won · '+(s.n-s.w)+' lost';
  xgRender();momRender();
 
  let bt='WAIT',bk='';
  if(s.ended){bt='ENDED';bk='stop'}
- else if(s.halt){bt=s.ok?'TARGET':'STOPPED';bk=s.ok?'go':'stop'}
+ else if(s.halt){bt='STOPPED';bk='stop'}
  else if(s.paused){bt='PAUSED';bk='warn'}
  else if(s.dayMsg){bt='DAY DONE';bk='warn'}
  else if(locked){bt='COOL-OFF';bk='warn'}
@@ -1690,18 +1596,18 @@ function update(){
  $('badge').textContent=bt;$('badge').className='badge '+bk;
 
  const bn=$('banner'),msg=s.ended?'Session ended.':(s.halt||s.dayMsg);
- bn.hidden=!msg;bn.textContent=msg||'';bn.className=s.ok?'ok':(!s.ended&&!s.halt&&s.dayMsg?'dy':'');
+ bn.hidden=!msg;bn.textContent=msg||'';bn.className=!s.ended&&!s.halt&&s.dayMsg?'dy':'';
 
  let a='';
  if(s.open.length){
-  a+='<p>'+s.open.length+' open, '+fmt(exposure())+' at risk. Mark each result when its match ends.'+(s.open.some(o=>o.fx&&o.fx.id!=null)?'<br><button class="pu chk" type="button" data-a="chk">Check results</button>':'')+'</p>';
+  a+='<p>'+s.open.length+' open. Mark each result when its match ends.'+(s.open.some(o=>o.fx&&o.fx.id!=null)?'<br><button class="pu chk" type="button" data-a="chk">Check results</button>':'')+'</p>';
   a+=s.open.map(o=>{
    const sg=o.fx&&sugs[o.id]&&sugs[o.id].fid===o.fx.id?sugs[o.id]:null,pick=sg?sg.res:'';
    const bt=(k,l,cl)=>'<button class="mini'+cl+(pick===k?' sug':'')+'" type="button" data-a="'+k+'" data-id="'+o.id+'">'+l+'</button>';
-   return '<div class="ob"><span class="oi"><b>'+esc(o.name||'Match')+'</b><small>'+fmt(o.stake)+' at '+o.odds+'</small>'+(sg?'<small class="osg">'+esc(sg.text)+' Tap '+(pick==='won'?'Won':pick==='lost'?'Lost':'Void')+' to confirm.</small>':'')+'</span>'+bt('won','Won',' w')+bt('lost','Lost',' l')+bt('void','Void','')+'</div>';
+   return '<div class="ob"><span class="oi"><b>'+esc(o.name||'Match')+'</b>'+(sg?'<small class="osg">'+esc(sg.text)+' Tap '+(pick==='won'?'Won':pick==='lost'?'Lost':'Void')+' to confirm.</small>':'')+'</span>'+bt('won','Won',' w')+bt('lost','Lost',' l')+bt('void','Void','')+'</div>';
   }).join('');
  }
- a+='<button class="buy" type="button" data-a="logbet"'+(why?' disabled':'')+'>LOG '+mkName(c.side,lineOf(c)).toUpperCase()+'</button><button class="neu" type="button" data-a="next">NEXT MATCH</button><p>'+(why?esc(why):'Place the bet with your bookmaker, then log it here.')+'</p>'+(v.noOdds?'<p class="pace" id="mknote">The Market box is off, so bets are logged without a real price and the profit shown is an estimate. Settings, Market box, turns real odds back on.</p>':'')+(live&&live.id!=null?'<p class="pace" id="asnote">This match is linked. After you log the bet, its final result is checked for you and Won, Lost or Void is suggested.</p>':apiKey?'<p class="pace" id="asnote">Tip: pick the match with Live matches or Scan first. A linked match gets its result checked for you after you log the bet.</p>':'');
+ a+='<button class="buy" type="button" data-a="logbet"'+(why?' disabled':'')+'>LOG '+mkName(c.side,lineOf(c)).toUpperCase()+'</button><button class="neu" type="button" data-a="next">NEXT MATCH</button><p>'+(why?esc(why):'Place the bet with your bookmaker, then log it here.')+'</p>'+(live&&live.id!=null?'<p class="pace" id="asnote">This match is linked. After you log the bet, its final result is checked for you and Won, Lost or Void is suggested.</p>':apiKey?'<p class="pace" id="asnote">Tip: pick the match with Live matches or Scan first. A linked match gets its result checked for you after you log the bet.</p>':'');
  $('acts').innerHTML=a;
 
  const eb=$('endbtn');
@@ -1719,68 +1625,55 @@ function renderLog(){
  let h='';
  if(fin){
   const rate=s.n?Math.round(s.w/s.n*100):0;
-  h+='<div class="sum"><p><span>Bets settled</span><b>'+s.n+'</b></p><p><span>Won</span><b>'+s.w+' ('+rate+'%)</b></p><p><span>Net P/L</span><b class="'+(s.pl>=0?'pos':'neg')+'">'+(s.pl>=0?'+':'')+fmt(s.pl)+'</b></p><p><span>Largest stake</span><b>'+fmt(s.maxStake)+'</b></p><p><span>Longest loss streak</span><b>'+s.maxSt+'</b></p></div>';
+  h+='<div class="sum"><p><span>Bets settled</span><b>'+s.n+'</b></p><p><span>Won</span><b>'+s.w+' ('+rate+'%)</b></p><p><span>Lost</span><b>'+(s.n-s.w)+'</b></p><p><span>Longest loss streak</span><b>'+s.maxSt+'</b></p></div>';
  }
  h+=s.log.length
-  ?s.log.map(r=>'<div class="row"><span>'+esc(r.t)+'</span><span>'+esc(r.name)+', '+fmt(r.stake)+' at '+r.odds+'</span><b class="'+(r.res==='won'?'pos':r.res==='lost'?'neg':'')+'">'+(r.res==='void'?'refund':(r.pnl>=0?'+':'')+fmt(r.pnl))+'</b></div>').join('')
+  ?s.log.map(r=>'<div class="row"><span>'+esc(r.t)+'</span><span>'+esc(r.name)+'</span><b class="'+(r.res==='won'?'pos':r.res==='lost'?'neg':'')+'">'+(r.res==='won'?'Won':r.res==='lost'?'Lost':'Void')+'</b></div>').join('')
   :'<p class="mut">No bets yet. Log one to start the log.</p>';
- if(hist.length)h+='<p class="mut" style="margin-top:10px">Previous sessions</p>'+hist.map(x=>'<div class="row"><span>#'+x.ses+'</span><span>'+x.n+' bets, '+x.w+' won</span><b class="'+(x.pl>=0?'pos':'neg')+'">'+(x.pl>=0?'+':'')+fmt(x.pl)+'</b></div>').join('');
+ if(hist.length)h+='<p class="mut" style="margin-top:10px">Previous sessions</p>'+hist.map(x=>'<div class="row"><span>#'+x.ses+'</span><span>'+x.n+' bets</span><b>'+x.w+' won</b></div>').join('');
  L.innerHTML=h;
 }
 
 function logBet(){
- const v=rd(),ev=evaluate(v,c),left=betsLeft(s,c),stk=stakeFor(v,c,s.bal,left,rnd(s.start*c.targetMult));
- if(gate(v,ev,stk))return;
+ const v=rd(),ev=evaluate(v,c);
+ if(gate(v,ev))return;
  const mk=mkKey(c.side,lineOf(c)),nm2=(v.name||'Match')+' · '+mkName(c.side,lineOf(c));
- addBet(s,c,{stake:stk.amt,odds:v.odds,name:nm2,mk:mk,fx:live&&live.id!=null?{id:live.id}:null},dayKey());
+ addBet(s,c,{name:nm2,mk:mk,fx:live&&live.id!=null?{id:live.id}:null},dayKey());
  save();
  nextMatch(false);
 }
 let book=[],rrArm=0,rrT=0;
 function bookSave(){try{localStorage.setItem('u35_book',JSON.stringify(book.slice(-2000)))}catch(e){}}
-function bookLoad(){try{const raw=localStorage.getItem('u35_book');if(raw===null){book=(s&&Array.isArray(s.log)?s.log.filter(x=>x.res==='won'||x.res==='lost').slice().reverse().map(x=>({at:0,odds:x.odds,stake:x.stake,res:x.res,pnl:x.pnl,mk:x.mk||'u3.5'})):[]);bookSave()}else{const b=JSON.parse(raw);book=Array.isArray(b)?b:[]}}catch(e){book=[]}}
+function bookLoad(){try{const raw=localStorage.getItem('u35_book');if(raw===null){book=(s&&Array.isArray(s.log)?s.log.filter(x=>x.res==='won'||x.res==='lost').slice().reverse().map(x=>({at:0,res:x.res,mk:x.mk||'u3.5'})):[]);bookSave()}else{const b=JSON.parse(raw);book=Array.isArray(b)?b:[]}}catch(e){book=[]}}
 const pc0=x=>(x*100).toFixed(x>=.995||x<.01?1:0)+'%';
 function renderRec(){
  const N=c.days*c.perDay,sel=$('r_mk'),cur=mkKey(c.side,lineOf(c));
  sel.options[0].textContent='This market ('+mkName(c.side,lineOf(c))+')';
  const mkf=sel.value==='cur'?cur:sel.value,r=recordStats(book,N,mkf==='all'?null:mkf);
- const sg=$('rsig');sg.className=r.kind==='idle'?'':r.kind;$('rh').textContent=r.head;$('rt').textContent=r.text;
+ const sg=$('rsig');sg.className=(r.kind==='idle'||r.kind==='info')?'':r.kind;$('rh').textContent=r.head;$('rt').textContent=r.text;
  const has=r.n>0;
  $('r_n').textContent=has?r.n+' ('+r.w+'-'+r.l+')':'0';
- const pl=$('r_pl');pl.textContent=has?(r.pl<0?'-$':'+$')+Math.abs(r.pl).toFixed(2):'-';pl.className=has?(r.pl<0?'neg':r.pl>0?'pos':''):'';
  $('r_rate').textContent=has?pct1(r.rate):'-';
- $('r_be').textContent=has?pct1(r.be):'-';
  $('r_ci').textContent=has?pct1(r.lo)+' to '+pct1(r.hi):'-';
+ $('r_fair').textContent=has&&r.fair!=null?r.fair.toFixed(2)+(r.fairSafe==null?'':' to '+r.fairSafe.toFixed(2)):'-';
+ $('r_run').textContent=has?String(r.run):'-';
  $('r_allk').textContent='All '+N+' bets win in a row';
  $('r_all').textContent=has?pc0(r.all):'-';
  const sc=$('r_scale');sc.hidden=!has;
  if(has){
   const pos=x=>Math.max(0,Math.min(100,(x-.85)/.15*100));
   $('r_band').style.left=pos(r.lo)+'%';$('r_band').style.width=Math.max(1,pos(r.hi)-pos(r.lo))+'%';
-  $('r_tick').style.left=pos(r.be)+'%';
-  const lb=$('r_lb');lb.textContent='Break-even '+pct1(r.be);lb.style.left=Math.max(14,Math.min(86,pos(r.be)))+'%';
-  const d=$('r_dot');d.style.left=pos(r.rate)+'%';d.className='dot'+(r.rate<r.be?' neg':'');
+  $('r_dot').style.left=pos(r.rate)+'%';
  }
  const rc=$('r_rec');rc.innerHTML='';r.recent.forEach(x=>{const i=document.createElement('i');i.textContent=x==='w'?'W':'L';if(x==='l')i.className='l';rc.appendChild(i)});
  $('r_recl').hidden=!has;
- let note='';
- if(has){
-  if(r.perfect)note+='To be sure you beat '+pct1(r.be)+', a perfect run needs about '+r.perfect+' wins in a row. ';
-  if(r.need95)note+='If your true win rate is 95%, it takes about '+r.need95+' settled bets to show that.';
- }else note=book.length?'No settled bets for this market yet. Change "Show results for" to see the others.':'Every settled bet is saved here and kept when you start a new session. Void bets do not count.';
- $('r_note').textContent=note;
+ $('r_note').textContent=has||!book.length?'Every settled bet is saved here and kept when you start a new session. Void bets do not count.':'No settled bets for this market yet. Change "Show results for" to see the others.';
  const bt=$('r_reset');bt.textContent=rrArm?'Tap again to erase the whole record':'Reset record (all markets)';bt.disabled=!book.length;$('r_copy').disabled=!book.length;
 }
 function applyMarket(){
  const ov=c.side==='over';
  $('mkt').value=mkKey(c.side,lineOf(c));
  $('logo').textContent=ov?'O':'U';$('brand').classList.toggle('ov',ov);
- applyFmt();
-}
-function applyFmt(){
- const f=FMT_LAB[c.fmt]?c.fmt:'dec',L=FMT_LAB[f],i=$('i_odds');
- $('fmt').value=f;$('lod').textContent=c.comm>0?L[0].replace(')',', before fee)'):L[0];
- i.placeholder=L[1];i.setAttribute('inputmode',L[2]);
 }
 function setMarket(val){
  const m=/^([uo])([0-9]\.5)$/.exec(val);if(!m)return;
@@ -1813,15 +1706,15 @@ function settle(id,kind){
  const t=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
  if(!settleBet(s,c,id,kind,dayKey(),Date.now(),t))return;
  delete sugs[id];chkMsg('');
- const le=s.log[0];if(le&&(le.res==='won'||le.res==='lost')){book.push({at:Date.now(),odds:le.odds,stake:le.stake,res:le.res,pnl:le.pnl,mk:le.mk||'u3.5'});bookSave()}
+ const le=s.log[0];if(le&&(le.res==='won'||le.res==='lost')){book.push({at:Date.now(),res:le.res,mk:le.mk||'u3.5'});bookSave()}
  if(s.halt)showLog=true;
  save();update();
 }
 function newSession(){
  if(s.open.length)return;
- if(s.n)hist.unshift({ses:ses,n:s.n,w:s.w,pl:s.pl});
+ if(s.n)hist.unshift({ses:ses,n:s.n,w:s.w});
  ses++;
- fresh((c.carry==='carry'&&s.bal>=10)?s.bal:c.start);
+ fresh();
  recheck();save();update();
 }
 // ---- Match clock: countdown to the entry window, with alerts while the page is open ----
@@ -2147,8 +2040,7 @@ let undoSnap=null;
 function fillPaste(){
  const ta=$('paste'),pr=$('pres'),pt=$('prt');
  if(!ta.value.trim())return;
- const r=parseStats(ta.value,c.side,c.fmt);
- if(!mktOn){delete r.vals.odds;r.got=r.got.filter(x=>!/^odds /.test(x))}
+ const r=parseStats(ta.value,c.side);
  const ks=Object.keys(r.vals);
  pr.hidden=false;
  ta.blur();
@@ -2465,7 +2357,7 @@ function scRender(){
  const all=scanSort(scItems,cov,c),show=all.filter(x=>scShowOut||x.k!=='out'),nOut=all.filter(x=>x.k==='out').length,nSunk=show.filter(x=>scanSunk(x,cov,c)).length;
  $('scrows').innerHTML=show.length?show.map(x=>{
   const f=x.f;
-  return '<button type="button" class="lvr'+(x.k==='out'?' out':'')+'" data-a="lvpick" data-id="'+esc(f.id)+'"><b>'+esc(f.home.name)+' v '+esc(f.away.name)+'</b><span class="lvs">'+esc(f.min)+"' "+esc(f.gh==null?'-':f.gh)+'–'+esc(f.ga==null?'-':f.ga)+'</span><small>'+esc(mktOn?x.why:x.why.replace(', add your odds',''))+'</small><span class="sct '+SCAN_TAGC[x.k]+'">'+SCAN_TAG[x.k]+'</span>'+covHtml(f)+'</button>';
+  return '<button type="button" class="lvr'+(x.k==='out'?' out':'')+'" data-a="lvpick" data-id="'+esc(f.id)+'"><b>'+esc(f.home.name)+' v '+esc(f.away.name)+'</b><span class="lvs">'+esc(f.min)+"' "+esc(f.gh==null?'-':f.gh)+'–'+esc(f.ga==null?'-':f.ga)+'</span><small>'+esc(x.why)+'</small><span class="sct '+SCAN_TAGC[x.k]+'">'+SCAN_TAG[x.k]+'</span>'+covHtml(f)+'</button>';
  }).join(''):'<div class="lvempty">'+(all.length?'Every match checked fails a rule.':'No live match is near your window right now.')+'</div>';
  const sk=$('scsunk');sk.hidden=!nSunk;sk.textContent=nSunk?(nSunk>1?nSunk+' matches are':'1 match is')+' listed last: that league usually sends no shots or xG.':'';
  const bo=$('scout');bo.hidden=!nOut;bo.textContent=scShowOut?'Hide the '+nOut+' that failed a rule':'Show the '+nOut+' that failed a rule';
@@ -2653,51 +2545,32 @@ function buildForm(){
  $('form').innerHTML=
   '<label>Theme<select id="f_theme"><option value="auto">Auto (follow device)</option><option value="light">Light</option><option value="dark">Dark</option></select></label>'+
   '<label>Panel size<select id="f_size"><option value="normal"'+(size==='normal'?' selected':'')+'>Normal</option><option value="compact"'+(size==='compact'?' selected':'')+'>Compact</option></select></label>'+
-  '<label>Market box (odds and match name)<select id="f_mkt"><option value="hide"'+(mktOn?'':' selected')+'>Hidden: bets use your minimum odds</option><option value="show"'+(mktOn?' selected':'')+'>Shown: type the real odds</option></select></label>'+
-  fg('sd','Discipline',grid(['days','perDay','minOdds','dayLoss','cool','maxStreak','stop','comm'])+
-   '<p class="pace">Minimum odds is also the price used for every bet while the Market box is hidden.</p>'+
-   '<p class="pace">Platform fee: the % your platform keeps from winnings (an exchange commission, say). Leave it at 0 for a normal sportsbook, where the margin is already in the odds. The panel works from odds after this fee.</p>'+
+  '<label>Match name box<select id="f_mkt"><option value="hide"'+(mktOn?'':' selected')+'>Hidden</option><option value="show"'+(mktOn?' selected':'')+'>Shown: name each bet</option></select></label>'+
+  fg('sd','Discipline',grid(['days','perDay','dayLoss','cool','maxStreak'])+
    sel('gate','Betting gate',[['block','Only when all rules pass'],['warn','Warn only']]))+
-  fg('ss','Staking and target',sel('staking','Staking',[['flat','Flat percent of bankroll'],['ladder','Target ladder, capped']])+
-   grid(['start','targetMult','stakePct','stakeCap'])+
-   sel('carry','New session starts from',[['reset','Start bankroll'],['carry','Previous balance']]))+
   fg('sm',mkName(c.side,lineOf(c))+' rules',(c.side==='over'?grid(['ovAvg','minFrom','minTo','ovGoals','ovSot','ovXg']):grid(['avgMax','minFrom','minTo','goalsBelow','sotMax','xgMax']))+
    sel('scope','Team rules apply to',[['both','Each team (stricter)'],['any','At least one team']])+
    sel('xgSkip','If the feed sends no xG',[['wait','Wait for it (all five rules)'],['skip','Skip the xG rule (four rules)']])+
    '<p class="pace">Skipping only happens when no xG is entered for either team, and the panel says so on screen. If you type or paste xG, the rule is checked as normal.</p>'+
    '<p class="pace">Rules are saved separately for each market.'+(c.side==='over'||lineOf(c)!==3.5?' The starting values for this market are my guesses, scaled from your Under 3.5 rules. Test them and set your own.':'')+'</p>'+
    '<button type="button" class="wide" data-a="rulereset">Reset '+mkName(c.side,lineOf(c))+' rules to the starting values</button>');
- $('form').oninput=preview;
  $('f_size').onchange=e=>setSize(e.target.value);
  $('f_mkt').onchange=e=>{setMkt(e.target.value);update()};
  $('f_theme').value=theme;$('f_theme').onchange=e=>setTheme(e.target.value);
  applyFold();
- preview();
 }
 function read(){
  const o={...c},k=(v,a,b)=>Math.min(b,Math.max(a,v));
  NUM.forEach(n=>{const el=$('f_'+n);if(!el)return;const v=parseFloat(el.value);if(!isNaN(v))o[n]=v});
- ['staking','scope','gate','carry','xgSkip'].forEach(n=>{o[n]=$('f_'+n).value});
+ ['scope','gate','xgSkip'].forEach(n=>{o[n]=$('f_'+n).value});
  o.xgSkip=o.xgSkip==='skip'?'skip':'wait';
- o.start=Math.max(10,o.start);o.targetMult=k(o.targetMult,1.01,50);o.days=k(Math.round(o.days),1,14);o.perDay=k(Math.round(o.perDay),1,50);
- o.minOdds=k(o.minOdds,1.01,20);o.comm=k(o.comm,0,50);o.fmt=FMT_LAB[o.fmt]?o.fmt:'dec';o.dayLoss=k(Math.round(o.dayLoss),0,50);o.cool=k(Math.round(o.cool),0,720);
- o.maxStreak=k(Math.round(o.maxStreak),1,12);o.stop=Math.max(1,o.stop);
- o.stakePct=k(o.stakePct,.1,100);o.stakeCap=k(o.stakeCap,.5,100);
+ o.days=k(Math.round(o.days),1,14);o.perDay=k(Math.round(o.perDay),1,50);
+ o.dayLoss=k(Math.round(o.dayLoss),0,50);o.cool=k(Math.round(o.cool),0,720);
+ o.maxStreak=k(Math.round(o.maxStreak),1,12);
  o.avgMax=k(o.avgMax,0,6);o.minFrom=k(Math.round(o.minFrom),0,120);o.minTo=k(Math.round(o.minTo),o.minFrom,120);
  o.goalsBelow=k(Math.round(o.goalsBelow),1,10);o.sotMax=k(Math.round(o.sotMax),0,30);o.xgMax=k(o.xgMax,0,6);
  o.ovAvg=k(o.ovAvg,0,8);o.ovGoals=k(Math.round(o.ovGoals),0,10);o.ovSot=k(Math.round(o.ovSot),0,60);o.ovXg=k(o.ovXg,0,12);
  return o;
-}
-function preview(){
- const o=read(),odds=o.minOdds,left=o.perDay*o.days,g=goal(o,o.start,o.start*o.targetMult,left,odds),pct=pctUse(o);
- let bal=o.start;
- for(let i=0;i<o.maxStreak;i++)bal-=bal*pct/100;
- const loss=o.start-bal,be=100/odds;
- let h='';
- if(g)h+='Goal <b>×'+o.targetMult+'</b> in <b>'+left+' bets</b> at odds <b>'+odds+'</b> needs <b>'+(g.f>=1?'more than your whole bankroll':Math.round(g.f*100)+'% of bankroll')+'</b> on every bet'+(g.over?', and any loss ends it. Your '+g.pct+'% stake reaches <b>×'+g.best.toFixed(2)+'</b> if all '+left+' win.':'.')+'<br>';
- h+='At odds '+odds+' you must win <b>'+be.toFixed(1)+'%</b> of bets to break even. Winning all '+left+' happens <b>'+(Math.pow(.95,left)*100).toFixed(0)+'%</b> of the time at a 95% win rate and <b>'+(Math.pow(.97,left)*100).toFixed(0)+'%</b> at 97%.<br>';
- h+='Worst case: <b>'+fmt(loss)+'</b> lost over '+o.maxStreak+' straight losses ('+(loss/o.start*100).toFixed(1)+'% of bankroll). The rules sharpen your picks. They do not remove the bookmaker margin.';
- $('risk').innerHTML=h;
 }
 
 $('r_in').addEventListener('input',()=>{rsArm=0});
@@ -2756,13 +2629,6 @@ document.addEventListener('input',e=>{
  if(e.target.id&&e.target.id.indexOf('i_')===0){
   $('exnote').hidden=true;update();
  }
-});
-// Changing the odds format clears the odds box, because 1.08, -1200 and 1/12 mean different things.
-$('fmt').addEventListener('change',e=>{
- c.fmt=FMT_LAB[e.target.value]?e.target.value:'dec';
- $('i_odds').value='';$('exnote').hidden=true;
- save();applyFmt();update();
- $('i_odds').focus();
 });
 $('paste').addEventListener('paste',()=>setTimeout(fillPaste,0));
 $('theme').onclick=()=>setTheme(effTheme()==='light'?'dark':'light');
