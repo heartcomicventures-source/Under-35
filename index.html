@@ -131,6 +131,14 @@ section{padding:14px}
 .lvr .lvw{justify-self:end;font-size:10px;font-weight:700;letter-spacing:.05em;color:var(--grn)}
 .lvr.on{background:var(--grnbg)}
 .lvr.out{opacity:.65}
+.lvr .cov{grid-column:1/-1;font-size:10px;font-weight:600;color:var(--mut)}
+.lvr .cov.ok{color:var(--grn)}
+.lvr .cov.am{color:var(--amb)}
+.covd{margin:8px 0;font-size:12px}
+.covd summary{cursor:pointer;color:var(--mut);padding:6px 0}
+.covr{display:flex;justify-content:space-between;gap:10px;padding:5px 0;border-bottom:1px solid var(--line);font-size:11px}
+.covr b{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.covr span{white-space:nowrap;color:var(--mut)}
 .lvr .sct{justify-self:end;font-size:10px;font-weight:700;letter-spacing:.05em;color:var(--mut)}
 .lvr .sct.go{color:var(--grn)}
 .lvr .sct.am{color:var(--amb)}
@@ -600,6 +608,7 @@ body{touch-action:manipulation;-webkit-text-size-adjust:100%;-webkit-tap-highlig
     <div class="two"><button type="button" class="wide" data-a="keysave">Save key</button><button type="button" class="wide" data-a="keytest">Test</button></div>
     <button type="button" class="wide" data-a="keyforget" id="keyforget">Remove key</button>
     <p class="pace" id="keymsg" role="status" hidden></p>
+    <details class="covd" id="covd"><summary>Data coverage seen so far</summary><p class="pace">Learned in this browser from the matches you open, refresh or scan. A tag shows in the lists once a league has been seen in 2 matches. Matches only count when the statistics call worked.</p><div id="covrows"></div><button type="button" class="wide" data-a="covclear">Clear coverage history</button></details>
     <p class="pace">Optional. With a key, Live matches on the Bet tab fills the minute, score, shots on target, xG and last-5 average goals for you. The key stays in this browser and is sent only to api-sports.io. It is never part of a copied record. Each refresh uses 2 requests. The Backtest tab uses the same key.</p>
    </div>
   </div>
@@ -668,6 +677,8 @@ function evaluate(v,c){
  const tot=(a,b)=>a==null||b==null?null:a+b;
  const tv=(a,b)=>{const t=tot(a,b);return t==null?'–':f(t)+' ('+f(a)+' · '+f(b)+')'};
  const timeR={s:'Time',lim:c.minFrom+'–'+c.minTo,d:'Minute '+c.minFrom+' to '+c.minTo,st:one('min',v.min,x=>x>=c.minFrom&&x<=c.minTo),val:v.min==null?'–':v.min+"'"};
+ // Setting "If the feed sends no xG: skip the rule": applies only when no xG is entered for either team.
+ const skipXg=c.xgSkip==='skip'&&v.xgh==null&&v.xga==null;
  const oddsR=v.noOdds?null:{s:'Odds',lim:'≥ '+c.minOdds,d:'Odds of '+c.minOdds+' or higher',st:one('odds',v.odds,x=>x>=c.minOdds),val:v.odds==null?'–':String(v.odds)};
  const R=(over?[
   {s:'Avg',lim:'≥ '+c.ovAvg,d:'Last 5 avg goals ≥ '+c.ovAvg+' ('+each+')',st:two('avgH','avgA',v.avgH,v.avgA,x=>x>=c.ovAvg),val:f(v.avgH)+' · '+f(v.avgA)},
@@ -683,12 +694,12 @@ function evaluate(v,c){
   {s:'SoT',lim:'≤ '+c.sotMax,d:'Shots on target ≤ '+c.sotMax+' ('+each+')',st:two('sotH','sotA',v.sotH,v.sotA,x=>x<=c.sotMax),val:f(v.sotH)+' · '+f(v.sotA)},
   {s:'xG',lim:'≤ '+c.xgMax,d:'xG ≤ '+c.xgMax+' ('+each+')',st:two('xgh','xga',v.xgh,v.xga,x=>x<=c.xgMax),val:f(v.xgh)+' · '+f(v.xga)},
   oddsR
- ]).filter(Boolean);
+ ]).filter(r=>r&&!(skipXg&&r.s==='xG'));
  if(v.min!=null&&v.min<c.minFrom)fs.min='a';
  const passed=R.filter(r=>r.st==='p').length;
  const total=(v.gh||0)+(v.ga||0);
  // dead: an Under already lost / an Over already won. risky: one more goal loses an Under. wins: one more goal wins an Over.
- return{R:R,fs:fs,passed:passed,allPass:passed===R.length,total:total,dead:total>mg,risky:!over&&mg>=1&&total===mg,wins:over&&total===mg&&mg>=1,over:over,mg:mg};
+ return{R:R,fs:fs,passed:passed,allPass:passed===R.length,total:total,dead:total>mg,risky:!over&&mg>=1&&total===mg,wins:over&&total===mg&&mg>=1,over:over,mg:mg,skip:skipXg?['xG']:[]};
 }
 // Straight-line pace: where xG and shots on target would be by the time the window opens.
 // Under: both only ever go up, so a value already over its limit can never come back under it. Over: they need to reach a minimum.
@@ -706,7 +717,7 @@ function projection(v,c){
  return{p:p,xg:xg,sot:sot,ok:xg!=='f'&&sot!=='f'};
 }
 function verdict(ev,v,c){
- const n=ev.R.length,over=c.side==='over',nm=mkName(c.side,lineOf(c));
+ const n=ev.R.length,over=c.side==='over',nm=mkName(c.side,lineOf(c)),sk=!!(ev.skip&&ev.skip.length);
  if(ev.R.every(r=>r.st==='e'))return{k:'idle',head:'Waiting for match numbers',text:'The rules update as you type.'};
  if(ev.dead)return{k:'bad',head:'NOT A GOOD OPPORTUNITY',text:ev.total+(over?' goals are in, so '+nm+' has already won. Nothing is left to bet.':' goals are in, so '+nm+' has already lost.')};
  const live=['min','gh','ga','sotH','sotA','xgh','xga'].some(k=>v[k]!=null);
@@ -724,20 +735,20 @@ function verdict(ev,v,c){
   const left=c.minFrom-v.min,pj=projection(v,c);
   if(!pj)return{k:'am',head:'NOT YET',text:'The window opens at minute '+c.minFrom+', '+left+' min from now. '+(v.min<15?'Too early to project. Refresh the stats around 30, 45 and 55 minutes.':'Nothing is failing so far.')};
   const fx=x=>x==null?'–':String(Math.round(x*10)/10);
-  const miss=[pj.xg==='e'?'xG':null,pj.sot==='e'?'shots on target':null].filter(Boolean);
+  const miss=[pj.xg==='e'&&!sk?'xG':null,pj.sot==='e'?'shots on target':null].filter(Boolean);
   if(miss.length)return{k:'am',head:'NOT YET',text:'Add '+miss.join(' and ')+' to project the pace to minute '+c.minFrom+'. The window opens in '+left+' min.'};
   if(over){
-   const l2='At this pace by minute '+c.minFrom+': total xG '+fx(pj.tx)+' (needs ≥ '+c.ovXg+'), total shots on target '+fx(pj.ts)+' (needs ≥ '+c.ovSot+'). Goals so far '+((v.gh||0)+(v.ga||0))+' (needs ≥ '+c.ovGoals+').';
+   const l2='At this pace by minute '+c.minFrom+': '+(sk?'':'total xG '+fx(pj.tx)+' (needs ≥ '+c.ovXg+'), ')+'total shots on target '+fx(pj.ts)+' (needs ≥ '+c.ovSot+'). Goals so far '+((v.gh||0)+(v.ga||0))+' (needs ≥ '+c.ovGoals+').';
    if(!pj.ok)return{k:'am',head:'AT RISK',text:l2+' Below a target, so it may fall short by the window.'};
    return{k:'ok',head:'ON TRACK',text:l2+' The window opens in '+left+' min.'};
   }
-  const line='At this pace by minute '+c.minFrom+': xG '+fx(pj.p.xgh)+' · '+fx(pj.p.xga)+' (limit '+c.xgMax+'), shots on target '+fx(pj.p.sotH)+' · '+fx(pj.p.sotA)+' (limit '+c.sotMax+').';
+  const line='At this pace by minute '+c.minFrom+': '+(sk?'':'xG '+fx(pj.p.xgh)+' · '+fx(pj.p.xga)+' (limit '+c.xgMax+'), ')+'shots on target '+fx(pj.p.sotH)+' · '+fx(pj.p.sotA)+' (limit '+c.sotMax+').';
   if(!pj.ok)return{k:'am',head:'AT RISK',text:line+' Over a limit, so it may fail by the window.'};
   return{k:'ok',head:'ON TRACK',text:line+' The window opens in '+left+' min.'};
  }
  const em=ev.R.filter(r=>r.st==='e');
  if(em.length)return{k:'am',head:'WAITING FOR NUMBERS',text:'Missing: '+em.map(r=>r.s).join(', ')+'. '+ev.passed+' of '+n+' rules pass so far.'};
- return{k:'go',head:'GOOD OPPORTUNITY',text:'Goals, shots on target and xG all '+(over?'clear their minimums':'pass')+' at minute '+v.min+'.'+(ev.risky?' '+gtxt(ev.total)+' in, so one more goal loses the bet.':'')+(ev.wins?' '+gtxt(ev.total)+' in, so one more goal wins the bet.':'')};
+ return{k:'go',head:'GOOD OPPORTUNITY',text:(sk?'Goals and shots on target both ':'Goals, shots on target and xG all ')+(over?'clear their minimums':'pass')+' at minute '+v.min+'.'+(sk?' xG was not checked: none was sent, and your setting skips it.':'')+(ev.risky?' '+gtxt(ev.total)+' in, so one more goal loses the bet.':'')+(ev.wins?' '+gtxt(ev.total)+' in, so one more goal wins the bet.':'')};
 }
 function betsLeft(s,c){if(s.day>c.days)return 0;return Math.max(0,c.perDay-s.dayBets)+Math.max(0,c.days-s.day)*c.perDay}
 function pctUse(c){return c.staking==='flat'?Math.min(c.stakePct,c.stakeCap):c.stakeCap}
@@ -1231,9 +1242,36 @@ function scanClass(f,st,av,c){
   if(pj&&!pj.ok)return{k:'risk',why:'opens in '+left+' min, pace may break a limit'};
   return{k:'soon',why:'opens in '+left+' min, nothing failing yet'};
  }
- const miss=['Avg','Goals','SoT','xG'].filter(s=>stOf(s)==='e').map(s=>({Avg:'average goals',Goals:'score',SoT:'shots on target',xG:'xG'}[s]));
+ const sk=!!(ev.skip&&ev.skip.length);
+ const miss=['Avg','Goals','SoT','xG'].filter(s=>stOf(s)==='e'&&!(sk&&s==='xG')).map(s=>({Avg:'average goals',Goals:'score',SoT:'shots on target',xG:'xG'}[s]));
  if(miss.length)return{k:'nodata',why:'missing '+miss.join(', ')};
- return{k:'go',why:'all five pass, add your odds'};
+ return{k:'go',why:sk?'all four rules pass (xG skipped), add your odds':'all five pass, add your odds'};
+}
+// ---- Data coverage: which leagues have sent shots on target and xG before. Learned from the matches you open, refresh or scan.
+const COV_KEEP=12,COV_LEAGUES=60;
+function covKey(f){return String(f&&f.league||'').slice(0,40)+'|'+String(f&&f.country||'').slice(0,30)}
+// Record one look at a match's statistics (the call itself worked). A match counts as having shots / xG if it ever showed them.
+function covNote(cov,f,sot,xg,at){
+ if(!f||!f.league)return cov;
+ const k=covKey(f),e=cov[k]||{o:[],t:0};
+ const i=e.o.findIndex(x=>x[0]===f.id),row=i>=0?e.o[i]:[f.id,0,0];
+ row[1]=row[1]||(sot?1:0);row[2]=row[2]||(xg?1:0);
+ if(i<0)e.o.push(row);
+ if(e.o.length>COV_KEEP)e.o.splice(0,e.o.length-COV_KEEP);
+ e.t=at;cov[k]=e;
+ const ks=Object.keys(cov);
+ if(ks.length>COV_LEAGUES)ks.sort((a,b)=>cov[a].t-cov[b].t).slice(0,ks.length-COV_LEAGUES).forEach(x=>{delete cov[x]});
+ return cov;
+}
+// A tag once a league has been seen in 2 or more matches: k 'ok' (both usually sent) or 'am' (something often missing).
+function covTag(cov,f){
+ const e=cov&&cov[covKey(f)];
+ if(!e||e.o.length<2)return null;
+ const n=e.o.length,sot=e.o.filter(x=>x[1]).length/n,xg=e.o.filter(x=>x[2]).length/n,miss=[];
+ if(sot<.75)miss.push('shots on target');
+ if(xg<.75)miss.push('xG');
+ const none=sot<.25&&xg<.25;
+ return{k:miss.length?'am':'ok',n:n,sot:sot,xg:xg,text:none?'Usually no shots or xG':miss.length?miss.join(' and ')+' often missing':'Shots and xG usually sent'};
 }
 function scanSort(items){return items.slice().sort((a,b)=>SCAN_RANK[a.k]-SCAN_RANK[b.k]||a.order-b.order)}
 function scanCounts(items){const n={go:0,soon:0,risk:0,nodata:0,out:0};items.forEach(x=>{if(n[x.k]!=null)n[x.k]++});return n}
@@ -1388,7 +1426,7 @@ function momNearest(M,G,x){
 }
 //</logic>
 
-const D={start:50,targetMult:1.07,days:2,perDay:6,minOdds:1.06,dayLoss:1,cool:15,maxStreak:2,stop:10,stakePct:10,stakeCap:10,avgMax:1,minFrom:60,minTo:65,goalsBelow:3,sotMax:3,xgMax:1.2,side:'under',line:3.5,m:{},ovAvg:1.5,ovGoals:3,ovSot:8,ovXg:3,scope:'both',staking:'flat',gate:'block',carry:'reset',fmt:'dec',comm:0};
+const D={start:50,targetMult:1.07,days:2,perDay:6,minOdds:1.06,dayLoss:1,cool:15,maxStreak:2,stop:10,stakePct:10,stakeCap:10,avgMax:1,minFrom:60,minTo:65,goalsBelow:3,sotMax:3,xgMax:1.2,side:'under',line:3.5,m:{},ovAvg:1.5,ovGoals:3,ovSot:8,ovXg:3,scope:'both',staking:'flat',gate:'block',carry:'reset',fmt:'dec',comm:0,xgSkip:'wait'};
 const FD={
  days:['Days in challenge',1],perDay:['Max bets per day',1],minOdds:['Minimum odds (after fees)',.01],comm:['Platform fee on winnings (%)',.1],dayLoss:['Stop for day after losses (0 = off)',1],cool:['Cool-off after a loss (min)',1],maxStreak:['Max loss streak',1],stop:['Session stop-loss ($)',1],
  start:['Start bankroll ($)',1],targetMult:['Target (× bankroll)',.05],stakePct:['Flat stake (% of bankroll)',.1],stakeCap:['Max stake (% of bankroll)',.5],
@@ -1485,7 +1523,7 @@ function update(){
  else if(v.min<=c.minTo){tl.textContent='In the window, '+(c.minTo-v.min)+' min left';tl.className='tlt pos'}
  else{tl.textContent='Window closed at minute '+c.minTo;tl.className='tlt neg'}
 
- $('rules').innerHTML=ev.R.map(r=>'<div class="ru '+r.st+'"><i class="ri">'+(r.st==='p'?'✓':r.st==='f'?'✕':'–')+'</i><span class="rd">'+esc(r.d)+'</span><span class="rs">'+r.s+'</span><b class="rv">'+esc(r.val)+'</b></div>').join('');
+ $('rules').innerHTML=ev.R.map(r=>'<div class="ru '+r.st+'"><i class="ri">'+(r.st==='p'?'✓':r.st==='f'?'✕':'–')+'</i><span class="rd">'+esc(r.d)+'</span><span class="rs">'+r.s+'</span><b class="rv">'+esc(r.val)+'</b></div>').join('')+(ev.skip&&ev.skip.length?'<div class="ru e sk"><i class="ri">–</i><span class="rd">xG not checked: none entered, and your setting skips it</span><span class="rs">xG</span><b class="rv">skipped</b></div>':'');
 
  const cls=vd.k==='go'?'go':vd.k==='bad'?'bad':vd.k==='am'?'am':vd.k==='ok'?'ok':'';
  let h='<b>'+vd.head+'</b><p>'+esc(vd.text)+'</p>';
@@ -2014,6 +2052,34 @@ function undoPaste(){
 }
 // ---- Live feed (optional): your own API-Sports key. It stays in this browser and is sent only to api-sports.io. ----
 const KEYK='u35_apikey';
+// ---- Data coverage memory (this browser only)
+let cov={};
+function covLoad(){
+ try{
+  const d=JSON.parse(localStorage.getItem('u35_cov')||'null');
+  if(d&&typeof d==='object'&&!Array.isArray(d))Object.keys(d).slice(0,COV_LEAGUES).forEach(k=>{
+   const e=d[k];
+   if(e&&Array.isArray(e.o)&&typeof e.t==='number')cov[k]={t:e.t,o:e.o.filter(x=>Array.isArray(x)&&x.length===3).slice(-COV_KEEP).map(x=>[x[0],x[1]?1:0,x[2]?1:0])};
+  });
+ }catch(e){}
+}
+function covSave(){try{localStorage.setItem('u35_cov',JSON.stringify(cov))}catch(e){}}
+// st: the parsed statistics of a call that worked (never after an error). Stats often start a few minutes in, so an empty look before minute 10 is not counted.
+function covSee(f,st){
+ if(!f||!st||!f.league)return;
+ const sot=st.sotH!=null||st.sotA!=null,xg=st.xgh!=null||st.xga!=null;
+ if(!sot&&!xg&&f.min!=null&&f.min<10)return;
+ covNote(cov,f,sot,xg,Date.now());covSave();covRender();
+}
+function covHtml(f){const t=covTag(cov,f);return t?'<span class="cov '+t.k+'">'+esc(t.text)+' · '+t.n+' seen</span>':''}
+function covRender(){
+ const el=$('covrows');if(!el)return;
+ const ks=Object.keys(cov).sort((a,b)=>cov[b].o.length-cov[a].o.length||cov[b].t-cov[a].t).slice(0,25);
+ el.innerHTML=ks.length?ks.map(k=>{
+  const e=cov[k],n=e.o.length,pc=i=>Math.round(e.o.filter(x=>x[i]).length/n*100),nm=k.split('|');
+  return '<div class="covr"><b>'+esc(nm[0]+(nm[1]?' · '+nm[1]:''))+'</b><span>'+n+' seen · shots '+pc(1)+'% · xG '+pc(2)+'%</span></div>';
+ }).join(''):'<div class="covr">Nothing yet. It fills in as you open, refresh or scan matches.</div>';
+}
 let apiKey='',live=null,lvList=[],lvListAt=0,lvBusy=false,lvT=0;
 let sugs={},chkBusy=false,chkLast=0,scItems=[],scShowOut=false;
 const SCAN_TAG={go:'PASSES',soon:'COMING',risk:'AT RISK',nodata:'NO DATA',out:'OUT'},SCAN_TAGC={go:'go',soon:'',risk:'am',nodata:'am',out:'bad'};
@@ -2066,7 +2132,7 @@ async function apiGet(path){
 }
 function lvRender(){
  const rows=apiFilter(apiSort(lvList,c),$('lvfilter').value);
- $('lvrows').innerHTML=rows.length?rows.map(f=>'<button type="button" class="lvr'+(live&&live.id===f.id?' on':'')+'" data-a="lvpick" data-id="'+esc(f.id)+'"><b>'+esc(f.home.name)+' v '+esc(f.away.name)+'</b><span class="lvs">'+esc(f.min)+"' "+esc(f.gh==null?'-':f.gh)+'–'+esc(f.ga==null?'-':f.ga)+'</span><small>'+esc(f.league+(f.country?' · '+f.country:''))+'</small>'+(apiInWin(f,c)?'<span class="lvw">IN WINDOW</span>':'<span></span>')+'</button>').join(''):'<div class="lvempty">'+(lvList.length?'No live match fits that filter.':'No matches are live right now.')+'</div>';
+ $('lvrows').innerHTML=rows.length?rows.map(f=>'<button type="button" class="lvr'+(live&&live.id===f.id?' on':'')+'" data-a="lvpick" data-id="'+esc(f.id)+'"><b>'+esc(f.home.name)+' v '+esc(f.away.name)+'</b><span class="lvs">'+esc(f.min)+"' "+esc(f.gh==null?'-':f.gh)+'–'+esc(f.ga==null?'-':f.ga)+'</span><small>'+esc(f.league+(f.country?' · '+f.country:''))+'</small>'+(apiInWin(f,c)?'<span class="lvw">IN WINDOW</span>':'<span></span>')+covHtml(f)+'</button>').join(''):'<div class="lvempty">'+(lvList.length?'No live match fits that filter.':'No matches are live right now.')+'</div>';
 }
 async function lvOpen(){
  if(lvBusy)return;
@@ -2130,12 +2196,13 @@ async function lvPick(id){
  const errs=[],safe=p=>p.catch(e=>{errs.push(e.message);return null});
  const r=await Promise.all([safe(apiGet('/fixtures/statistics?fixture='+encodeURIComponent(f.id))),safe(lvAvg(f.home.id)),safe(lvAvg(f.away.id))]);
  const st=r[0]?apiStats(r[0],f.home.id,f.away.id):null;
+ covSee(f,st);
  const vals=apiVals(f,st,{h:r[1],a:r[2]});
  lvWrite(vals);update();snap();
  const synced=lvClock(f,lvListAt||Date.now());
- const miss=apiMissing(vals,true),pr=$('pres');
+ const miss=apiMissing(vals,true).filter(x=>!(c.xgSkip==='skip'&&x==='xG')),pr=$('pres');
  pr.hidden=false;pr.className='pres'+(miss.length?' am':'');
- $('prt').textContent='Filled from API-Sports: '+lvSummary(vals)+'.'+(miss.length?' Not provided: '+miss.join(', ')+'. Type those in.'+lvWhy(st):' Check them against the screen.');
+ $('prt').textContent='Filled from API-Sports: '+lvSummary(vals)+'.'+(c.xgSkip==='skip'&&vals.xgh==null&&vals.xga==null?' xG is skipped (your setting).':'')+(miss.length?' Not provided: '+miss.join(', ')+'. Type those in.'+lvWhy(st):' Check them against the screen.');
  $('pundo').hidden=false;
  lvMsg('Linked to '+f.home.name+' v '+f.away.name+'. Updated '+hhmmss()+'.'+(synced?' Clock synced to the match.':'')+(errs.length?' Problem: '+errs[0]:''),errs.length?'am':false);
  lvBusy=false;
@@ -2151,6 +2218,7 @@ async function lvRefresh(auto){
   lvBusy=false;return;
  }
  const fx=fj?apiOne(fj):null,st=sj?apiStats(sj,live.home.id,live.away.id):null;
+ covSee(fx,st);
  const vals=apiVals(fx,st,null);
  lvWrite(vals);update();snap();
  const synced=fx?lvClock(fx,Date.now()):false;
@@ -2174,7 +2242,7 @@ function scRender(){
  const all=scanSort(scItems),show=all.filter(x=>scShowOut||x.k!=='out'),nOut=all.filter(x=>x.k==='out').length;
  $('scrows').innerHTML=show.length?show.map(x=>{
   const f=x.f;
-  return '<button type="button" class="lvr'+(x.k==='out'?' out':'')+'" data-a="lvpick" data-id="'+esc(f.id)+'"><b>'+esc(f.home.name)+' v '+esc(f.away.name)+'</b><span class="lvs">'+esc(f.min)+"' "+esc(f.gh==null?'-':f.gh)+'–'+esc(f.ga==null?'-':f.ga)+'</span><small>'+esc(mktOn?x.why:x.why.replace(', add your odds',''))+'</small><span class="sct '+SCAN_TAGC[x.k]+'">'+SCAN_TAG[x.k]+'</span></button>';
+  return '<button type="button" class="lvr'+(x.k==='out'?' out':'')+'" data-a="lvpick" data-id="'+esc(f.id)+'"><b>'+esc(f.home.name)+' v '+esc(f.away.name)+'</b><span class="lvs">'+esc(f.min)+"' "+esc(f.gh==null?'-':f.gh)+'–'+esc(f.ga==null?'-':f.ga)+'</span><small>'+esc(mktOn?x.why:x.why.replace(', add your odds',''))+'</small><span class="sct '+SCAN_TAGC[x.k]+'">'+SCAN_TAG[x.k]+'</span>'+covHtml(f)+'</button>';
  }).join(''):'<div class="lvempty">'+(all.length?'Every match checked fails a rule.':'No live match is near your window right now.')+'</div>';
  const bo=$('scout');bo.hidden=!nOut;bo.textContent=scShowOut?'Hide the '+nOut+' that failed a rule':'Show the '+nOut+' that failed a rule';
  $('scres').hidden=false;
@@ -2194,7 +2262,9 @@ async function lvScan(){
    const errs=[],safe=p=>p.catch(e=>{errs.push(e.message);return null});
    const r=await Promise.all([safe(scGet('/fixtures/statistics?fixture='+encodeURIComponent(f.id))),safe(lvAvg(f.home.id,scGet)),safe(lvAvg(f.away.id,scGet))]);
    if(errs.length){bad++;firstErr=firstErr||errs[0]}
-   const x=scanClass(f,r[0]?apiStats(r[0],f.home.id,f.away.id):null,{h:r[1],a:r[2]},c);
+   const sst=r[0]?apiStats(r[0],f.home.id,f.away.id):null;
+   covSee(f,sst);
+   const x=scanClass(f,sst,{h:r[1],a:r[2]},c);
    scItems.push({f:f,k:x.k,why:x.why,order:order});
   };
   for(let i=0;i<cand.length;i+=SCAN_PAR){
@@ -2369,6 +2439,8 @@ function buildForm(){
    sel('carry','New session starts from',[['reset','Start bankroll'],['carry','Previous balance']]))+
   fg('sm',mkName(c.side,lineOf(c))+' rules',(c.side==='over'?grid(['ovAvg','minFrom','minTo','ovGoals','ovSot','ovXg']):grid(['avgMax','minFrom','minTo','goalsBelow','sotMax','xgMax']))+
    sel('scope','Team rules apply to',[['both','Each team (stricter)'],['any','At least one team']])+
+   sel('xgSkip','If the feed sends no xG',[['wait','Wait for it (all five rules)'],['skip','Skip the xG rule (four rules)']])+
+   '<p class="pace">Skipping only happens when no xG is entered for either team, and the panel says so on screen. If you type or paste xG, the rule is checked as normal.</p>'+
    '<p class="pace">Rules are saved separately for each market.'+(c.side==='over'||lineOf(c)!==3.5?' The starting values for this market are my guesses, scaled from your Under 3.5 rules. Test them and set your own.':'')+'</p>'+
    '<button type="button" class="wide" data-a="rulereset">Reset '+mkName(c.side,lineOf(c))+' rules to the starting values</button>');
  $('form').oninput=preview;
@@ -2381,7 +2453,8 @@ function buildForm(){
 function read(){
  const o={...c},k=(v,a,b)=>Math.min(b,Math.max(a,v));
  NUM.forEach(n=>{const el=$('f_'+n);if(!el)return;const v=parseFloat(el.value);if(!isNaN(v))o[n]=v});
- ['staking','scope','gate','carry'].forEach(n=>{o[n]=$('f_'+n).value});
+ ['staking','scope','gate','carry','xgSkip'].forEach(n=>{o[n]=$('f_'+n).value});
+ o.xgSkip=o.xgSkip==='skip'?'skip':'wait';
  o.start=Math.max(10,o.start);o.targetMult=k(o.targetMult,1.01,50);o.days=k(Math.round(o.days),1,14);o.perDay=k(Math.round(o.perDay),1,50);
  o.minOdds=k(o.minOdds,1.01,20);o.comm=k(o.comm,0,50);o.fmt=FMT_LAB[o.fmt]?o.fmt:'dec';o.dayLoss=k(Math.round(o.dayLoss),0,50);o.cool=k(Math.round(o.cool),0,720);
  o.maxStreak=k(Math.round(o.maxStreak),1,12);o.stop=Math.max(1,o.stop);
@@ -2423,6 +2496,7 @@ document.addEventListener('click',e=>{
  if(k==='logbet')logBet();
  else if(k==='won'||k==='lost'||k==='void')settle(a.dataset.id,k);
  else if(k==='next')nextMatch(true);
+ else if(k==='covclear'){cov={};covSave();covRender();if(lvList.length&&!$('lvlist').hidden)lvRender();if(scItems.length&&!$('scres').hidden)scRender()}
  else if(k==='rulereset'){const pr=presetRules(c.side,lineOf(c));c=Object.assign({},c,pr);c.m=Object.assign({},c.m||{});delete c.m[mkKey(c.side,lineOf(c))];save();buildForm();update()}
  else if(k==='rcopy')recCopy();
  else if(k==='rrestore')recRestore();
@@ -2479,7 +2553,7 @@ bookLoad();
 applyMarket();
 recheck();
 update();
-snapLoad();renderSnaps();clkLoad();clkArm();clockTick();
+snapLoad();renderSnaps();clkLoad();clkArm();clockTick();covLoad();covRender();
 setInterval(clockTick,1000);
 $('ck_t').addEventListener('change',e=>clkFromTime(e.target.value));
 document.addEventListener('change',e=>{
