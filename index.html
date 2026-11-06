@@ -274,6 +274,11 @@ section{padding:14px}
 #msig.ok{background:var(--card);border-color:var(--grn);color:var(--grn)}
 .msm{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 8px;margin:0 0 4px;font:700 16px/1.25 var(--body);color:var(--tx);overflow-wrap:anywhere}
 .msm em{font-style:normal;font-size:12px;font-weight:600;color:var(--mut);white-space:nowrap}
+.msw{margin:6px 0 4px;padding:7px 10px;border-radius:8px;background:var(--panel);border:1px solid var(--line);color:var(--tx)}
+.msw1{display:flex;flex-wrap:wrap;justify-content:space-between;gap:2px 10px;font:700 15px/1.25 var(--body);font-variant-numeric:tabular-nums}
+.msw2{margin-top:2px;font:700 13px/1.3 var(--body);font-variant-numeric:tabular-nums;color:var(--mut)}
+.msw2.am{color:var(--amb)}.msw2.pos{color:var(--grn)}.msw2.neg{color:var(--red)}
+.msw small{display:block;margin-top:3px;font-size:11px;font-weight:400;color:var(--mut)}
 .msu{display:block;width:100%;min-height:40px;margin:8px 0 0;padding:6px 10px;border-radius:8px;border:1.5px solid var(--grn);background:var(--grnbg);color:var(--grn);font:700 15px/1.2 var(--display);letter-spacing:.05em}
 .msg{display:grid;grid-template-columns:40px repeat(5,minmax(0,1fr));gap:6px;align-items:center;margin-top:10px}
 .msl{font-size:11px;font-weight:700;color:var(--mut)}
@@ -818,8 +823,7 @@ function signalAll(v,c){
    const sorted=list.slice().sort((a,b)=>under?((a.risky?1:0)-(b.risky?1:0))||a.line-b.line:a.line-b.line);
    const t=sorted[0],rest=sorted.slice(1);
    if(isGo){
-    const wl=v.min>=c.minTo?'This is the last minute of the window.':'The window closes in '+(c.minTo-v.min)+' min (minute '+c.minTo+').';
-    out={k:'go',head:'BET '+t.name.toUpperCase(),pick:t.key,text:'All rules pass at minute '+v.min+'. '+wl+' '+t.name+(under?' loses':' wins')+' at '+(t.mg+1)+' goals; '+t.total+' so far.'+(rest.length?' Also passing: '+listJoin(names(rest))+'.':'')};
+    out={k:'go',head:'BET '+t.name.toUpperCase(),pick:t.key,text:'All rules pass at minute '+v.min+'. '+t.name+(under?' loses':' wins')+' at '+(t.mg+1)+' goals; '+t.total+' so far.'+(rest.length?' Also passing: '+listJoin(names(rest))+'.':'')};
    }else if(live){
     out={k:'ok',head:'WAIT FOR MINUTE '+c.minFrom,pick:t.key,text:t.name+' is on track. '+t.text+(rest.length?' Also on track: '+listJoin(names(rest))+'.':'')};
    }else{
@@ -843,6 +847,13 @@ function signalAll(v,c){
  }
  out.rows=rows;out.win=win;out.live=live;out.curKey=curKey;
  return out;
+}
+// When to bet, in match minutes and (with the match clock running) in time of day. Without the clock it works from the minute you typed.
+function whenInfo(cl,c,now,minNow){
+ const I=clockInfo(cl,c,now),o={from:c.minFrom,to:c.minTo,clock:I.k!=='off',state:'none',secs:null,mins:null,est:false,opens:null,closes:null};
+ if(I.k!=='off'){o.state=I.k;o.secs=I.secs;o.est=!!I.est;o.opens=I.opens;o.closes=I.closes}
+ else if(minNow!=null){o.state=minNow<c.minFrom?'wait':minNow<=c.minTo?'in':'past';o.mins=minNow<c.minFrom?c.minFrom-minNow:minNow<=c.minTo?c.minTo-minNow:0}
+ return o;
 }
 function betsLeft(s,c){if(s.day>c.days)return 0;return Math.max(0,c.perDay-s.dayBets)+Math.max(0,c.days-s.day)*c.perDay}
 function newState(k){return{w:0,n:0,placed:0,st:0,maxSt:0,res:[],sres:[],log:[],open:[],nid:0,paused:false,halt:'',dayMsg:'',ended:false,startDate:k,dayDate:k,day:1,dayBets:0,dayLosses:0,lockUntil:0}}
@@ -1650,6 +1661,25 @@ function lvStat(v){
   ?'Linked to '+esc(nm)+'. Not filled: '+esc(miss.join(', '))+'. Type '+(miss.length>1?'them':'it')+' in.'+(live.why?'<small>'+esc(live.why.trim())+'</small>':'')
   :'Linked to '+esc(nm)+'. Shots on target and xG are filled'+(skipped?' (xG skipped by your setting)':'')+'.';
 }
+let msK='idle';
+const clkTm=t=>new Date(t).toLocaleTimeString(undefined,{hour:'numeric',minute:'2-digit'});
+// The exact window: minutes, time of day when the match clock is running, and a countdown that ticks every second.
+function msWhenHtml(){
+ if(msK==='bad')return '';
+ const W=whenInfo(clk,c,Date.now(),num($('i_min').value));
+ let l1='<span>Minute '+W.from+' to '+W.to+'</span>';
+ if(W.clock)l1+='<span>'+(W.est?'~':'')+esc(clkTm(W.opens))+' to '+esc(clkTm(W.closes))+'</span>';
+ let l2='',k='';
+ if(W.state==='wait'){k='am';l2=W.clock?'Opens in '+(W.est?'about ':'')+mmss(W.secs):'Opens in '+W.mins+' min'}
+ else if(W.state==='in'){k='pos';l2=W.clock?'Open now · '+mmss(W.secs)+' left':'Open now · '+W.mins+' min left'}
+ else if(W.state==='past'){k='neg';l2=W.clock?'Closed at '+clkTm(W.closes)+' by the match clock':'Closed at minute '+W.to}
+ return '<div class="msw"><div class="msw1">'+l1+'</div>'+(l2?'<div class="msw2 '+k+'">'+esc(l2)+'</div>':'')+(W.clock||W.state==='past'?'':'<small>Start the match clock to see the time of day.</small>')+'</div>';
+}
+function msigWhen(){
+ const el=$('mswhen');if(!el)return;
+ const h=msWhenHtml();
+ if(el.dataset.w!==h){el.dataset.w=h;el.innerHTML=h}
+}
 const SIGCLS={bet:'go',soon:'ok',lean:'ok',wait:'am',no:'bad',lost:'dn',won:'dn',idle:''};
 const SIGWORD={bet:'bet now',soon:'on track',lean:'leans this way',wait:'wait',no:'no bet',lost:'already lost',won:'already won',idle:'no numbers yet'};
 // The card above the verdict: which of the nine goal lines fits, and when to bet it. The pick can be switched to in one tap.
@@ -1666,12 +1696,14 @@ function msigRender(v){
  const row=(side,label)=>'<span class="msl">'+label+'</span>'+S.rows.filter(r=>r.side===side).map(chip).join('')+(side==='under'?'<span></span>':'');
  const ctx=[v.min!=null?v.min+"'":null,(v.gh!=null&&v.ga!=null)?v.gh+'–'+v.ga:null].filter(Boolean).join(' · ');
  const mline=v.name||ctx?'<div class="msm">'+(v.name?'<span>'+esc(v.name)+'</span>':'')+(ctx?'<em>'+esc(ctx)+'</em>':'')+'</div>':'';
- const h='<div class="msh" aria-live="polite"><small>Which market, and when</small>'+mline+'<b>'+esc(head)+'</b><p>'+esc(text)+'</p></div>'
+ msK=S.k;
+ const h='<div class="msh" aria-live="polite"><small>Which market, and when</small>'+mline+'<b>'+esc(head)+'</b></div><div id="mswhen"></div><div class="msh" aria-live="polite"><p>'+esc(text)+'</p></div>'
   +(use?'<button type="button" class="msu" data-a="usemkt" data-mk="'+use.key+'">Switch to '+esc(use.name)+(cur?' (now '+esc(cur.name)+')':'')+'</button>':'')
   +'<div class="msg">'+row('under','Under')+row('over','Over')+'</div>'
   +'<p class="msn">Each line uses its own limits from Settings. Tap a line to switch to it.</p>';
  el.hidden=false;el.className=cls;
  if(el.dataset.h!==h){el.dataset.h=h;el.innerHTML=h}
+ msigWhen();
 }
 function update(){
  const v=rd(),ev=evaluate(v,c),vd=verdict(ev,v,c),left=betsLeft(s,c),why=gate(v,ev),fin=s.ended||!!s.halt,locked=s.lockUntil>Date.now();
@@ -1947,6 +1979,7 @@ function clockTick(){
   sa.hidden=false;sa.className='snage'+(old?' am':'');
   sa.textContent=(old?'Stats are '+age+' min old (from minute '+l.min+'). Refresh them'+(inw?' before you bet.':'.'):'Stats from minute '+l.min+', '+(age<1?'just now.':age+' min ago.'));
  }
+ msigWhen();
  if(I.k==='off')return;
  const T=clkTimes(I);
  Object.keys(T).forEach(k=>{if(!fired[k]&&now>=T[k]){fired[k]=true;if(now-T[k]<=90000)ckAlert(k)}});
