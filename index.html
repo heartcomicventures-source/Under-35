@@ -262,7 +262,8 @@ section{padding:14px}
 #sig.go,#rsig.go{background:var(--grnbg);border-color:var(--grn);color:var(--grn)}
 #sig.am,#rsig.am{background:var(--ambbg);border-color:var(--amb);color:var(--amb)}
 #sig.ok,#rsig.ok{background:var(--card);border-color:var(--grn);color:var(--grn)}
-#sig.bad,#rsig.bad{background:var(--redbg);border-color:var(--red);color:var(--red)}
+#rsig.bad{background:var(--redbg);border-color:var(--red);color:var(--red)}
+#sig.bad,#msig.bad{background:transparent;border-color:var(--red);color:var(--red)}
 #msig{padding:10px 12px;border-radius:10px;font-size:12px;margin-bottom:10px;background:var(--card);border:1.5px solid var(--line);color:var(--mut)}
 #msig .msh small{display:block;margin-bottom:3px;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--mut)}
 #msig b{display:block;font:700 22px/1.1 var(--display);letter-spacing:.05em;margin-bottom:3px}
@@ -271,7 +272,8 @@ section{padding:14px}
 #msig.go{background:var(--grnbg);border-color:var(--grn);color:var(--grn)}
 #msig.am{background:var(--ambbg);border-color:var(--amb);color:var(--amb)}
 #msig.ok{background:var(--card);border-color:var(--grn);color:var(--grn)}
-#msig.bad{background:var(--redbg);border-color:var(--red);color:var(--red)}
+.msm{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 8px;margin:0 0 4px;font:700 16px/1.25 var(--body);color:var(--tx);overflow-wrap:anywhere}
+.msm em{font-style:normal;font-size:12px;font-weight:600;color:var(--mut);white-space:nowrap}
 .msu{display:block;width:100%;min-height:40px;margin:8px 0 0;padding:6px 10px;border-radius:8px;border:1.5px solid var(--grn);background:var(--grnbg);color:var(--grn);font:700 15px/1.2 var(--display);letter-spacing:.05em}
 .msg{display:grid;grid-template-columns:40px repeat(5,minmax(0,1fr));gap:6px;align-items:center;margin-top:10px}
 .msl{font-size:11px;font-weight:700;color:var(--mut)}
@@ -1662,7 +1664,9 @@ function msigRender(v){
  }
  const chip=r=>'<button type="button" class="msc '+SIGCLS[r.st]+(r.cur?' sel':'')+'" data-a="usemkt" data-mk="'+r.key+'" aria-label="'+esc(r.name+': '+SIGWORD[r.st])+'"'+(r.cur?' aria-current="true"':'')+'><i>'+r.line+'</i><em>'+r.lbl+'</em></button>';
  const row=(side,label)=>'<span class="msl">'+label+'</span>'+S.rows.filter(r=>r.side===side).map(chip).join('')+(side==='under'?'<span></span>':'');
- const h='<div class="msh" aria-live="polite"><small>Which market, and when</small><b>'+esc(head)+'</b><p>'+esc(text)+'</p></div>'
+ const ctx=[v.min!=null?v.min+"'":null,(v.gh!=null&&v.ga!=null)?v.gh+'–'+v.ga:null].filter(Boolean).join(' · ');
+ const mline=v.name||ctx?'<div class="msm">'+(v.name?'<span>'+esc(v.name)+'</span>':'')+(ctx?'<em>'+esc(ctx)+'</em>':'')+'</div>':'';
+ const h='<div class="msh" aria-live="polite"><small>Which market, and when</small>'+mline+'<b>'+esc(head)+'</b><p>'+esc(text)+'</p></div>'
   +(use?'<button type="button" class="msu" data-a="usemkt" data-mk="'+use.key+'">Switch to '+esc(use.name)+(cur?' (now '+esc(cur.name)+')':'')+'</button>':'')
   +'<div class="msg">'+row('under','Under')+row('over','Over')+'</div>'
   +'<p class="msn">Each line uses its own limits from Settings. Tap a line to switch to it.</p>';
