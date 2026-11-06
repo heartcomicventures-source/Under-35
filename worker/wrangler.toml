@@ -1,0 +1,12 @@
+# For people with a computer: put your KV namespace id below (npx wrangler kv namespace create STORE),
+# then run: npx wrangler deploy   and   npx wrangler secret put TOKEN
+name = "sporthub-alerts"
+main = "worker.js"
+compatibility_date = "2025-01-01"
+
+[triggers]
+crons = ["* * * * *"]
+
+[[kv_namespaces]]
+binding = "STORE"
+id = "PASTE_YOUR_KV_NAMESPACE_ID_HERE"
