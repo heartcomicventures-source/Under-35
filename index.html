@@ -1,8 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Under 3.5 Panel</title>
-<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Manual checklist, stake tracker and backtest for betting soccer goal lines (Under and Over) at any platform's odds, with optional live stats from your own API-Sports key.">
+<meta name="theme-color" content="#080c0f" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#e5eaed" media="(prefers-color-scheme: light)">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Under 3.5">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<link rel="icon" type="image/png" href="data:image/png;base64,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">
+<link rel="apple-touch-icon" href="data:image/png;base64,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">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600;700&display=swap">
+<style>
+/* Page reset (a published artifact gets this from its host; a standalone file needs its own) */
+:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0;font:14px system-ui}
+img{max-width:100%}
+[hidden]{display:none!important}
+</style>
 <style>
 :root{
  /* Layout: one 360px control panel in the style of the reference. Bets left on top, a numbered chip for every bet in the session, match inputs that turn green or red as they pass or fail, a big verdict box, six rule rows, session stats with a goal check, then open bets and actions. */
@@ -431,10 +451,11 @@ body{touch-action:manipulation;-webkit-text-size-adjust:100%;-webkit-tap-highlig
  body .brand select{font-size:17px}
 }
 </style>
-
+</head>
+<body>
 <main class="panel">
  <header>
-  <div class="brand" id="brand"><span class="logo" id="logo">U</span><select id="mkt" aria-label="Goal line market"><option value="u1.5">Under 1.5</option><option value="u2.5">Under 2.5</option><option value="u3.5">Under 3.5</option><option value="u4.5">Under 4.5</option><option value="o0.5">Over 0.5</option><option value="o1.5">Over 1.5</option><option value="o2.5">Over 2.5</option><option value="o3.5">Over 3.5</option><option value="o4.5">Over 4.5</option></select></div>
+  <div class="brand" id="brand"><span class="logo" id="logo">U</span></div>
   <span id="badge" class="badge">WAIT</span>
   <button id="theme" type="button" aria-label="Switch between light and dark"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" style="display:block;margin:auto"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M8 2a6 6 0 0 1 0 12z" fill="currentColor"/></svg></button>
   <button id="pause" type="button" aria-label="Pause or resume betting">❚❚</button>
@@ -731,6 +752,8 @@ function evaluate(v,c){
  const timeR={s:'Time',lim:c.minFrom+'–'+c.minTo,d:'Minute '+c.minFrom+' to '+c.minTo,st:one('min',v.min,x=>x>=c.minFrom&&x<=c.minTo),val:v.min==null?'–':v.min+"'"};
  // Setting "If the feed sends no xG: skip the rule": applies only when no xG is entered for either team.
  const skipXg=c.xgSkip==='skip'&&v.xgh==null&&v.xga==null;
+  // Decide from the score and shots on target only: the average-goals and xG rules are left out altogether.
+  const liveOnly=c.basis==='live';
  const R=(over?[
   {s:'Avg',lim:'≥ '+c.ovAvg,d:'Last 5 avg total goals ≥ '+c.ovAvg+' ('+each+')',st:two('avgH','avgA',v.avgH,v.avgA,x=>x>=c.ovAvg),val:f(v.avgH)+' · '+f(v.avgA)},
   timeR,
@@ -743,12 +766,13 @@ function evaluate(v,c){
   {s:'Goals',lim:'< '+c.goalsBelow,d:'Goals so far below '+c.goalsBelow+' ('+each+')',st:two('gh','ga',v.gh,v.ga,x=>x<c.goalsBelow),val:f(v.gh)+' – '+f(v.ga)},
   {s:'SoT',lim:'≤ '+c.sotMax,d:'Shots on target ≤ '+c.sotMax+' ('+each+')',st:two('sotH','sotA',v.sotH,v.sotA,x=>x<=c.sotMax),val:f(v.sotH)+' · '+f(v.sotA)},
   {s:'xG',lim:'≤ '+c.xgMax,d:'xG ≤ '+c.xgMax+' ('+each+')',st:two('xgh','xga',v.xgh,v.xga,x=>x<=c.xgMax),val:f(v.xgh)+' · '+f(v.xga)}
- ]).filter(r=>!(skipXg&&r.s==='xG'));
+ ]).filter(r=>!(skipXg&&r.s==='xG')&&!(liveOnly&&(r.s==='Avg'||r.s==='xG')));
+  if(liveOnly)['avgH','avgA','xgh','xga'].forEach(k=>{delete fs[k]});
  if(v.min!=null&&v.min<c.minFrom)fs.min='a';
  const passed=R.filter(r=>r.st==='p').length;
  const total=(v.gh||0)+(v.ga||0);
  // dead: an Under already lost / an Over already won. risky: one more goal loses an Under. wins: one more goal wins an Over.
- return{R:R,fs:fs,passed:passed,allPass:passed===R.length,total:total,dead:total>mg,risky:!over&&mg>=1&&total===mg,wins:over&&total===mg&&mg>=1,over:over,mg:mg,skip:skipXg?['xG']:[]};
+ return{R:R,fs:fs,passed:passed,allPass:passed===R.length,total:total,dead:total>mg,risky:!over&&mg>=1&&total===mg,wins:over&&total===mg&&mg>=1,over:over,mg:mg,liveOnly:liveOnly,skip:liveOnly?['Avg','xG']:skipXg?['xG']:[]};
 }
 // Straight-line pace: where xG and shots on target would be by the time the window opens.
 // Under: both only ever go up, so a value already over its limit can never come back under it. Over: they need to reach a minimum.
@@ -796,7 +820,7 @@ function verdict(ev,v,c){
  }
  const em=ev.R.filter(r=>r.st==='e');
  if(em.length)return{k:'am',head:'WAITING FOR NUMBERS',text:'Missing: '+em.map(r=>r.s).join(', ')+'. '+ev.passed+' of '+n+' rules pass so far.'};
- return{k:'go',head:'GOOD OPPORTUNITY',text:(sk?'Goals and shots on target both ':'Goals, shots on target and xG all ')+(over?'clear their minimums':'pass')+' at minute '+v.min+'.'+(sk?' xG was not checked: none was sent, and your setting skips it.':'')+(ev.risky?' '+gtxt(ev.total)+' in, so one more goal loses the bet.':'')+(ev.wins?' '+gtxt(ev.total)+' in, so one more goal wins the bet.':'')};
+ return{k:'go',head:'GOOD OPPORTUNITY',text:(sk?'Goals and shots on target both ':'Goals, shots on target and xG all ')+(over?'clear their minimums':'pass')+' at minute '+v.min+'.'+(sk&&!ev.liveOnly?' xG was not checked: none was sent, and your setting skips it.':'')+(ev.risky?' '+gtxt(ev.total)+' in, so one more goal loses the bet.':'')+(ev.wins?' '+gtxt(ev.total)+' in, so one more goal wins the bet.':'')};
 }
 // One look across all nine goal lines: which one fits the numbers right now, and is it time to bet.
 // Each line is judged with its own saved limits and the shared minute window. Nothing here looks at a price.
@@ -832,7 +856,7 @@ function signalAll(v,c){
    const sorted=list.slice().sort((a,b)=>under?((a.risky?1:0)-(b.risky?1:0))||a.line-b.line:a.line-b.line);
    const t=sorted[0],rest=sorted.slice(1);
    if(isGo){
-    out={k:'go',head:'BET '+t.name.toUpperCase(),pick:t.key,text:'All rules pass at minute '+v.min+'. '+t.name+(under?' loses':' wins')+' at '+(t.mg+1)+' goals; '+t.total+' so far.'+(rest.length?' Also passing: '+listJoin(names(rest))+'.':'')};
+    out={k:'go',head:'BET '+t.name.toUpperCase(),pick:t.key,text:'All rules pass at minute '+v.min+'. '+t.name+(under?' loses':' wins')+' at '+(t.mg+1)+(t.mg+1===1?' goal; ':' goals; ')+t.total+' so far.'+(rest.length?' Also passing: '+listJoin(names(rest))+'.':'')};
    }else if(live){
     out={k:'ok',head:'WAIT FOR MINUTE '+c.minFrom,pick:t.key,text:t.name+' is on track. '+t.text+(rest.length?' Also on track: '+listJoin(names(rest))+'.':'')};
    }else{
@@ -1043,6 +1067,11 @@ function apiVals(fx,st,av){
  if(st){put('sotH',st.sotH);put('sotA',st.sotA);put('xgh',st.xgh);put('xga',st.xga)}
  if(av){put('avgH',av.h);put('avgA',av.a)}
  return v;
+}
+// The numbers the rules still need from the feed. When the panel decides from the score and shots on target, xG and average goals are not needed.
+function apiNeed(v,c){
+ const lo=!!c&&c.basis==='live',sx=!!c&&c.xgSkip==='skip'&&v.xgh==null&&v.xga==null;
+ return apiMissing(v,true).filter(x=>!(lo&&(x==='xG'||x==='average goals'))&&!(sx&&x==='xG'));
 }
 function apiMissing(v,wantAvg){
  const m=[];
@@ -1307,9 +1336,9 @@ function scanClass(f,st,av,c){
   return{k:'soon',why:'opens in '+left+' min, nothing failing yet'};
  }
  const sk=!!(ev.skip&&ev.skip.length);
- const miss=['Avg','Goals','SoT','xG'].filter(s=>stOf(s)==='e'&&!(sk&&s==='xG')).map(s=>({Avg:'average goals',Goals:'score',SoT:'shots on target',xG:'xG'}[s]));
+ const miss=['Avg','Goals','SoT','xG'].filter(s=>stOf(s)==='e'&&!(sk&&s==='xG')&&!(ev.liveOnly&&s==='Avg')).map(s=>({Avg:'average goals',Goals:'score',SoT:'shots on target',xG:'xG'}[s]));
  if(miss.length)return{k:'nodata',why:'missing '+miss.join(', ')};
- return{k:'go',why:sk?'all four rules pass (xG skipped)':'all five rules pass'};
+ return{k:'go',why:ev.liveOnly?'score and shots on target pass':sk?'all four rules pass (xG skipped)':'all five rules pass'};
 }
 // ---- Data coverage: which leagues have sent shots on target and xG before. Learned from the matches you open, refresh or scan.
 const COV_KEEP=12,COV_LEAGUES=60;
@@ -1342,7 +1371,7 @@ function covTag(cov,f){
 function covTier(cov,f,c){
  const t=covTag(cov,f);
  if(!t)return 1;
- const r=c&&c.xgSkip==='skip'?[t.sot]:[t.sot,t.xg];
+ const r=c&&(c.xgSkip==='skip'||c.basis==='live')?[t.sot]:[t.sot,t.xg];
  if(r.every(x=>x>=.75))return 0;
  if(r.every(x=>x<.25))return 3;
  return 2;
@@ -1614,9 +1643,42 @@ function momNearest(M,G,x){
  M.rows.forEach((p,i)=>{const d=Math.abs(G.px(p.m)-x);if(d<bd){bd=d;best=i}});
  return best;
 }
+// ---- The panel picks the market. A pin from Settings (like 'u2.5') holds one line; with no pin it follows the numbers.
+function pinOf(c){const m=c&&c.pin?/^([uo])([0-9]\.5)$/.exec(c.pin):null;if(!m)return null;const side=m[1]==='o'?'over':'under',line=parseFloat(m[2]);return mkValid(side,line)?{side:side,line:line}:null}
+const MK_RANK={bet:0,soon:1,lean:2,wait:3,no:4,idle:5,won:6,lost:6};
+// The market to work on for these numbers, or null to leave it as it is (nothing entered yet).
+// The line the signal picks; with no pick the closest fit, preferring the market already on screen so it does not jump about.
+function pickMarket(v,c){
+ const p=pinOf(c);
+ if(p)return{side:p.side,line:p.line,pinned:true};
+ const S=signalAll(v,c);
+ if(S.k==='idle')return null;
+ let r=S.pick?S.rows.find(x=>x.key===S.pick):null;
+ if(!r){
+  const fit=S.rows.filter(x=>x.k==='go'||x.k==='ok');
+  const pool=fit.length?fit:[S.sides.under,S.sides.over];
+  r=pool.slice().sort((a,b)=>MK_RANK[a.st]-MK_RANK[b.st]||(b.cur?1:0)-(a.cur?1:0)||a.fails-b.fails||(a.side===b.side?(a.side==='under'?a.line-b.line:b.line-a.line):(a.side==='under'?-1:1)))[0];
+ }
+ // Nothing better than where it already is: stay put, so the market does not jump about while the numbers are still coming in.
+ const cur=S.rows.find(x=>x.cur);
+ if(!S.pick&&r&&cur&&cur.st!=='won'&&cur.st!=='lost'&&MK_RANK[cur.st]<=MK_RANK[r.st])r=cur;
+ return r&&r.st!=='won'&&r.st!=='lost'?{side:r.side,line:r.line,pinned:false,k:S.k}:null;
+}
+// One live match through every market: the best class wins. With a pin only that market is checked, so the result is as before.
+function scanClassAll(f,st,av,c){
+ const pin=pinOf(c),cand=pin?[[pin.side,pin.line]]:MKT_ALL,v=apiVals(f,st,av);
+ let best=null;
+ cand.forEach(a=>{
+  const cm=(a[0]===c.side&&a[1]===lineOf(c))?c:switchMarket(c,a[0],a[1]);
+  const x=scanClass(f,st,av,cm),ev=evaluate(v,cm);
+  x.mk=pin?'':mkName(a[0],a[1]);x.fails=ev.R.filter(r=>r.st==='f').length;x.risky=ev.risky?1:0;
+  if(!best||SCAN_RANK[x.k]<SCAN_RANK[best.k]||(SCAN_RANK[x.k]===SCAN_RANK[best.k]&&(x.risky<best.risky||(x.risky===best.risky&&x.fails<best.fails))))best=x;
+ });
+ return best;
+}
 //</logic>
 
-const D={avgDef:2,days:2,perDay:6,dayLoss:1,cool:15,maxStreak:2,avgMax:2.5,minFrom:60,minTo:65,goalsBelow:3,sotMax:3,xgMax:1.2,side:'under',line:3.5,m:{},ovAvg:3,ovGoals:3,ovSot:8,ovXg:3,scope:'both',gate:'block',xgSkip:'wait'};
+const D={avgDef:2,days:2,perDay:6,dayLoss:1,cool:15,maxStreak:2,avgMax:2.5,minFrom:60,minTo:65,goalsBelow:3,sotMax:3,xgMax:1.2,side:'under',line:3.5,m:{},ovAvg:3,ovGoals:3,ovSot:8,ovXg:3,scope:'both',gate:'block',xgSkip:'wait',basis:'live',pin:''};
 // Settings that older versions saved for money and odds. They are dropped when a saved session loads.
 const GONE=['start','targetMult','minOdds','stop','stakePct','stakeCap','staking','carry','fmt','comm'];
 const FD={
@@ -1696,12 +1758,12 @@ function lvStat(v){
  if(!live){el.hidden=true;el.textContent='';return}
  const nm=(live.home.name+' v '+live.away.name).slice(0,60),skipped=c.xgSkip==='skip'&&v.xgh==null&&v.xga==null;
  const EX={'minute or score':'min 62 score 1-0','shots on target':'sot 2 1','xG':'xg 0.7 0.9','average goals':'avg 2.1 2.3'};
- const miss=apiMissing(v,true).filter(x=>!(skipped&&x==='xG'));
+ const miss=apiNeed(v,c);
  el.hidden=false;
  el.className='lvstat'+(miss.length?' am':' ok');
  el.innerHTML=miss.length
   ?'Linked to '+esc(nm)+'. Not filled: '+esc(miss.join(', '))+'. Add '+(miss.length>1?'them':'it')+' with the stats line below, for example: '+esc(miss.map(x=>EX[x]||'').filter(Boolean).join(' '))+'.'+(live.why?'<small>'+esc(live.why.trim())+'</small>':'')
-  :'Linked to '+esc(nm)+'. Shots on target and xG are filled'+(skipped?' (xG skipped by your setting)':'')+'.';
+  :'Linked to '+esc(nm)+'. '+(c.basis==='live'?'Score and shots on target are filled.':'Shots on target and xG are filled'+(skipped?' (xG skipped by your setting)':'')+'.');
 }
 let msK='idle';
 // The exact window: minutes, and with the match clock running a countdown that ticks every second. No clock time is shown.
@@ -1724,31 +1786,29 @@ const SIGCLS={bet:'go',soon:'ok',lean:'ok',wait:'am',no:'bad',lost:'dn',won:'dn'
 const SIGWORD={bet:'bet now',soon:'on track',lean:'leans this way',wait:'wait',no:'no bet',lost:'already lost',won:'already won',idle:'no numbers yet'};
 // The card above the verdict: which of the nine goal lines fits, and when to bet it. The pick can be switched to in one tap.
 function msigRender(v){
- const el=$('msig'),S=signalAll(v,c),cur=S.rows.find(r=>r.cur);
- let head=S.head,text=S.text,cls=S.k==='idle'?'':S.k,use=null
+ const el=$('msig'),S=signalAll(v,c),pin=pinOf(c);
+ let head=S.head,text=S.text,cls=S.k==='idle'?'':S.k;
  if(S.pick){
   const P=S.rows.find(r=>r.key===S.pick);
   const why=S.k==='go'?gate(v,P.ev):'';
   if(why){head='RULES PASS, DO NOT BET';cls='am';text=P.name+' fits the rules, but: '+why}
-  else{
-   if(S.k==='go')head='BET '+P.side.toUpperCase();
-   if(!P.cur)use=P;
-  }
+  else if(S.k==='go')head='BET '+P.side.toUpperCase();
  }
- const chip=(side,label)=>{const r=S.sides[side],on=c.side===side;return '<button type="button" class="msc '+SIGCLS[r.st]+(on?' sel':'')+'" data-a="usemkt" data-mk="'+r.key+'" aria-label="'+esc(label+': '+SIGWORD[r.st]+(r.st==='bet'||r.st==='soon'||r.st==='lean'||r.st==='wait'?' ('+r.name+')':''))+'"'+(on?' aria-current="true"':'')+'><i>'+label+'</i><em>'+r.lbl+'</em></button>'};
+ const chip=(side,label)=>{const r=S.sides[side],on=c.side===side;return '<div class="msc '+SIGCLS[r.st]+(on?' sel':'')+'" role="img" aria-label="'+esc(label+': '+SIGWORD[r.st]+(r.st==='bet'||r.st==='soon'||r.st==='lean'||r.st==='wait'?' ('+r.name+')':''))+'"'+(on?' aria-current="true"':'')+'><i>'+label+'</i><em>'+r.lbl+'</em></div>'};
  const ctx=[v.min!=null?v.min+"'":null,(v.gh!=null&&v.ga!=null)?v.gh+'–'+v.ga:null].filter(Boolean).join(' · ');
  const mline=v.name||ctx?'<div class="msm">'+(v.name?'<span>'+esc(v.name)+'</span>':'')+(ctx?'<em>'+esc(ctx)+'</em>':'')+'</div>':'';
  msK=S.k;
+ const from=c.basis==='live'?'the score and shots on target':'the score, shots on target, xG and average goals';
  const h='<div class="msh" aria-live="polite"><small>Which market, and when</small>'+mline+'<b>'+esc(head)+'</b></div><div id="mswhen"></div><div class="msh" aria-live="polite"><p>'+esc(text)+'</p>'+(S.why&&S.why.length?'<ul class="msy">'+S.why.map(w=>'<li><span class="msyn">'+esc(w.name)+'</span> '+esc(w.text)+'</li>').join('')+'</ul>':'')+'</div>'
-  +(use?'<button type="button" class="msu" data-a="usemkt" data-mk="'+use.key+'">Switch to '+esc(use.name)+(cur?' (now '+esc(cur.name)+')':'')+'</button>':'')
   +'<div class="msg">'+chip('under','Under')+chip('over','Over')+'</div>'
-  +'<p class="msn">Tap Under or Over to switch to its best-fitting line. Each line uses its own limits from Settings.</p>';
+  +(pin?'<p class="msn">The market is held at '+esc(mkName(pin.side,pin.line))+' in Settings.</p><button type="button" class="msu" data-a="unpin">Let the panel choose</button>':'<p class="msn">The panel picks the line itself from '+from+'. Each line uses its own limits from Settings.</p>');
  el.hidden=false;el.className=cls;
  if(el.dataset.h!==h){el.dataset.h=h;el.innerHTML=h}
  msigWhen();
 }
 function update(){
- const v=rd(),ev=evaluate(v,c),vd=verdict(ev,v,c),left=betsLeft(s,c),why=gate(v,ev),fin=s.ended||!!s.halt,locked=s.lockUntil>Date.now();
+ const v=rd();autoMarket(v);
+ const ev=evaluate(v,c),vd=verdict(ev,v,c),left=betsLeft(s,c),why=gate(v,ev),fin=s.ended||!!s.halt,locked=s.lockUntil>Date.now();
  lkSync(v.name);lvStat(v);
  const todayLeft=(fin||s.dayMsg||s.day>c.days)?0:Math.max(0,c.perDay-s.dayBets);
  $('lbl').textContent='Day '+Math.min(s.day,c.days)+' of '+c.days+': bets left today';
@@ -1772,7 +1832,7 @@ function update(){
  else if(v.min<=c.minTo){tl.textContent='In the window, '+(c.minTo-v.min)+' min left';tl.className='tlt pos'}
  else{tl.textContent='Window closed at minute '+c.minTo;tl.className='tlt neg'}
 
- $('rules').innerHTML=ev.R.map(r=>'<div class="ru '+r.st+'"><i class="ri">'+(r.st==='p'?'✓':r.st==='f'?'✕':'–')+'</i><span class="rd">'+esc(r.d)+'</span><span class="rs">'+r.s+'</span><b class="rv">'+esc(r.val)+'</b></div>').join('')+(ev.skip&&ev.skip.length?'<div class="ru e sk"><i class="ri">–</i><span class="rd">xG not checked: none entered, and your setting skips it</span><span class="rs">xG</span><b class="rv">skipped</b></div>':'');
+ $('rules').innerHTML=ev.R.map(r=>'<div class="ru '+r.st+'"><i class="ri">'+(r.st==='p'?'✓':r.st==='f'?'✕':'–')+'</i><span class="rd">'+esc(r.d)+'</span><span class="rs">'+r.s+'</span><b class="rv">'+esc(r.val)+'</b></div>').join('')+(ev.skip&&ev.skip.length&&!ev.liveOnly?'<div class="ru e sk"><i class="ri">–</i><span class="rd">xG not checked: none entered, and your setting skips it</span><span class="rs">xG</span><b class="rv">skipped</b></div>':'');
 
  const cls=vd.k==='go'?'go':vd.k==='bad'?'bad':vd.k==='am'?'am':vd.k==='ok'?'ok':'';
  let h='<b>'+vd.head+'</b><p>'+esc(vd.text)+'</p>';
@@ -1882,18 +1942,33 @@ function renderRec(){
 }
 function applyMarket(){
  const ov=c.side==='over';
- $('mkt').value=mkKey(c.side,lineOf(c));
- $('logo').textContent=ov?'O':'U';$('brand').classList.toggle('ov',ov);
+  $('logo').textContent=ov?'O':'U';$('brand').classList.toggle('ov',ov);
 }
-function setMarket(val){
- const m=/^([uo])([0-9]\.5)$/.exec(val);if(!m)return;
- const side=m[1]==='o'?'over':'under',line=parseFloat(m[2]);
- if(!mkValid(side,line)||(side===c.side&&line===lineOf(c))){applyMarket();return}
- c=switchMarket(c,side,line);save();applyMarket();
+// Settings > Market: '' lets the panel decide, a line like 'o2.5' holds it.
+function setPin(val){
+ const m=/^([uo])([0-9]\.5)$/.exec(val||''),side=m?(m[1]==='o'?'over':'under'):null,line=m?parseFloat(m[2]):null;
+ c=Object.assign({},c,{pin:m&&mkValid(side,line)?val:''});
+ if(c.pin&&(side!==c.side||line!==lineOf(c)))c=switchMarket(c,side,line);
+ save();applyMarket();
  if(!$('v-set').hidden)buildForm();
  if(!$('v-rec').hidden)renderRec();
  if(!$('v-bt').hidden)btOpen();
  update();
+}
+function setBasis(val){
+ c=Object.assign({},c,{basis:val==='all'?'all':'live'});
+ save();
+ if(!$('v-set').hidden)buildForm();
+ update();
+}
+// The panel works on the market that fits the live numbers, unless one is pinned. Only while the Bet tab is showing, so editing
+// Settings or reading the Record never changes the market under you.
+function autoMarket(v){
+ if($('v-bet').hidden)return false;
+ const t=pickMarket(v,c);
+ if(!t||(t.side===c.side&&t.line===lineOf(c)))return false;
+ c=switchMarket(c,t.side,t.line);save();applyMarket();
+ return true;
 }
 let rsT=0,rsArm=0;
 function rmsg(txt,bad){const m=$('r_msg');m.textContent=txt||'';m.hidden=!txt;m.className='pace'+(bad?' am':'')}
@@ -2532,9 +2607,9 @@ async function lvPick(id){
  fwSee(f,vals,st);
  lvWrite(vals);update();snap();
  const synced=lvClock(f,lvListAt||Date.now());
- const miss=apiMissing(vals,true).filter(x=>!(c.xgSkip==='skip'&&x==='xG')),pr=$('pres');
+ const miss=apiNeed(vals,c),pr=$('pres');
  pr.hidden=false;pr.className='pres'+(miss.length?' am':'');
- $('prt').textContent='Filled from API-Sports: '+lvSummary(vals)+'.'+(c.xgSkip==='skip'&&vals.xgh==null&&vals.xga==null?' xG is skipped (your setting).':'')+(miss.length?' Not provided: '+miss.join(', ')+'. Add those with the stats line below.'+lvWhy(st):' Check them against the screen.');
+ $('prt').textContent='Filled from API-Sports: '+lvSummary(vals)+'.'+(c.basis!=='live'&&c.xgSkip==='skip'&&vals.xgh==null&&vals.xga==null?' xG is skipped (your setting).':'')+(miss.length?' Not provided: '+miss.join(', ')+'. Add those with the stats line below.'+lvWhy(st):' Check them against the screen.');
  $('pundo').hidden=false;
  lvMsg('Linked to '+f.home.name+' v '+f.away.name+'. Updated '+hhmmss()+'.'+(synced?' Clock synced to the match.':'')+(errs.length?' Problem: '+errs[0]:''),errs.length?'am':false);
  lvBusy=false;
@@ -2600,8 +2675,8 @@ async function lvScan(){
    const sst=r[0]?apiStats(r[0],f.home.id,f.away.id):null;
    covSee(f,sst);
    fwSee(f,apiVals(f,sst,{h:r[1],a:r[2]}),sst);
-   const x=scanClass(f,sst,{h:r[1],a:r[2]},c);
-   scItems.push({f:f,k:x.k,why:x.why,order:order});
+   const x=scanClassAll(f,sst,{h:r[1],a:r[2]},c);
+   scItems.push({f:f,k:x.k,why:(x.mk?x.mk+': ':'')+x.why,order:order});
   };
   for(let i=0;i<cand.length;i+=SCAN_PAR){
    lvMsg('Scanning '+Math.min(i+SCAN_PAR,cand.length)+' of '+cand.length+' matches…');
@@ -2765,23 +2840,29 @@ function buildForm(){
   '<label>Theme<select id="f_theme"><option value="auto">Auto (follow device)</option><option value="light">Light</option><option value="dark">Dark</option></select></label>'+
   '<label>Panel size<select id="f_size"><option value="normal"'+(size==='normal'?' selected':'')+'>Normal</option><option value="compact"'+(size==='compact'?' selected':'')+'>Compact</option></select></label>'+
   '<label>Match name box<select id="f_mkt"><option value="hide"'+(mktOn?'':' selected')+'>Hidden</option><option value="show"'+(mktOn?' selected':'')+'>Shown: name each bet</option></select></label>'+
-  fg('sd','Discipline',grid(['days','perDay','dayLoss','cool','maxStreak'])+
+  '<label>Market<select id="f_pin"><option value=""'+(pinOf(c)?'':' selected')+'>Auto: the panel decides</option>'+MKT_ALL.map(a=>{const k=mkKey(a[0],a[1]);return '<option value="'+k+'"'+(c.pin===k?' selected':'')+'>'+mkName(a[0],a[1])+'</option>'}).join('')+'</select></label>'+
+   '<label>Decide from<select id="f_basis"><option value="live"'+(c.basis==='live'?' selected':'')+'>Score and shots on target</option><option value="all"'+(c.basis==='live'?'':' selected')+'>Also xG and average goals</option></select></label>'+
+   '<p class="pace">Auto picks the Under or Over line that fits the live numbers. Pick a line to hold it instead.</p>'+
+   fg('sd','Discipline',grid(['days','perDay','dayLoss','cool','maxStreak'])+
    sel('gate','Betting gate',[['block','Only when all rules pass'],['warn','Warn only']]))+
-  fg('sm',mkName(c.side,lineOf(c))+' rules',(c.side==='over'?grid(['ovAvg','minFrom','minTo','ovGoals','ovSot','ovXg']):grid(['avgMax','minFrom','minTo','goalsBelow','sotMax','xgMax']))+
+  fg('sm',mkName(c.side,lineOf(c))+' rules',(c.side==='over'?grid(c.basis==='live'?['minFrom','minTo','ovGoals','ovSot']:['ovAvg','minFrom','minTo','ovGoals','ovSot','ovXg']):grid(c.basis==='live'?['minFrom','minTo','goalsBelow','sotMax']:['avgMax','minFrom','minTo','goalsBelow','sotMax','xgMax']))+
    sel('scope','Team rules apply to',[['both','Each team (stricter)'],['any','At least one team']])+
-   sel('xgSkip','If the feed sends no xG',[['wait','Wait for it (all five rules)'],['skip','Skip the xG rule (four rules)']])+
-   '<p class="pace">Skipping only happens when no xG is entered for either team, and the panel says so on screen. If you type or paste xG, the rule is checked as normal.</p>'+
+   (c.basis==='live'?'':sel('xgSkip','If the feed sends no xG',[['wait','Wait for it (all five rules)'],['skip','Skip the xG rule (four rules)']])+
+    '<p class="pace">Skipping only happens when no xG is entered for either team, and the panel says so on screen. If you type or paste xG, the rule is checked as normal.</p>')+
+    '<p class="pace">'+(pinOf(c)?'These are the rules for the market you hold.':'These are the rules for '+mkName(c.side,lineOf(c))+', the line the panel is using now. To edit another line, hold it with Market above.')+'</p>'+
    '<p class="pace">Rules are saved separately for each market.'+(c.side==='over'||lineOf(c)!==3.5?' The starting values for this market are my guesses, scaled from your Under 3.5 rules. Test them and set your own.':'')+'</p>'+
    '<button type="button" class="wide" data-a="rulereset">Reset '+mkName(c.side,lineOf(c))+' rules to the starting values</button>');
  $('f_size').onchange=e=>setSize(e.target.value);
  $('f_mkt').onchange=e=>{setMkt(e.target.value);update()};
+  $('f_pin').onchange=e=>setPin(e.target.value);
+  $('f_basis').onchange=e=>setBasis(e.target.value);
  $('f_theme').value=theme;$('f_theme').onchange=e=>setTheme(e.target.value);
  applyFold();
 }
 function read(){
  const o={...c},k=(v,a,b)=>Math.min(b,Math.max(a,v));
  NUM.forEach(n=>{const el=$('f_'+n);if(!el)return;const v=parseFloat(el.value);if(!isNaN(v))o[n]=v});
- ['scope','gate','xgSkip'].forEach(n=>{o[n]=$('f_'+n).value});
+ ['scope','gate','xgSkip'].forEach(n=>{const el=$('f_'+n);if(el)o[n]=el.value});
  o.xgSkip=o.xgSkip==='skip'?'skip':'wait';
  o.days=k(Math.round(o.days),1,14);o.perDay=k(Math.round(o.perDay),1,50);
  o.dayLoss=k(Math.round(o.dayLoss),0,50);o.cool=k(Math.round(o.cool),0,720);
@@ -2795,7 +2876,6 @@ function read(){
 $('r_in').addEventListener('input',()=>{rsArm=0});
 $('lvfilter').addEventListener('input',lvRender);
 $('lvauto').addEventListener('change',lvAutoSync);
-$('mkt').addEventListener('change',e=>setMarket(e.target.value));
 $('r_mk').addEventListener('change',()=>renderRec());
 document.addEventListener('click',e=>{
  const fb=e.target.closest('[data-f]');
@@ -2810,7 +2890,7 @@ document.addEventListener('click',e=>{
  const a=e.target.closest('[data-a]');if(!a)return;
  const k=a.dataset.a;
  if(k==='logbet')logBet();
- else if(k==='usemkt')setMarket(a.dataset.mk);
+ else if(k==='unpin')setPin('');
  else if(k==='won'||k==='lost'||k==='void')settle(a.dataset.id,k);
  else if(k==='next')nextMatch(true);
  else if(k==='covclear'){cov={};covSave();covRender();if(lvList.length&&!$('lvlist').hidden)lvRender();if(scItems.length&&!$('scres').hidden)scRender()}
@@ -2886,3 +2966,5 @@ setInterval(()=>{
 },2000);
 })();
 </script>
+</body>
+</html>
