@@ -29,6 +29,7 @@ img{max-width:100%}
  --xg1:#3987e5;--xg2:#d95926;
  --bg:#080c0f;--panel:#10151a;--card:#161c22;--line:#232b33;--tx:#edf1f3;--mut:#8693a0;
  --grn:#34d17f;--grnbg:#0e2a1c;--red:#ff5b60;--redbg:#2d1316;--amb:#f2b23d;--ambbg:#2a2110;--chip:#1b222a;
+ --a97:var(--amb);--ab97:var(--ambbg);--a97dim:var(--amb);
  --display:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;
  --body:"Barlow",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
  color-scheme:dark;
@@ -38,6 +39,9 @@ img{max-width:100%}
 }
 :root[data-theme="light"]{--xg1:#2a78d6;--xg2:#eb6834;--bg:#e5eaed;--panel:#ffffff;--card:#f0f3f5;--line:#d8dee3;--tx:#12181d;--mut:#5f6e7c;--grn:#0b8a4b;--grnbg:#dff4e8;--red:#cf2f35;--redbg:#fce7e8;--amb:#94600c;--ambbg:#fbf0d9;--chip:#e2e7eb;color-scheme:light}
 
+@supports (color:color-mix(in srgb,red 50%,transparent)){
+ :root{--a97:color-mix(in srgb,var(--amb) 97%,transparent);--ab97:color-mix(in srgb,var(--ambbg) 97%,transparent);--a97dim:color-mix(in srgb,var(--amb) 45%,transparent)}
+}
 *,*::before,*::after{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--tx);font:14px/1.4 var(--body);padding-block:20px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;justify-content:center}
 button{font:inherit;color:inherit;cursor:pointer}
@@ -259,36 +263,38 @@ section{padding:14px}
 #sig,#rsig{padding:10px 12px;border-radius:10px;font-size:12px;margin-bottom:10px;background:var(--card);border:1.5px solid var(--line);color:var(--mut)}
 #sig b,#rsig b{display:block;font:700 22px/1.1 var(--display);letter-spacing:.05em;margin-bottom:3px}
 #sig p,#rsig p{margin:3px 0 0;color:var(--tx);opacity:.9}
-#sig.go,#rsig.go{background:var(--grnbg);border-color:var(--grn);color:var(--grn)}
-#sig.am,#rsig.am{background:var(--ambbg);border-color:var(--amb);color:var(--amb)}
-#sig.ok,#rsig.ok{background:var(--card);border-color:var(--grn);color:var(--grn)}
+#rsig.go{background:var(--grnbg);border-color:var(--grn);color:var(--grn)}
+#rsig.am{background:var(--ambbg);border-color:var(--amb);color:var(--amb)}
+#rsig.ok{background:var(--card);border-color:var(--grn);color:var(--grn)}
 #rsig.bad{background:var(--redbg);border-color:var(--red);color:var(--red)}
-#sig.bad,#msig.bad{background:transparent;border-color:var(--red);color:var(--red)}
+/* Bet-tab signal boxes: one colour, amber at 97%. The state shows in the fill and the outline, and the heading says it in words.
+   BET = filled, on track = outline, wait = dashed outline, no bet = no fill and a faint outline. */
+#sig.go,#msig.go{background:var(--ab97);border-style:solid;border-color:var(--a97);color:var(--a97)}
+#sig.ok,#msig.ok{background:var(--card);border-style:solid;border-color:var(--a97);color:var(--a97)}
+#sig.am,#msig.am{background:transparent;border-style:dashed;border-color:var(--a97);color:var(--a97)}
+#sig.bad,#msig.bad{background:transparent;border-style:solid;border-color:var(--a97dim);color:var(--a97)}
 #msig{padding:10px 12px;border-radius:10px;font-size:12px;margin-bottom:10px;background:var(--card);border:1.5px solid var(--line);color:var(--mut)}
 #msig .msh small{display:block;margin-bottom:3px;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--mut)}
 #msig b{display:block;font:700 22px/1.1 var(--display);letter-spacing:.05em;margin-bottom:3px}
 #msig p{margin:3px 0 0;color:var(--tx);opacity:.9}
 #msig .msn{margin:8px 0 0;font-size:11px;color:var(--mut);opacity:1}
-#msig.go{background:var(--grnbg);border-color:var(--grn);color:var(--grn)}
-#msig.am{background:var(--ambbg);border-color:var(--amb);color:var(--amb)}
-#msig.ok{background:var(--card);border-color:var(--grn);color:var(--grn)}
 .msm{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 8px;margin:0 0 4px;font:700 16px/1.25 var(--body);color:var(--tx);overflow-wrap:anywhere}
 .msm em{font-style:normal;font-size:12px;font-weight:600;color:var(--mut);white-space:nowrap}
 .msw{margin:6px 0 4px;padding:7px 10px;border-radius:8px;background:var(--panel);border:1px solid var(--line);color:var(--tx)}
 .msw1{display:flex;flex-wrap:wrap;justify-content:space-between;gap:2px 10px;font:700 15px/1.25 var(--body);font-variant-numeric:tabular-nums}
 .msw2{margin-top:2px;font:700 13px/1.3 var(--body);font-variant-numeric:tabular-nums;color:var(--mut)}
-.msw2.am{color:var(--amb)}.msw2.pos{color:var(--grn)}.msw2.neg{color:var(--red)}
+.msw2.am,.msw2.pos,.msw2.neg{color:var(--a97)}
 .msw small{display:block;margin-top:3px;font-size:11px;font-weight:400;color:var(--mut)}
-.msu{display:block;width:100%;min-height:40px;margin:8px 0 0;padding:6px 10px;border-radius:8px;border:1.5px solid var(--grn);background:var(--grnbg);color:var(--grn);font:700 15px/1.2 var(--display);letter-spacing:.05em}
+.msu{display:block;width:100%;min-height:40px;margin:8px 0 0;padding:6px 10px;border-radius:8px;border:1.5px solid var(--a97);background:var(--ab97);color:var(--a97);font:700 15px/1.2 var(--display);letter-spacing:.05em}
 .msg{display:grid;grid-template-columns:40px repeat(5,minmax(0,1fr));gap:6px;align-items:center;margin-top:10px}
 .msl{font-size:11px;font-weight:700;color:var(--mut)}
 .msc{min-width:0;min-height:42px;padding:4px 0;border-radius:8px;border:1.5px solid var(--line);background:var(--panel);color:var(--mut);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
 .msc i{font:700 17px/1 var(--display);font-style:normal;letter-spacing:.02em;color:var(--tx)}
 .msc em{font:700 9px/1 var(--body);font-style:normal;letter-spacing:.06em}
-.msc.go{background:var(--grnbg);border-color:var(--grn);color:var(--grn)}
-.msc.ok{border-color:var(--grn);color:var(--grn)}
-.msc.am{background:var(--ambbg);border-color:var(--amb);color:var(--amb)}
-.msc.bad{color:var(--red)}
+.msc.go{background:var(--ab97);border-color:var(--a97);color:var(--a97)}
+.msc.ok{border-color:var(--a97);color:var(--a97)}
+.msc.am{background:transparent;border-style:dashed;border-color:var(--a97);color:var(--a97)}
+.msc.bad{color:var(--a97dim)}
 .msc.dn{opacity:.55}
 .msc.sel{box-shadow:0 0 0 2px var(--panel),0 0 0 4px var(--tx)}
 
@@ -1662,18 +1668,16 @@ function lvStat(v){
   :'Linked to '+esc(nm)+'. Shots on target and xG are filled'+(skipped?' (xG skipped by your setting)':'')+'.';
 }
 let msK='idle';
-const clkTm=t=>new Date(t).toLocaleTimeString(undefined,{hour:'numeric',minute:'2-digit'});
-// The exact window: minutes, time of day when the match clock is running, and a countdown that ticks every second.
+// The exact window: minutes, and with the match clock running a countdown that ticks every second. No clock time is shown.
 function msWhenHtml(){
  if(msK==='bad')return '';
  const W=whenInfo(clk,c,Date.now(),num($('i_min').value));
  let l1='<span>Minute '+W.from+' to '+W.to+'</span>';
- if(W.clock)l1+='<span>'+(W.est?'~':'')+esc(clkTm(W.opens))+' to '+esc(clkTm(W.closes))+'</span>';
  let l2='',k='';
  if(W.state==='wait'){k='am';l2=W.clock?'Opens in '+(W.est?'about ':'')+mmss(W.secs):'Opens in '+W.mins+' min'}
- else if(W.state==='in'){k='pos';l2=W.clock?'Open now · '+mmss(W.secs)+' left':'Open now · '+W.mins+' min left'}
- else if(W.state==='past'){k='neg';l2=W.clock?'Closed at '+clkTm(W.closes)+' by the match clock':'Closed at minute '+W.to}
- return '<div class="msw"><div class="msw1">'+l1+'</div>'+(l2?'<div class="msw2 '+k+'">'+esc(l2)+'</div>':'')+(W.clock||W.state==='past'?'':'<small>Start the match clock to see the time of day.</small>')+'</div>';
+ else if(W.state==='in'){k='pos';l2=W.clock?'Open now · '+(W.est?'about ':'')+mmss(W.secs)+' left':'Open now · '+W.mins+' min left'}
+ else if(W.state==='past'){k='neg';l2=W.clock?'Closed at minute '+W.to+' by the match clock':'Closed at minute '+W.to}
+ return '<div class="msw"><div class="msw1">'+l1+'</div>'+(l2?'<div class="msw2 '+k+'">'+esc(l2)+'</div>':'')+(W.clock||W.state==='past'?'':'<small>Start the match clock for a live countdown.</small>')+'</div>';
 }
 function msigWhen(){
  const el=$('mswhen');if(!el)return;
