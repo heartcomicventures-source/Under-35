@@ -454,8 +454,8 @@ body{touch-action:manipulation;-webkit-text-size-adjust:100%;-webkit-tap-highlig
    </div>
    <div class="mg">
     <div class="grp">Before kick-off</div>
-    <label>Home avg goals (last 5)<input id="i_avgH" inputmode="decimal" autocomplete="off" value="0.8"></label>
-    <label>Away avg goals (last 5)<input id="i_avgA" inputmode="decimal" autocomplete="off" value="1.0"></label>
+    <label>Home avg total goals (last 5)<input id="i_avgH" inputmode="decimal" autocomplete="off" value="2.2"></label>
+    <label>Away avg total goals (last 5)<input id="i_avgA" inputmode="decimal" autocomplete="off" value="2.4"></label>
     <div class="grp">Live now</div>
     <label class="mt">Minute<input id="i_min" inputmode="numeric" autocomplete="off" value="60"></label>
     <label>Home goals<input id="i_gh" inputmode="numeric" autocomplete="off" value="1"></label>
@@ -623,7 +623,7 @@ body{touch-action:manipulation;-webkit-text-size-adjust:100%;-webkit-tap-highlig
     <button type="button" class="wide" data-a="keyforget" id="keyforget">Remove key</button>
     <p class="pace" id="keymsg" role="status" hidden></p>
     <details class="covd" id="covd"><summary>Data coverage seen so far</summary><p class="pace">Learned in this browser from the matches you open, refresh or scan. A tag shows in the lists once a league has been seen in 2 matches. Matches only count when the statistics call worked.</p><div id="covrows"></div><button type="button" class="wide" data-a="covclear">Clear coverage history</button></details>
-    <p class="pace">Optional. With a key, Live matches on the Bet tab fills the minute, score, shots on target, xG and last-5 average goals for you. The key stays in this browser and is sent only to api-sports.io. It is never part of a copied record. Each refresh uses 2 requests. The Backtest tab uses the same key.</p>
+    <p class="pace">Optional. With a key, Live matches on the Bet tab fills the minute, score, shots on target, xG and last-5 average total goals (scored plus conceded) for you. The key stays in this browser and is sent only to api-sports.io. It is never part of a copied record. Each refresh uses 2 requests. The Backtest tab uses the same key.</p>
    </div>
   </div>
   <button class="wide pri" type="button" data-a="apply">Apply and start new session</button>
@@ -652,8 +652,8 @@ function judge(a,b,test,scope){
 // Rule values are kept per market. Under 3.5 is your own rule set; every other market starts from my guesses scaled from it.
 const LINES_U=[1.5,2.5,3.5,4.5],LINES_O=[0.5,1.5,2.5,3.5,4.5];
 const UF=['avgMax','goalsBelow','sotMax','xgMax'],OF=['ovAvg','ovGoals','ovSot','ovXg'];
-const UNDER_PRE={'1.5':{avgMax:.7,goalsBelow:2,sotMax:1,xgMax:.5},'2.5':{avgMax:.9,goalsBelow:2,sotMax:2,xgMax:.9},'3.5':{avgMax:1,goalsBelow:3,sotMax:3,xgMax:1.2},'4.5':{avgMax:1.2,goalsBelow:3,sotMax:4,xgMax:1.5}};
-const OVER_PRE={'0.5':{ovAvg:1.3,ovGoals:0,ovSot:5,ovXg:1.2},'1.5':{ovAvg:1.4,ovGoals:1,ovSot:6,ovXg:1.8},'2.5':{ovAvg:1.5,ovGoals:2,ovSot:7,ovXg:2.4},'3.5':{ovAvg:1.5,ovGoals:3,ovSot:8,ovXg:3},'4.5':{ovAvg:1.6,ovGoals:4,ovSot:9,ovXg:3.6}};
+const UNDER_PRE={'1.5':{avgMax:1.8,goalsBelow:2,sotMax:1,xgMax:.5},'2.5':{avgMax:2.2,goalsBelow:2,sotMax:2,xgMax:.9},'3.5':{avgMax:2.5,goalsBelow:3,sotMax:3,xgMax:1.2},'4.5':{avgMax:3,goalsBelow:3,sotMax:4,xgMax:1.5}};
+const OVER_PRE={'0.5':{ovAvg:2.4,ovGoals:0,ovSot:5,ovXg:1.2},'1.5':{ovAvg:2.6,ovGoals:1,ovSot:6,ovXg:1.8},'2.5':{ovAvg:2.8,ovGoals:2,ovSot:7,ovXg:2.4},'3.5':{ovAvg:3,ovGoals:3,ovSot:8,ovXg:3},'4.5':{ovAvg:3.2,ovGoals:4,ovSot:9,ovXg:3.6}};
 const lineOf=c=>c&&typeof c.line==='number'&&isFinite(c.line)?c.line:3.5;
 const mkKey=(side,line)=>(side==='over'?'o':'u')+line;
 const mkName=(side,line)=>(side==='over'?'Over ':'Under ')+line;
@@ -692,13 +692,13 @@ function evaluate(v,c){
  // Setting "If the feed sends no xG: skip the rule": applies only when no xG is entered for either team.
  const skipXg=c.xgSkip==='skip'&&v.xgh==null&&v.xga==null;
  const R=(over?[
-  {s:'Avg',lim:'≥ '+c.ovAvg,d:'Last 5 avg goals ≥ '+c.ovAvg+' ('+each+')',st:two('avgH','avgA',v.avgH,v.avgA,x=>x>=c.ovAvg),val:f(v.avgH)+' · '+f(v.avgA)},
+  {s:'Avg',lim:'≥ '+c.ovAvg,d:'Last 5 avg total goals ≥ '+c.ovAvg+' ('+each+')',st:two('avgH','avgA',v.avgH,v.avgA,x=>x>=c.ovAvg),val:f(v.avgH)+' · '+f(v.avgA)},
   timeR,
   {s:'Goals',lim:'≥ '+c.ovGoals,d:'Total goals so far ≥ '+c.ovGoals,st:sum('gh','ga',tot(v.gh,v.ga),x=>x>=c.ovGoals),val:tv(v.gh,v.ga)},
   {s:'SoT',lim:'≥ '+c.ovSot,d:'Total shots on target ≥ '+c.ovSot,st:sum('sotH','sotA',tot(v.sotH,v.sotA),x=>x>=c.ovSot),val:tv(v.sotH,v.sotA)},
   {s:'xG',lim:'≥ '+c.ovXg,d:'Total xG ≥ '+c.ovXg,st:sum('xgh','xga',tot(v.xgh,v.xga),x=>x>=c.ovXg),val:tv(v.xgh,v.xga)}
  ]:[
-  {s:'Avg',lim:'≤ '+c.avgMax,d:'Last 5 avg goals ≤ '+c.avgMax+' ('+each+')',st:two('avgH','avgA',v.avgH,v.avgA,x=>x<=c.avgMax),val:f(v.avgH)+' · '+f(v.avgA)},
+  {s:'Avg',lim:'≤ '+c.avgMax,d:'Last 5 avg total goals ≤ '+c.avgMax+' ('+each+')',st:two('avgH','avgA',v.avgH,v.avgA,x=>x<=c.avgMax),val:f(v.avgH)+' · '+f(v.avgA)},
   timeR,
   {s:'Goals',lim:'< '+c.goalsBelow,d:'Goals so far below '+c.goalsBelow+' ('+each+')',st:two('gh','ga',v.gh,v.ga,x=>x<c.goalsBelow),val:f(v.gh)+' – '+f(v.ga)},
   {s:'SoT',lim:'≤ '+c.sotMax,d:'Shots on target ≤ '+c.sotMax+' ('+each+')',st:two('sotH','sotA',v.sotH,v.sotA,x=>x<=c.sotMax),val:f(v.sotH)+' · '+f(v.sotA)},
@@ -905,7 +905,7 @@ function apiStats(j,homeId,awayId){
  });
  return out;
 }
-// /fixtures?team=&last=5: average goals scored by that team in its finished games (needs at least 3).
+// /fixtures?team=&last=5: average total goals (scored + conceded) in that team's finished games (needs at least 3).
 function apiAvg(j,teamId){
  const a=j&&Array.isArray(j.response)?j.response:[];
  let n=0,sum=0;
@@ -913,9 +913,10 @@ function apiAvg(j,teamId){
   const t=r&&r.teams,g=r&&r.goals,sh=r&&r.fixture&&r.fixture.status&&r.fixture.status.short;
   if(!t||!g||!t.home||!t.away)return;
   if(sh&&['FT','AET','PEN'].indexOf(sh)<0)return;
-  const x=t.home.id===teamId?nOrNull(g.home):t.away.id===teamId?nOrNull(g.away):null;
-  if(x==null)return;
-  n++;sum+=x;
+  if(t.home.id!==teamId&&t.away.id!==teamId)return;
+  const x=nOrNull(g.home),y=nOrNull(g.away);
+  if(x==null||y==null)return;
+  n++;sum+=x+y;
  });
  return n>=3?Math.round(sum/n*100)/100:null;
 }
@@ -1091,19 +1092,19 @@ function btList(j){
  });
  return out;
 }
-// One league season: goals each team scored, oldest first, so a team's last-5 average before any match can be worked out.
+// One league season: the total goals (both teams) in each team's games, oldest first, so a team's last-5 average before any match can be worked out.
 function btIndex(j){
  const idx={};
  (j&&Array.isArray(j.response)?j.response:[]).forEach(r=>{
   const m=btList({response:[r]})[0];
   if(!m)return;
-  (idx[m.home.id]=idx[m.home.id]||[]).push({t:m.ts,g:m.gh});
-  (idx[m.away.id]=idx[m.away.id]||[]).push({t:m.ts,g:m.ga});
+  (idx[m.home.id]=idx[m.home.id]||[]).push({t:m.ts,g:m.gh+m.ga});
+  (idx[m.away.id]=idx[m.away.id]||[]).push({t:m.ts,g:m.gh+m.ga});
  });
  Object.keys(idx).forEach(k=>idx[k].sort((a,b)=>a.t-b.t));
  return idx;
 }
-// Average goals scored in the team's last 5 league games before kickoff (needs at least 3).
+// Average total goals (scored + conceded) in the team's last 5 league games before kickoff (needs at least 3).
 function btAvg(idx,teamId,ts){
  const a=idx&&idx[teamId];
  if(!a)return null;
@@ -1271,7 +1272,7 @@ function fwNote(list,f,vals,c,at){
  const nm=((f.home&&f.home.name)||'Home')+' v '+((f.away&&f.away.name)||'Away'),g=k=>vals[k]==null?null:vals[k];
  const r={id:f.id,at:at,n:nm.slice(0,40),lg:String(f.league||'').slice(0,40),co:String(f.country||'').slice(0,30),
   m:vals.min,gh:vals.gh,ga:vals.ga,sh:g('sotH'),sa:g('sotA'),xh:g('xgh'),xa:g('xga'),
-  ah:vals.avgH!=null?vals.avgH:(old?old.ah:null),aa:vals.avgA!=null?vals.avgA:(old?old.aa:null),
+  d:2,ah:vals.avgH!=null?vals.avgH:(old?old.ah:null),aa:vals.avgA!=null?vals.avgA:(old?old.aa:null),
   p:ev.allPass?1:0,r:null,k:0,nx:at+(100-vals.min)*60000};
  if(old)list[i]=r;else list.push(r);
  if(list.length>FW_KEEP)list.sort((a,b)=>a.at-b.at).splice(0,list.length-FW_KEEP);
@@ -1477,13 +1478,13 @@ function momNearest(M,G,x){
 }
 //</logic>
 
-const D={days:2,perDay:6,dayLoss:1,cool:15,maxStreak:2,avgMax:1,minFrom:60,minTo:65,goalsBelow:3,sotMax:3,xgMax:1.2,side:'under',line:3.5,m:{},ovAvg:1.5,ovGoals:3,ovSot:8,ovXg:3,scope:'both',gate:'block',xgSkip:'wait'};
+const D={avgDef:2,days:2,perDay:6,dayLoss:1,cool:15,maxStreak:2,avgMax:2.5,minFrom:60,minTo:65,goalsBelow:3,sotMax:3,xgMax:1.2,side:'under',line:3.5,m:{},ovAvg:3,ovGoals:3,ovSot:8,ovXg:3,scope:'both',gate:'block',xgSkip:'wait'};
 // Settings that older versions saved for money and odds. They are dropped when a saved session loads.
 const GONE=['start','targetMult','minOdds','stop','stakePct','stakeCap','staking','carry','fmt','comm'];
 const FD={
  days:['Days in challenge',1],perDay:['Max bets per day',1],dayLoss:['Stop for day after losses (0 = off)',1],cool:['Cool-off after a loss (min)',1],maxStreak:['Max loss streak',1],
- avgMax:['Max avg goals (last 5)',.1],minFrom:['Entry minute from',1],minTo:['Entry minute to',1],goalsBelow:['Goals per team below',1],sotMax:['Max shots on target per team',1],xgMax:['Max xG per team',.1],
- ovAvg:['Min avg goals (last 5, each team)',.1],ovGoals:['Min total goals so far',1],ovSot:['Min total shots on target',1],ovXg:['Min total xG',.1]
+ avgMax:['Max avg total goals per game (last 5)',.1],minFrom:['Entry minute from',1],minTo:['Entry minute to',1],goalsBelow:['Goals per team below',1],sotMax:['Max shots on target per team',1],xgMax:['Max xG per team',.1],
+ ovAvg:['Min avg total goals per game (last 5, each team)',.1],ovGoals:['Min total goals so far',1],ovSot:['Min total shots on target',1],ovXg:['Min total xG',.1]
 };
 const NUM=Object.keys(FD);
 const KEY='u35_v2';
@@ -1502,7 +1503,20 @@ function applyFold(){
 function save(){try{localStorage.setItem(KEY,JSON.stringify({v:2,c:c,s:s,h:hist,n:ses}))}catch(e){}}
 // A saved session that still holds the old untouched defaults (nothing logged) is dropped so the new defaults apply.
 function OLDDEF(d){try{const k=d.c,x=d.s;return k.start===1000&&k.targetMult===2&&k.stakePct===5&&k.stop===150&&x.bal===1000&&!x.placed&&!x.n&&!(x.log&&x.log.length)&&!x.open.length&&!(d.h&&d.h.length)&&(d.n||1)===1}catch(e){return false}}
-function load(){try{const d=JSON.parse(localStorage.getItem(KEY)||'null');if(d&&d.v===2&&d.c&&d.s&&Array.isArray(d.s.open)&&!OLDDEF(d)){c={...D,...d.c};GONE.forEach(k=>{delete c[k]});s=d.s;if(!Array.isArray(s.sres))s.sres=[];hist=Array.isArray(d.h)?d.h:[];ses=d.n||1}}catch(e){}}
+// Saved before "avg goals" meant scored + conceded: the old limits were on a smaller scale, so each market's two avg limits are reset to the new starting values.
+function avgMigrate(c){
+ const pr=presetRules(c.side,lineOf(c));
+ if(typeof pr.avgMax==='number')c.avgMax=pr.avgMax;
+ if(typeof pr.ovAvg==='number')c.ovAvg=pr.ovAvg;
+ const m={};
+ Object.keys(c.m||{}).forEach(k=>{
+  const e=Object.assign({},c.m[k]),mm=/^([uo])([0-9]\.5)$/.exec(k);
+  if(mm){const q=presetRules(mm[1]==='o'?'over':'under',parseFloat(mm[2]));if(mm[1]==='u'&&typeof q.avgMax==='number')e.avgMax=q.avgMax;if(mm[1]==='o'&&typeof q.ovAvg==='number')e.ovAvg=q.ovAvg}
+  m[k]=e;
+ });
+ c.m=m;c.avgDef=2;
+}
+function load(){try{const d=JSON.parse(localStorage.getItem(KEY)||'null');if(d&&d.v===2&&d.c&&d.s&&Array.isArray(d.s.open)&&!OLDDEF(d)){const old=d.c.avgDef!==2;c={...D,...d.c};GONE.forEach(k=>{delete c[k]});if(old)avgMigrate(c);s=d.s;if(!Array.isArray(s.sres))s.sres=[];hist=Array.isArray(d.h)?d.h:[];ses=d.n||1}}catch(e){}}
 const HOST_THEME=document.documentElement.getAttribute('data-theme');
 let theme='auto';
 function effTheme(){if(theme!=='auto')return theme;if(HOST_THEME==='light'||HOST_THEME==='dark')return HOST_THEME;try{return matchMedia('(prefers-color-scheme: light)').matches?'light':'dark'}catch(e){return'dark'}}
@@ -2108,6 +2122,7 @@ function fwLoad(){
    r.r=ok?r.r:(r.r==='v'||r.r==='x'?r.r:null);
    if(typeof r.nx!=='number')r.nx=r.at+(100-r.m)*60000;
    if(typeof r.k!=='number')r.k=0;
+   if(r.d!==2){r.ah=null;r.aa=null;r.d=2}
    return r;
   });
  }catch(e){}
@@ -2477,7 +2492,7 @@ function btRender(sm,info){
  $('bt_gl').hidden=!sm.byGoals.length;
  $('btres').hidden=false;
  $('btnote').textContent='Tested '+nm+' on '+info.checked+' of '+info.found+' finished matches found over '+info.days+' days'+(info.q?' for "'+info.q+'"':'')+', at minute '+info.minute+'. '
-  +'Rules tested: average goals (last 5 league games before each match), the entry window and goals so far. Shots on target and xG could not be tested, because after-match data only has full-match totals and not the value at minute '+info.minute+'. '
+  +'Rules tested: average total goals, scored plus conceded (last 5 league games before each match), the entry window and goals so far. Shots on target and xG could not be tested, because after-match data only has full-match totals and not the value at minute '+info.minute+'. '
   +'Left out: '+sm.cnt.noavg+' with no average yet, '+sm.cnt.dead+' already decided at that minute'+(info.skipped?', '+info.skipped+' whose goal times did not add up to the final score':'')+'. '
   +'"Odds needed" is the price where that win rate breaks even, up to the cautious end of the range. Real prices move with the score, so read the table, not just the top. Used '+info.req+' requests.';
 }
