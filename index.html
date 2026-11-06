@@ -1,28 +1,8 @@
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Under 3.5 Panel</title>
-<meta name="description" content="Manual checklist, stake tracker and backtest for betting soccer goal lines (Under and Over) at any platform's odds, with optional live stats from your own API-Sports key.">
-<meta name="theme-color" content="#080c0f" media="(prefers-color-scheme: dark)">
-<meta name="theme-color" content="#e5eaed" media="(prefers-color-scheme: light)">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Under 3.5">
-<meta name="apple-mobile-web-app-status-bar-style" content="black">
-<link rel="icon" type="image/png" href="data:image/png;base64,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">
-<link rel="apple-touch-icon" href="data:image/png;base64,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">
+<meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600;700&display=swap">
-<style>
-/* Page reset (a published artifact gets this from its host; a standalone file needs its own) */
-:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-body{margin:0;font:14px system-ui}
-img{max-width:100%}
-[hidden]{display:none!important}
-</style>
 <style>
 :root{
  /* Layout: one 360px control panel in the style of the reference. Bets left on top, a numbered chip for every bet in the session, match inputs that turn green or red as they pass or fail, a big verdict box, six rule rows, session stats with a goal check, then open bets and actions. */
@@ -286,6 +266,9 @@ section{padding:14px}
 .msw2{margin-top:2px;font:700 13px/1.3 var(--body);font-variant-numeric:tabular-nums;color:var(--mut)}
 .msw2.am,.msw2.pos,.msw2.neg{color:var(--a97)}
 .msw small{display:block;margin-top:3px;font-size:11px;font-weight:400;color:var(--mut)}
+.msy{margin:6px 0 0;padding:0;list-style:none;font-size:12px;line-height:1.35;color:var(--tx)}
+.msy li{margin:3px 0}
+.msyn{font-weight:700;color:var(--a97)}
 .msu{display:block;width:100%;min-height:40px;margin:8px 0 0;padding:6px 10px;border-radius:8px;border:1.5px solid var(--a97);background:var(--ab97);color:var(--a97);font:700 15px/1.2 var(--display);letter-spacing:.05em}
 .msg{display:grid;grid-template-columns:40px repeat(5,minmax(0,1fr));gap:6px;align-items:center;margin-top:10px}
 .msl{font-size:11px;font-weight:700;color:var(--mut)}
@@ -432,8 +415,7 @@ body{touch-action:manipulation;-webkit-text-size-adjust:100%;-webkit-tap-highlig
  body .brand select{font-size:17px}
 }
 </style>
-</head>
-<body>
+
 <main class="panel">
  <header>
   <div class="brand" id="brand"><span class="logo" id="logo">U</span><select id="mkt" aria-label="Goal line market"><option value="u1.5">Under 1.5</option><option value="u2.5">Under 2.5</option><option value="u3.5">Under 3.5</option><option value="u4.5">Under 4.5</option><option value="o0.5">Over 0.5</option><option value="o1.5">Over 1.5</option><option value="o2.5">Over 2.5</option><option value="o3.5">Over 3.5</option><option value="o4.5">Over 4.5</option></select></div>
@@ -817,6 +799,9 @@ function signalAll(v,c){
  const win=v.min==null?'none':v.min<c.minFrom?'early':v.min<=c.minTo?'in':'closed';
  const names=l=>l.map(r=>r.name);
  const go=rows.filter(r=>r.k==='go'),ok=rows.filter(r=>r.k==='ok'),am=rows.filter(r=>r.k==='am');
+ // The nearest line on each side (fewest failing rules, then the looser line), so a refusal always says why.
+ const nearest=(side,pool)=>pool.filter(r=>r.side===side&&!r.dead).sort((a,b)=>a.fails-b.fails||(b.cur?1:0)-(a.cur?1:0)||(side==='under'?b.line-a.line:a.line-b.line))[0];
+ const whyOf=(sides,pool)=>sides.map(sd=>nearest(sd,pool)).filter(Boolean).map(r=>({key:r.key,name:r.name,text:r.text}));
  let out;
  if(go.length||ok.length){
   const isGo=go.length>0,list=isGo?go:ok;
@@ -840,7 +825,7 @@ function signalAll(v,c){
   }
  }else if(am.length){
   const s=am.slice().sort((a,b)=>b.passed-a.passed||(b.cur?1:0)-(a.cur?1:0)||a.line-b.line)[0];
-  out={k:'am',head:'WAIT',pick:null,text:'Closest fit is '+s.name+'. '+s.text};
+  out={k:'am',head:'WAIT',pick:null,text:'Closest fit is '+s.name+'. '+s.text,why:whyOf(['under','over'].filter(sd=>!am.some(r=>r.side===sd)),rows.filter(r=>r.k==='bad'))};
  }else if(rows.every(r=>r.k==='idle')){
   out={k:'idle',head:'WAITING FOR MATCH NUMBERS',pick:null,text:'Pick a live match or paste a stats line. All nine lines update as the numbers come in.'};
  }else if(win==='closed'){
@@ -850,8 +835,7 @@ function signalAll(v,c){
  }else if(rows.every(r=>r.dead)){
   out={k:'bad',head:'NO BET',pick:null,text:rows[0].total+' goals are in: every Under has lost and every Over has already won.'};
  }else{
-  const s=rows.filter(r=>!r.dead).sort((a,b)=>a.fails-b.fails||(b.cur?1:0)-(a.cur?1:0)||a.line-b.line)[0];
-  out={k:'bad',head:'NO BET',pick:null,text:'No goal line fits these numbers. Closest is '+s.name+': '+s.text};
+  out={k:'bad',head:'NO BET',pick:null,text:'No goal line fits these numbers. Nearest on each side:',why:whyOf(['under','over'],rows)};
  }
  out.rows=rows;out.win=win;out.live=live;out.curKey=curKey;
  return out;
@@ -1692,7 +1676,7 @@ const SIGWORD={bet:'bet now',soon:'on track',lean:'leans this way',wait:'wait',n
 // The card above the verdict: which of the nine goal lines fits, and when to bet it. The pick can be switched to in one tap.
 function msigRender(v){
  const el=$('msig'),S=signalAll(v,c),cur=S.rows.find(r=>r.cur);
- let head=S.head,text=S.text,cls=S.k==='idle'?'':S.k,use=null;
+ let head=S.head,text=S.text,cls=S.k==='idle'?'':S.k,use=null
  if(S.pick){
   const P=S.rows.find(r=>r.key===S.pick);
   const why=S.k==='go'?gate(v,P.ev):'';
@@ -1704,7 +1688,7 @@ function msigRender(v){
  const ctx=[v.min!=null?v.min+"'":null,(v.gh!=null&&v.ga!=null)?v.gh+'–'+v.ga:null].filter(Boolean).join(' · ');
  const mline=v.name||ctx?'<div class="msm">'+(v.name?'<span>'+esc(v.name)+'</span>':'')+(ctx?'<em>'+esc(ctx)+'</em>':'')+'</div>':'';
  msK=S.k;
- const h='<div class="msh" aria-live="polite"><small>Which market, and when</small>'+mline+'<b>'+esc(head)+'</b></div><div id="mswhen"></div><div class="msh" aria-live="polite"><p>'+esc(text)+'</p></div>'
+ const h='<div class="msh" aria-live="polite"><small>Which market, and when</small>'+mline+'<b>'+esc(head)+'</b></div><div id="mswhen"></div><div class="msh" aria-live="polite"><p>'+esc(text)+'</p>'+(S.why&&S.why.length?'<ul class="msy">'+S.why.map(w=>'<li><span class="msyn">'+esc(w.name)+'</span> '+esc(w.text)+'</li>').join('')+'</ul>':'')+'</div>'
   +(use?'<button type="button" class="msu" data-a="usemkt" data-mk="'+use.key+'">Switch to '+esc(use.name)+(cur?' (now '+esc(cur.name)+')':'')+'</button>':'')
   +'<div class="msg">'+row('under','Under')+row('over','Over')+'</div>'
   +'<p class="msn">Each line uses its own limits from Settings. Tap a line to switch to it.</p>';
@@ -2846,5 +2830,3 @@ setInterval(()=>{
 },2000);
 })();
 </script>
-</body>
-</html>
