@@ -250,11 +250,15 @@ section{padding:14px}
 #rsig.bad{background:var(--redbg);border-color:var(--red);color:var(--red)}
 /* Bet-tab signal boxes: one colour, amber at 97%. The state shows in the fill and the outline, and the heading says it in words.
    BET = filled, on track = outline, wait = dashed outline, no bet = no fill and a faint outline. */
-#sig.go,#msig.go{background:var(--ab97);border-style:solid;border-color:var(--a97);color:var(--a97)}
-#sig.ok,#msig.ok{background:var(--card);border-style:solid;border-color:var(--a97);color:var(--a97)}
-#sig.am,#msig.am{background:transparent;border-style:dashed;border-color:var(--a97);color:var(--a97)}
-#sig.bad,#msig.bad{background:transparent;border-style:solid;border-color:var(--a97dim);color:var(--a97)}
-#msig{padding:10px 12px;border-radius:10px;font-size:12px;margin-bottom:10px;background:var(--card);border:1.5px solid var(--line);color:var(--mut)}
+#sig.go{background:var(--ab97);border-style:solid;border-color:var(--a97);color:var(--a97)}
+#sig.ok{background:var(--card);border-style:solid;border-color:var(--a97);color:var(--a97)}
+#sig.am{background:transparent;border-style:dashed;border-color:var(--a97);color:var(--a97)}
+#sig.bad{background:transparent;border-style:solid;border-color:var(--a97dim);color:var(--a97)}
+/* The market card keeps the same plain border as the other cards; only the fill and the heading colour show the state. */
+#msig.go{background:var(--ab97);color:var(--a97)}
+#msig.ok,#msig.am,#msig.bad{color:var(--a97)}
+#msig.am,#msig.bad{background:transparent}
+#msig{padding:10px 12px;border-radius:10px;font-size:12px;margin-bottom:10px;background:var(--card);border:1px solid var(--line);color:var(--mut)}
 #msig .msh small{display:block;margin-bottom:3px;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--mut)}
 #msig b{display:block;font:700 22px/1.1 var(--display);letter-spacing:.05em;margin-bottom:3px}
 #msig p{margin:3px 0 0;color:var(--tx);opacity:.9}
@@ -270,11 +274,10 @@ section{padding:14px}
 .msy li{margin:3px 0}
 .msyn{font-weight:700;color:var(--a97)}
 .msu{display:block;width:100%;min-height:40px;margin:8px 0 0;padding:6px 10px;border-radius:8px;border:1.5px solid var(--a97);background:var(--ab97);color:var(--a97);font:700 15px/1.2 var(--display);letter-spacing:.05em}
-.msg{display:grid;grid-template-columns:40px repeat(5,minmax(0,1fr));gap:6px;align-items:center;margin-top:10px}
-.msl{font-size:11px;font-weight:700;color:var(--mut)}
-.msc{min-width:0;min-height:42px;padding:4px 0;border-radius:8px;border:1.5px solid var(--line);background:var(--panel);color:var(--mut);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
-.msc i{font:700 17px/1 var(--display);font-style:normal;letter-spacing:.02em;color:var(--tx)}
-.msc em{font:700 9px/1 var(--body);font-style:normal;letter-spacing:.06em}
+.msg{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:10px}
+.msc{min-width:0;min-height:54px;padding:6px 0;border-radius:8px;border:1.5px solid var(--line);background:var(--panel);color:var(--mut);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
+.msc i{font:700 20px/1 var(--display);font-style:normal;letter-spacing:.04em;color:var(--tx)}
+.msc em{font:700 11px/1 var(--body);font-style:normal;letter-spacing:.06em}
 .msc.go{background:var(--ab97);border-color:var(--a97);color:var(--a97)}
 .msc.ok{border-color:var(--a97);color:var(--a97)}
 .msc.am{background:transparent;border-style:dashed;border-color:var(--a97);color:var(--a97)}
@@ -837,7 +840,11 @@ function signalAll(v,c){
  }else{
   out={k:'bad',head:'NO BET',pick:null,text:'No goal line fits these numbers. Nearest on each side:',why:whyOf(['under','over'],rows)};
  }
- out.rows=rows;out.win=win;out.live=live;out.curKey=curKey;
+ // One row per side for the two buttons: the line that best represents that side right now.
+const RANK={bet:0,soon:1,lean:2,wait:3,no:4,idle:5,won:6,lost:6};
+const sideRow=side=>rows.filter(r=>r.side===side).sort((a,b)=>RANK[a.st]-RANK[b.st]||(a.st==='no'?(a.fails-b.fails||(b.cur?1:0)-(a.cur?1:0)||(side==='under'?b.line-a.line:a.line-b.line)):a.st==='wait'?(b.passed-a.passed||(b.cur?1:0)-(a.cur?1:0)||a.line-b.line):(side==='under'?((a.risky?1:0)-(b.risky?1:0)||a.line-b.line):a.line-b.line)))[0];
+out.sides={under:sideRow('under'),over:sideRow('over')};
+out.rows=rows;out.win=win;out.live=live;out.curKey=curKey;
  return out;
 }
 // When to bet, in match minutes and (with the match clock running) in time of day. Without the clock it works from the minute you typed.
@@ -1681,17 +1688,19 @@ function msigRender(v){
   const P=S.rows.find(r=>r.key===S.pick);
   const why=S.k==='go'?gate(v,P.ev):'';
   if(why){head='RULES PASS, DO NOT BET';cls='am';text=P.name+' fits the rules, but: '+why}
-  else if(!P.cur)use=P;
+  else{
+   if(S.k==='go')head='BET '+P.side.toUpperCase();
+   if(!P.cur)use=P;
+  }
  }
- const chip=r=>'<button type="button" class="msc '+SIGCLS[r.st]+(r.cur?' sel':'')+'" data-a="usemkt" data-mk="'+r.key+'" aria-label="'+esc(r.name+': '+SIGWORD[r.st])+'"'+(r.cur?' aria-current="true"':'')+'><i>'+r.line+'</i><em>'+r.lbl+'</em></button>';
- const row=(side,label)=>'<span class="msl">'+label+'</span>'+S.rows.filter(r=>r.side===side).map(chip).join('')+(side==='under'?'<span></span>':'');
+ const chip=(side,label)=>{const r=S.sides[side],on=c.side===side;return '<button type="button" class="msc '+SIGCLS[r.st]+(on?' sel':'')+'" data-a="usemkt" data-mk="'+r.key+'" aria-label="'+esc(label+': '+SIGWORD[r.st]+(r.st==='bet'||r.st==='soon'||r.st==='lean'||r.st==='wait'?' ('+r.name+')':''))+'"'+(on?' aria-current="true"':'')+'><i>'+label+'</i><em>'+r.lbl+'</em></button>'};
  const ctx=[v.min!=null?v.min+"'":null,(v.gh!=null&&v.ga!=null)?v.gh+'–'+v.ga:null].filter(Boolean).join(' · ');
  const mline=v.name||ctx?'<div class="msm">'+(v.name?'<span>'+esc(v.name)+'</span>':'')+(ctx?'<em>'+esc(ctx)+'</em>':'')+'</div>':'';
  msK=S.k;
  const h='<div class="msh" aria-live="polite"><small>Which market, and when</small>'+mline+'<b>'+esc(head)+'</b></div><div id="mswhen"></div><div class="msh" aria-live="polite"><p>'+esc(text)+'</p>'+(S.why&&S.why.length?'<ul class="msy">'+S.why.map(w=>'<li><span class="msyn">'+esc(w.name)+'</span> '+esc(w.text)+'</li>').join('')+'</ul>':'')+'</div>'
   +(use?'<button type="button" class="msu" data-a="usemkt" data-mk="'+use.key+'">Switch to '+esc(use.name)+(cur?' (now '+esc(cur.name)+')':'')+'</button>':'')
-  +'<div class="msg">'+row('under','Under')+row('over','Over')+'</div>'
-  +'<p class="msn">Each line uses its own limits from Settings. Tap a line to switch to it.</p>';
+  +'<div class="msg">'+chip('under','Under')+chip('over','Over')+'</div>'
+  +'<p class="msn">Tap Under or Over to switch to its best-fitting line. Each line uses its own limits from Settings.</p>';
  el.hidden=false;el.className=cls;
  if(el.dataset.h!==h){el.dataset.h=h;el.innerHTML=h}
  msigWhen();
