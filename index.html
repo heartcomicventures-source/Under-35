@@ -34,9 +34,9 @@ img{max-width:100%}
  --t-score:700 28px/34px var(--body);   /* Title 1: live scores */
  --t-h1:700 22px/28px var(--body);      /* Title 2 bold: wordmark, verdict headlines */
  --t-prob:700 22px/28px var(--body);    /* Title 2 bold: figures */
- --t-h2:600 20px/25px var(--body);      /* Title 3 semibold: section headings */
+ --t-h2:600 17px/22px var(--body);      /* Headline: section headings */
  --t-team:600 17px/22px var(--body);    /* Headline: team and match names */
- --t-btn:600 17px/22px var(--body);     /* Headline: buttons */
+ --t-btn:600 15px/20px var(--body);     /* Subhead semibold: buttons */
  --t-body:400 13px/18px var(--body);    /* Normal text: 13, the size of the fill note */
  --t-field:400 16px/22px var(--body);   /* Callout: input fields (16 keeps iPhone from zooming in on focus) */
  --t-btn-s:600 15px/20px var(--body);   /* Subhead semibold: small buttons, tabs, filters */
@@ -46,9 +46,9 @@ img{max-width:100%}
  color-scheme:dark;
 }
 @media (prefers-color-scheme: light){
- :root:not([data-theme="dark"]){--xg1:#5fbdd4;--xg2:#f3a944;--xg3:var(--tx);--bg:#e5eaed;--panel:#ffffff;--card:#f0f3f5;--line:#d8dee3;--tx:#12181d;--mut:#5f6e7c;--grn:#0b8a4b;--grnbg:#dff4e8;--red:#cf2f35;--redbg:#fce7e8;--amb:#0057ff;--ambbg:#e6efff;--chip:#e2e7eb;color-scheme:light}
+ :root:not([data-theme="dark"]){--xg1:#5fbdd4;--xg2:#f3a944;--xg3:var(--tx);--bg:#e5eaed;--panel:#ffffff;--card:#f0f3f5;--line:#d8dee3;--tx:#12181d;--mut:#586775;--grn:#087240;--grnbg:#dff4e8;--red:#bd262c;--redbg:#fce7e8;--amb:#0057ff;--ambbg:#e6efff;--chip:#e2e7eb;color-scheme:light}
 }
-:root[data-theme="light"]{--xg1:#5fbdd4;--xg2:#f3a944;--xg3:var(--tx);--bg:#e5eaed;--panel:#ffffff;--card:#f0f3f5;--line:#d8dee3;--tx:#12181d;--mut:#5f6e7c;--grn:#0b8a4b;--grnbg:#dff4e8;--red:#cf2f35;--redbg:#fce7e8;--amb:#0057ff;--ambbg:#e6efff;--chip:#e2e7eb;color-scheme:light}
+:root[data-theme="light"]{--xg1:#5fbdd4;--xg2:#f3a944;--xg3:var(--tx);--bg:#e5eaed;--panel:#ffffff;--card:#f0f3f5;--line:#d8dee3;--tx:#12181d;--mut:#586775;--grn:#087240;--grnbg:#dff4e8;--red:#bd262c;--redbg:#fce7e8;--amb:#0057ff;--ambbg:#e6efff;--chip:#e2e7eb;color-scheme:light}
 
 @supports (color:color-mix(in srgb,red 50%,transparent)){
  :root{--a97:color-mix(in srgb,var(--amb) 97%,transparent);--ab97:color-mix(in srgb,var(--ambbg) 97%,transparent);--a97dim:color-mix(in srgb,var(--amb) 45%,transparent)}
@@ -371,6 +371,7 @@ section{padding:14px}
 .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .two label{min-width:0}
 footer{font:var(--t-label);padding:10px 14px 12px;color:var(--mut);text-align:center;border-top:1px solid var(--line)}
+.bld{display:block;margin-top:6px;font-variant-numeric:tabular-nums}
 
 /* Folds: headers show in compact, and as plain headings in Settings */
 .fold{margin:0}
@@ -433,27 +434,34 @@ body{touch-action:manipulation;-webkit-text-size-adjust:100%;-webkit-tap-highlig
  body .lvauto input{width:24px;height:24px}
  body .keyl input,body .keyl select{min-height:44px}
  body .lvr{padding:12px 10px}
- body .lvbtn{height:38px}
- body #pause,body #theme{width:42px;height:38px}
+ body .lvbtn{height:44px}
+ body #pause,body #theme{width:44px;height:44px}
  body .ckbtns button{padding:12px 10px}
  body .ckrow{gap:10px 16px}
  body .ckrow input[type=checkbox]{width:24px;height:24px}
  body .pu{padding:9px 16px}
  body .lk a{padding:9px 16px}
- body .pgo{height:38px}
- body .paste textarea{height:38px}
+ body .pgo{height:44px}
+ body .paste textarea{height:44px}
  body .paste textarea:focus{height:96px}
  body #form select,body #form input{min-height:44px}
+ /* 44 pt minimum for everything you tap (Apple's guideline) */
+ body .lvbtn,body .pgo,body .pu,body .mini,body .msu,body .momseg button,body .ckbtns button,body .wide,body .buy,body .sell,body .neu,body .tabs button{min-height:44px}
+ body .ckrow label,body .lvauto{min-height:44px}
+ body .ckrow input[type=time],body .mg input,body .mg select,body #lvfilter,body .rmk select,body .keyl select,body .keyl input{min-height:44px}
+ body .covd summary,body .xgtab summary{padding:13px 0}
 }
 @media (max-width:399px){
- header{gap:6px;padding-left:12px;padding-right:12px}
- .badge{font:var(--t-pill);padding:5px 7px}
- body #pause,body #theme{width:36px}
+ header{gap:4px;padding-left:12px;padding-right:12px}
+ .badge{font:var(--t-pill);padding:4px 6px;letter-spacing:.02em}
+ .wm{font-size:clamp(18px,5.4vw,22px)}
+ body #pause,body #theme{width:44px}
 }
 @media (max-width:359px){
- header{padding-left:10px;padding-right:10px}
+ header{padding-left:8px;padding-right:8px;gap:4px}
  .brand{gap:0}
- .wm{font-size:18px;letter-spacing:.01em}
+ .wm{font-size:16px;letter-spacing:0}
+ .badge{padding:4px 4px}
 }
 </style>
 </head>
@@ -519,8 +527,8 @@ body{touch-action:manipulation;-webkit-text-size-adjust:100%;-webkit-tap-highlig
    </div>
    <div class="mg">
     <div class="grp">Before kick-off</div>
-    <label>Home avg total goals (last 5)<input id="i_avgH" inputmode="decimal" autocomplete="off" value="2.2"></label>
-    <label>Away avg total goals (last 5)<input id="i_avgA" inputmode="decimal" autocomplete="off" value="2.4"></label>
+    <label>Home avg total goals <br>(last 5)<input id="i_avgH" inputmode="decimal" autocomplete="off" value="2.2"></label>
+    <label>Away avg total goals <br>(last 5)<input id="i_avgA" inputmode="decimal" autocomplete="off" value="2.4"></label>
     <div class="grp lnx">Live now</div>
     <label class="lnx">Minute<input tabindex="-1" id="i_min" inputmode="numeric" autocomplete="off" value="60"></label>
     <label class="lnx">Home goals<input tabindex="-1" id="i_gh" inputmode="numeric" autocomplete="off" value="1"></label>
@@ -694,7 +702,7 @@ body{touch-action:manipulation;-webkit-text-size-adjust:100%;-webkit-tap-highlig
   </div>
   <button class="wide pri" type="button" data-a="apply">Apply and start new session</button>
  </section>
- <footer>Numbers come from a pasted stats line, or are pulled from your own API-Sports key if you add one. Not connected to a bookmaker. No bet is guaranteed.</footer>
+ <footer>Numbers come from a pasted stats line, or are pulled from your own API-Sports key if you add one. Not connected to a bookmaker. No bet is guaranteed.<span class="bld" id="buildno">Build 54 · 6 Nov 2026</span></footer>
 </main>
 
 <script>
