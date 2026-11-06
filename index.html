@@ -51,14 +51,9 @@ input:focus-visible,select:focus-visible,button:focus-visible{outline:2px solid 
 .panel{width:100%;max-width:360px;min-width:0;background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden;align-self:flex-start}
 header{display:flex;align-items:center;gap:8px;padding:12px 14px}
 .brand{flex:1;min-width:0;display:flex;align-items:center;gap:8px;font:700 20px/1 var(--display);letter-spacing:.03em}
-.brand select{flex:0 1 auto;min-width:0;max-width:100%;-webkit-appearance:none;appearance:none;background-color:transparent;border:1px solid var(--line);border-radius:8px;color:var(--tx);font:700 20px/1 var(--display);letter-spacing:.03em;padding:5px 24px 5px 8px;background-image:linear-gradient(45deg,transparent 50%,var(--mut) 50%),linear-gradient(135deg,var(--mut) 50%,transparent 50%);background-position:calc(100% - 13px) 52%,calc(100% - 8px) 52%;background-size:5px 5px,5px 5px;background-repeat:no-repeat}
-.brand select option{color:var(--tx);background:var(--panel)}
-.brand.ov .logo{background:var(--amb)}
-.logo{flex:none}
-.brand select{text-overflow:ellipsis;min-width:6.7em}
+.wm{flex:none;color:var(--grn);font:800 20px/1 var(--display);letter-spacing:.08em;white-space:nowrap}
 .rmk{display:block;margin:0 0 10px;font-size:11px;color:var(--mut)}
 .rmk select{display:block;width:100%;margin-top:3px;padding:8px 10px;background:var(--card);color:var(--tx);border:1px solid var(--line);border-radius:8px;font:600 14px var(--body)}
-.logo{width:22px;height:22px;border-radius:6px;background:var(--grn);color:var(--panel);display:grid;place-items:center;font:700 15px/1 var(--display)}
 .badge{font:700 11px/1 var(--body);letter-spacing:.05em;padding:5px 10px;border-radius:6px;border:1px solid var(--line);color:var(--mut);background:transparent;white-space:nowrap}
 .badge.go{color:var(--grn);border-color:var(--grn);background:var(--grnbg)}
 .badge.warn{color:var(--amb);border-color:var(--amb);background:var(--ambbg)}
@@ -424,7 +419,6 @@ body{touch-action:manipulation;-webkit-text-size-adjust:100%;-webkit-tap-highlig
  body .keyl input,body .keyl select{min-height:44px}
  body .lvr{padding:12px 10px}
  body .lvbtn{height:38px}
- body .brand select{font-size:20px}
  body #pause,body #theme{width:42px;height:38px}
  body .ckbtns button{padding:12px 10px;font-size:13px}
  body .ckrow{gap:10px 16px;font-size:12px}
@@ -441,21 +435,19 @@ body{touch-action:manipulation;-webkit-text-size-adjust:100%;-webkit-tap-highlig
 @media (max-width:399px){
  header{gap:6px;padding-left:12px;padding-right:12px}
  .badge{padding:5px 7px;font-size:10px}
- body .brand select{font-size:18px;padding:5px 20px 5px 8px}
  body #pause,body #theme{width:36px}
 }
 @media (max-width:359px){
  header{padding-left:10px;padding-right:10px}
  .brand{gap:0}
- .brand .logo{display:none}
- body .brand select{font-size:17px}
+ .wm{font-size:17px;letter-spacing:.05em}
 }
 </style>
 </head>
 <body>
 <main class="panel">
  <header>
-  <div class="brand" id="brand"><span class="logo" id="logo">U</span></div>
+  <div class="brand" id="brand"><span class="wm" id="wm">SPORTHUB</span></div>
   <span id="badge" class="badge">WAIT</span>
   <button id="theme" type="button" aria-label="Switch between light and dark"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" style="display:block;margin:auto"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M8 2a6 6 0 0 1 0 12z" fill="currentColor"/></svg></button>
   <button id="pause" type="button" aria-label="Pause or resume betting">❚❚</button>
@@ -1940,16 +1932,12 @@ function renderRec(){
  $('r_note').textContent=has||!book.length?'Every settled bet is saved here and kept when you start a new session. Void bets do not count.':'No settled bets for this market yet. Change "Show results for" to see the others.';
  const bt=$('r_reset');bt.textContent=rrArm?'Tap again to erase the whole record':'Reset record (all markets)';bt.disabled=!book.length;$('r_copy').disabled=!book.length;
 }
-function applyMarket(){
- const ov=c.side==='over';
-  $('logo').textContent=ov?'O':'U';$('brand').classList.toggle('ov',ov);
-}
 // Settings > Market: '' lets the panel decide, a line like 'o2.5' holds it.
 function setPin(val){
  const m=/^([uo])([0-9]\.5)$/.exec(val||''),side=m?(m[1]==='o'?'over':'under'):null,line=m?parseFloat(m[2]):null;
  c=Object.assign({},c,{pin:m&&mkValid(side,line)?val:''});
  if(c.pin&&(side!==c.side||line!==lineOf(c)))c=switchMarket(c,side,line);
- save();applyMarket();
+ save();
  if(!$('v-set').hidden)buildForm();
  if(!$('v-rec').hidden)renderRec();
  if(!$('v-bt').hidden)btOpen();
@@ -1967,7 +1955,7 @@ function autoMarket(v){
  if($('v-bet').hidden)return false;
  const t=pickMarket(v,c);
  if(!t||(t.side===c.side&&t.line===lineOf(c)))return false;
- c=switchMarket(c,t.side,t.line);save();applyMarket();
+ c=switchMarket(c,t.side,t.line);save();
  return true;
 }
 let rsT=0,rsArm=0;
@@ -2923,7 +2911,7 @@ document.addEventListener('click',e=>{
  else if(k==='log'){showLog=!showLog;renderLog()}
  else if(k==='end'){if(!s.open.length){s.ended=true;showLog=true;save();update()}}
  else if(k==='new')newSession();
- else if(k==='apply'){c=read();ses=1;hist=[];fresh();recheck();save();applyMarket();clkArm();clockTick();document.querySelector('[data-t="bet"]').click()}
+ else if(k==='apply'){c=read();ses=1;hist=[];fresh();recheck();save();clkArm();clockTick();document.querySelector('[data-t="bet"]').click()}
 });
 document.addEventListener('input',e=>{
  if(e.target.id&&e.target.id.indexOf('i_')===0){
@@ -2943,7 +2931,7 @@ load();
 if(!s)fresh();
 keyLoad();
 bookLoad();
-applyMarket();
+
 recheck();
 update();
 snapLoad();renderSnaps();clkLoad();clkArm();clockTick();covLoad();covRender();fwLoad();fwRender();
