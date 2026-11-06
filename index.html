@@ -263,6 +263,27 @@ section{padding:14px}
 #sig.am,#rsig.am{background:var(--ambbg);border-color:var(--amb);color:var(--amb)}
 #sig.ok,#rsig.ok{background:var(--card);border-color:var(--grn);color:var(--grn)}
 #sig.bad,#rsig.bad{background:var(--redbg);border-color:var(--red);color:var(--red)}
+#msig{padding:10px 12px;border-radius:10px;font-size:12px;margin-bottom:10px;background:var(--card);border:1.5px solid var(--line);color:var(--mut)}
+#msig .msh small{display:block;margin-bottom:3px;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--mut)}
+#msig b{display:block;font:700 22px/1.1 var(--display);letter-spacing:.05em;margin-bottom:3px}
+#msig p{margin:3px 0 0;color:var(--tx);opacity:.9}
+#msig .msn{margin:8px 0 0;font-size:11px;color:var(--mut);opacity:1}
+#msig.go{background:var(--grnbg);border-color:var(--grn);color:var(--grn)}
+#msig.am{background:var(--ambbg);border-color:var(--amb);color:var(--amb)}
+#msig.ok{background:var(--card);border-color:var(--grn);color:var(--grn)}
+#msig.bad{background:var(--redbg);border-color:var(--red);color:var(--red)}
+.msu{display:block;width:100%;min-height:40px;margin:8px 0 0;padding:6px 10px;border-radius:8px;border:1.5px solid var(--grn);background:var(--grnbg);color:var(--grn);font:700 15px/1.2 var(--display);letter-spacing:.05em}
+.msg{display:grid;grid-template-columns:40px repeat(5,minmax(0,1fr));gap:6px;align-items:center;margin-top:10px}
+.msl{font-size:11px;font-weight:700;color:var(--mut)}
+.msc{min-width:0;min-height:42px;padding:4px 0;border-radius:8px;border:1.5px solid var(--line);background:var(--panel);color:var(--mut);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
+.msc i{font:700 17px/1 var(--display);font-style:normal;letter-spacing:.02em;color:var(--tx)}
+.msc em{font:700 9px/1 var(--body);font-style:normal;letter-spacing:.06em}
+.msc.go{background:var(--grnbg);border-color:var(--grn);color:var(--grn)}
+.msc.ok{border-color:var(--grn);color:var(--grn)}
+.msc.am{background:var(--ambbg);border-color:var(--amb);color:var(--amb)}
+.msc.bad{color:var(--red)}
+.msc.dn{opacity:.55}
+.msc.sel{box-shadow:0 0 0 2px var(--panel),0 0 0 4px var(--tx)}
 
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-bottom:10px}
 .grid div{background:var(--card);padding:9px 12px;min-width:0}
@@ -353,7 +374,7 @@ body.compact{padding-block:10px}
 .compact .rules{margin-bottom:0}
 .compact .grid{margin-bottom:8px}
 .compact .pace{margin-bottom:0}
-.compact #sig{margin-bottom:8px}
+.compact #sig,.compact #msig{margin-bottom:8px}
 .compact #banner{margin-bottom:8px}
 .compact .acts{margin-bottom:8px}
 .compact .btns{display:grid;grid-template-columns:1fr 1fr;gap:8px}
@@ -482,6 +503,7 @@ body{touch-action:manipulation;-webkit-text-size-adjust:100%;-webkit-tap-highlig
    <button type="button" class="fhd" data-f="rules" aria-expanded="true"><span class="ft">Rules</span><span class="fs" id="fs-rules"></span><i class="chev"></i></button>
    <div class="fb"><div class="rules" id="rules"></div></div>
   </div>
+  <div id="msig" hidden></div>
   <div id="sig" aria-live="polite"></div>
   <p class="snage" id="snage" hidden></p>
 
@@ -762,6 +784,63 @@ function verdict(ev,v,c){
  const em=ev.R.filter(r=>r.st==='e');
  if(em.length)return{k:'am',head:'WAITING FOR NUMBERS',text:'Missing: '+em.map(r=>r.s).join(', ')+'. '+ev.passed+' of '+n+' rules pass so far.'};
  return{k:'go',head:'GOOD OPPORTUNITY',text:(sk?'Goals and shots on target both ':'Goals, shots on target and xG all ')+(over?'clear their minimums':'pass')+' at minute '+v.min+'.'+(sk?' xG was not checked: none was sent, and your setting skips it.':'')+(ev.risky?' '+gtxt(ev.total)+' in, so one more goal loses the bet.':'')+(ev.wins?' '+gtxt(ev.total)+' in, so one more goal wins the bet.':'')};
+}
+// One look across all nine goal lines: which one fits the numbers right now, and is it time to bet.
+// Each line is judged with its own saved limits and the shared minute window. Nothing here looks at a price.
+const MKT_ALL=[['under',1.5],['under',2.5],['under',3.5],['under',4.5],['over',0.5],['over',1.5],['over',2.5],['over',3.5],['over',4.5]];
+const SIG_LBL={bet:'BET',soon:'SOON',lean:'LEAN',wait:'WAIT',no:'NO',lost:'LOST',won:'WON',idle:'–'};
+const listJoin=a=>a.length<2?(a[0]||''):a.slice(0,-1).join(', ')+' and '+a[a.length-1];
+function signalAll(v,c){
+ const live=['min','gh','ga','sotH','sotA','xgh','xga'].some(k=>v[k]!=null);
+ const curKey=mkKey(c.side==='over'?'over':'under',lineOf(c));
+ const rows=MKT_ALL.map(a=>{
+  const side=a[0],line=a[1],key=mkKey(side,line),cur=key===curKey,cm=cur?c:switchMarket(c,side,line);
+  const ev=evaluate(v,cm),vd=verdict(ev,v,cm);
+  const st=vd.k==='idle'?'idle':vd.k==='go'?'bet':vd.k==='ok'?(live?'soon':'lean'):vd.k==='am'?'wait':(ev.dead?(side==='over'?'won':'lost'):'no');
+  return{key:key,side:side,line:line,name:mkName(side,line),cur:cur,k:vd.k,st:st,lbl:SIG_LBL[st],text:vd.text,passed:ev.passed,n:ev.R.length,fails:ev.R.filter(r=>r.st==='f').length,dead:ev.dead,risky:ev.risky,total:ev.total,mg:ev.mg,ev:ev};
+ });
+ const win=v.min==null?'none':v.min<c.minFrom?'early':v.min<=c.minTo?'in':'closed';
+ const names=l=>l.map(r=>r.name);
+ const go=rows.filter(r=>r.k==='go'),ok=rows.filter(r=>r.k==='ok'),am=rows.filter(r=>r.k==='am');
+ let out;
+ if(go.length||ok.length){
+  const isGo=go.length>0,list=isGo?go:ok;
+  const sides=list.map(r=>r.side).filter((x,i,a)=>a.indexOf(x)===i);
+  if(sides.length>1){
+   out={k:'am',head:'MIXED SIGNAL',pick:null,text:!live
+    ?'Pre-match averages fit both sides: '+listJoin(names(list))+'. The live numbers decide it at minute '+c.minFrom+'.'
+    :listJoin(names(list))+' both fit, but they point opposite ways. '+(isGo?'Pick one by your own read, or skip this match.':'The window opens in '+(c.minFrom-v.min)+' min.')};
+  }else{
+   const under=sides[0]==='under';
+   // Under: the tightest line that can still take one more goal. Over: the line closest to winning.
+   const sorted=list.slice().sort((a,b)=>under?((a.risky?1:0)-(b.risky?1:0))||a.line-b.line:a.line-b.line);
+   const t=sorted[0],rest=sorted.slice(1);
+   if(isGo){
+    const wl=v.min>=c.minTo?'This is the last minute of the window.':'The window closes in '+(c.minTo-v.min)+' min (minute '+c.minTo+').';
+    out={k:'go',head:'BET '+t.name.toUpperCase(),pick:t.key,text:'All rules pass at minute '+v.min+'. '+wl+' '+t.name+(under?' loses':' wins')+' at '+(t.mg+1)+' goals; '+t.total+' so far.'+(rest.length?' Also passing: '+listJoin(names(rest))+'.':'')};
+   }else if(live){
+    out={k:'ok',head:'WAIT FOR MINUTE '+c.minFrom,pick:t.key,text:t.name+' is on track. '+t.text+(rest.length?' Also on track: '+listJoin(names(rest))+'.':'')};
+   }else{
+    out={k:'ok',head:'LEAN '+(under?'UNDER':'OVER'),pick:null,text:'Pre-match averages fit '+listJoin(names(list))+'. The live numbers decide it at minute '+c.minFrom+'.'};
+   }
+  }
+ }else if(am.length){
+  const s=am.slice().sort((a,b)=>b.passed-a.passed||(b.cur?1:0)-(a.cur?1:0)||a.line-b.line)[0];
+  out={k:'am',head:'WAIT',pick:null,text:'Closest fit is '+s.name+'. '+s.text};
+ }else if(rows.every(r=>r.k==='idle')){
+  out={k:'idle',head:'WAITING FOR MATCH NUMBERS',pick:null,text:'Type the numbers in, or pick a live match. All nine lines update as you type.'};
+ }else if(win==='closed'){
+  out={k:'bad',head:'WINDOW CLOSED',pick:null,text:'The window closed at minute '+c.minTo+'. Nothing to bet on this match. Move on to the next one.'};
+ }else if(!live){
+  out={k:'bad',head:'SKIP THIS MATCH',pick:null,text:'The pre-match averages fit no goal line.'};
+ }else if(rows.every(r=>r.dead)){
+  out={k:'bad',head:'NO BET',pick:null,text:rows[0].total+' goals are in: every Under has lost and every Over has already won.'};
+ }else{
+  const s=rows.filter(r=>!r.dead).sort((a,b)=>a.fails-b.fails||(b.cur?1:0)-(a.cur?1:0)||a.line-b.line)[0];
+  out={k:'bad',head:'NO BET',pick:null,text:'No goal line fits these numbers. Closest is '+s.name+': '+s.text};
+ }
+ out.rows=rows;out.win=win;out.live=live;out.curKey=curKey;
+ return out;
 }
 function betsLeft(s,c){if(s.day>c.days)return 0;return Math.max(0,c.perDay-s.dayBets)+Math.max(0,c.days-s.day)*c.perDay}
 function newState(k){return{w:0,n:0,placed:0,st:0,maxSt:0,res:[],sres:[],log:[],open:[],nid:0,paused:false,halt:'',dayMsg:'',ended:false,startDate:k,dayDate:k,day:1,dayBets:0,dayLosses:0,lockUntil:0}}
@@ -1569,6 +1648,27 @@ function lvStat(v){
   ?'Linked to '+esc(nm)+'. Not filled: '+esc(miss.join(', '))+'. Type '+(miss.length>1?'them':'it')+' in.'+(live.why?'<small>'+esc(live.why.trim())+'</small>':'')
   :'Linked to '+esc(nm)+'. Shots on target and xG are filled'+(skipped?' (xG skipped by your setting)':'')+'.';
 }
+const SIGCLS={bet:'go',soon:'ok',lean:'ok',wait:'am',no:'bad',lost:'dn',won:'dn',idle:''};
+const SIGWORD={bet:'bet now',soon:'on track',lean:'leans this way',wait:'wait',no:'no bet',lost:'already lost',won:'already won',idle:'no numbers yet'};
+// The card above the verdict: which of the nine goal lines fits, and when to bet it. The pick can be switched to in one tap.
+function msigRender(v){
+ const el=$('msig'),S=signalAll(v,c),cur=S.rows.find(r=>r.cur);
+ let head=S.head,text=S.text,cls=S.k==='idle'?'':S.k,use=null;
+ if(S.pick){
+  const P=S.rows.find(r=>r.key===S.pick);
+  const why=S.k==='go'?gate(v,P.ev):'';
+  if(why){head='RULES PASS, DO NOT BET';cls='am';text=P.name+' fits the rules, but: '+why}
+  else if(!P.cur)use=P;
+ }
+ const chip=r=>'<button type="button" class="msc '+SIGCLS[r.st]+(r.cur?' sel':'')+'" data-a="usemkt" data-mk="'+r.key+'" aria-label="'+esc(r.name+': '+SIGWORD[r.st])+'"'+(r.cur?' aria-current="true"':'')+'><i>'+r.line+'</i><em>'+r.lbl+'</em></button>';
+ const row=(side,label)=>'<span class="msl">'+label+'</span>'+S.rows.filter(r=>r.side===side).map(chip).join('')+(side==='under'?'<span></span>':'');
+ const h='<div class="msh" aria-live="polite"><small>Which market, and when</small><b>'+esc(head)+'</b><p>'+esc(text)+'</p></div>'
+  +(use?'<button type="button" class="msu" data-a="usemkt" data-mk="'+use.key+'">Switch to '+esc(use.name)+(cur?' (now '+esc(cur.name)+')':'')+'</button>':'')
+  +'<div class="msg">'+row('under','Under')+row('over','Over')+'</div>'
+  +'<p class="msn">Each line uses its own limits from Settings. Tap a line to switch to it.</p>';
+ el.hidden=false;el.className=cls;
+ if(el.dataset.h!==h){el.dataset.h=h;el.innerHTML=h}
+}
 function update(){
  const v=rd(),ev=evaluate(v,c),vd=verdict(ev,v,c),left=betsLeft(s,c),why=gate(v,ev),fin=s.ended||!!s.halt,locked=s.lockUntil>Date.now();
  lkSync(v.name);lvStat(v);
@@ -1599,6 +1699,7 @@ function update(){
  const cls=vd.k==='go'?'go':vd.k==='bad'?'bad':vd.k==='am'?'am':vd.k==='ok'?'ok':'';
  let h='<b>'+vd.head+'</b><p>'+esc(vd.text)+'</p>';
  const sg=$('sig');sg.className=cls;sg.innerHTML=h;
+ msigRender(v);
 
  $('wl').textContent=s.w+' / '+(s.n-s.w);
  $('wr').textContent=s.n?Math.round(s.w/s.n*100)+'%':'–';
@@ -2625,6 +2726,7 @@ document.addEventListener('click',e=>{
  const a=e.target.closest('[data-a]');if(!a)return;
  const k=a.dataset.a;
  if(k==='logbet')logBet();
+ else if(k==='usemkt')setMarket(a.dataset.mk);
  else if(k==='won'||k==='lost'||k==='void')settle(a.dataset.id,k);
  else if(k==='next')nextMatch(true);
  else if(k==='covclear'){cov={};covSave();covRender();if(lvList.length&&!$('lvlist').hidden)lvRender();if(scItems.length&&!$('scres').hidden)scRender()}
