@@ -414,9 +414,9 @@ body{touch-action:manipulation;-webkit-text-size-adjust:100%;-webkit-tap-highlig
    <button type="button" class="fhd" data-f="clock" aria-expanded="true"><span class="ft">Match clock</span><span class="fs" id="fs-clock">Off</span><i class="chev"></i></button>
    <div class="fb">
     <div class="clk" id="ckbox">
-     <div class="ckmain"><b id="ckt">Clock off</b><span id="cks">Tap Kicked off at kickoff, or enter the kickoff time.</span></div>
+     <div class="ckmain"><b id="ckt">Clock off</b><span id="cks">Tap Kicked off at kickoff, or enter the kickoff time. A linked live match sets it for you.</span></div>
      <div class="ckbtns"><button type="button" data-a="ckko">Kicked off</button><button type="button" data-a="ckh2">2nd half</button><button type="button" data-a="ckrs">Reset</button></div>
-     <div class="ckrow"><label>Kickoff at <input type="time" id="ck_t"></label><label><input type="checkbox" id="ck_snd" checked>Alerts</label><button type="button" class="pu" data-a="cktest">Test</button></div>
+     <div class="ckrow"><label>Kickoff at <input type="time" id="ck_t"></label><label><input type="checkbox" id="ck_snd" checked>Alerts</label><label><input type="checkbox" id="ck_lv" checked>Sync to live match</label><button type="button" class="pu" data-a="cktest">Test</button></div>
     </div>
    </div>
   </div>
@@ -823,6 +823,23 @@ function clockInfo(cl,c,now){
  const k=now<opens?'wait':now<closes?'in':'past';
  return{k:k,min:min,est:est,opens:opens,closes:closes,secs:k==='wait'?(opens-now)/1000:k==='in'?(closes-now)/1000:0,
   kick:cl.ko&&now<cl.ko?(cl.ko-now)/1000:null,sync:est&&e!=null&&e>45+CK_STOP&&k!=='past'};
+}
+// A linked live match reports its minute in whole minutes (status 1H or 2H). From that, work out where the match clock should be,
+// anchored at 'at' (when the feed was read). Returns {ko,h2} to set, or null to leave the clock alone:
+// no usable minute (stoppage time reads 45 and 90, half time has none), or the clock is already close enough
+// (1.5 min if an earlier sync set it, 2.5 min if you tapped it yourself). A clock that has no 2nd-half tap yet always takes the feed's 2nd-half minute, which makes it exact.
+function clockFromLive(fx,cl,c,at){
+ if(!fx||typeof fx.min!=='number'||!isFinite(fx.min)||!isFinite(at))return null;
+ let w=null;
+ if(fx.short==='1H'&&fx.min>=1&&fx.min<45)w={ko:at-fx.min*60000,h2:null};
+ else if(fx.short==='2H'&&fx.min>=46&&fx.min<90)w={ko:at-(fx.min+CK_STOP+CK_HT)*60000,h2:at-(fx.min-45)*60000};
+ if(!w)return null;
+ const I=cl?clockInfo(cl,c,at):{k:'off'};
+ if(I.k!=='off'){
+  const tol=cl.src==='live'?1.5:2.5;
+  if(Math.abs(I.min-fx.min)<=tol&&(cl.h2||!w.h2))return null;
+ }
+ return w;
 }
 function mmss(s){const t=Math.max(0,Math.ceil(s));return Math.floor(t/60)+':'+String(t%60).padStart(2,'0')}
 // Odds as a platform quotes them (decimal 1.08, American -1200, fractional 1/12) become decimal odds after fees.
@@ -1645,18 +1662,20 @@ function newSession(){
  recheck();save();update();
 }
 // ---- Match clock: countdown to the entry window, with alerts while the page is open ----
-let clk={ko:null,h2:null,snd:true},fired={pre:true,open:true,close:true},ac=null,wl=null,alertTimer=0;
+let clk={ko:null,h2:null,snd:true,lv:true,src:null},fired={pre:true,open:true,close:true},ac=null,wl=null,alertTimer=0;
 function clkSave(){try{localStorage.setItem('u35_clock',JSON.stringify(clk))}catch(e){}}
 function clkLoad(){
  try{
   const d=JSON.parse(localStorage.getItem('u35_clock')||'null');
   if(d&&typeof d==='object'){
    if(typeof d.snd==='boolean')clk.snd=d.snd;
+   if(typeof d.lv==='boolean')clk.lv=d.lv;
    const t=Date.now(),ok=x=>typeof x==='number'&&isFinite(x)&&Math.abs(t-x)<5*3600000;
    if(ok(d.ko))clk.ko=d.ko;if(ok(d.h2))clk.h2=d.h2;
+   if(d.src==='live'&&(clk.ko||clk.h2))clk.src='live';
   }
  }catch(e){}
- $('ck_snd').checked=clk.snd;
+ $('ck_snd').checked=clk.snd;$('ck_lv').checked=clk.lv;
 }
 function clkTimes(I){
  const T={pre:I.opens-120000,open:I.opens,close:I.closes-60000};
@@ -1668,6 +1687,14 @@ function clkArm(){
  const I=clockInfo(clk,c,Date.now());if(I.k==='off')return;
  const T=clkTimes(I),n=Date.now();
  Object.keys(T).forEach(k=>{fired[k]=n>=T[k]});
+}
+// A linked live match tells us the real minute, so the clock sets itself (no Kicked off or 2nd half taps needed).
+function lvClock(fx,at){
+ if(!clk.lv)return false;
+ const w=clockFromLive(fx,clk,c,at);
+ if(!w)return false;
+ clkSet(w.ko,w.h2,'live');$('ck_t').value='';
+ return true;
 }
 function ensureAudio(){
  try{if(!ac){const A=window.AudioContext||window.webkitAudioContext;if(A)ac=new A()}if(ac&&ac.state==='suspended')ac.resume()}catch(e){ac=null}
@@ -1705,15 +1732,15 @@ function ckAlert(k){
  }
 }
 function clockTick(){
- const now=Date.now(),I=clockInfo(clk,c,now),fs=$('fs-clock'),tt=$('ckt'),ss=$('cks');
- let a='Off',cl='fs',t='Clock off',tc='',s2='Tap Kicked off at kickoff, or enter the kickoff time.';
+ const now=Date.now(),I=clockInfo(clk,c,now),fs=$('fs-clock'),tt=$('ckt'),ss=$('cks'),lv=clk.src==='live';
+ let a='Off',cl='fs',t='Clock off',tc='',s2='Tap Kicked off at kickoff, or enter the kickoff time. A linked live match sets it for you.';
  if(I.k!=='off'){
   const m=Math.max(0,Math.floor(I.min));
   if(I.k==='wait'){
    a=(I.est?'~':'')+'Opens in '+mmss(I.secs);cl='fs am';t='Window opens in '+(I.est?'about ':'')+mmss(I.secs);
-   s2=I.kick!=null?'Kickoff in '+mmss(I.kick)+'.':(I.est?'About '+m+"' on the clock (estimate). ":'Clock is at '+m+"'. ")+(I.sync?'Tap 2nd half the moment play restarts to sync it.':(I.est?'Tap 2nd half when play restarts for an exact countdown.':''));
+   s2=I.kick!=null?'Kickoff in '+mmss(I.kick)+'.':(I.est&&!lv?'About '+m+"' on the clock (estimate). ":'Clock is at '+m+"'. ")+(lv?(I.est?'Set from the live match. It syncs again when the second half starts and you refresh (or Auto is on).':'Set from the live match.'):(I.sync?'Tap 2nd half the moment play restarts to sync it.':(I.est?'Tap 2nd half when play restarts for an exact countdown.':'')));
   }else if(I.k==='in'){
-   a='In window · '+mmss(I.secs)+' left';cl='fs pos';t='In the window: '+mmss(I.secs)+' left';tc='pos';s2=(I.est?'About ':'Clock is at ')+m+"'"+(I.est?' (estimate). ':'. ')+'Check the numbers now.';
+   a='In window · '+mmss(I.secs)+' left';cl='fs pos';t='In the window: '+mmss(I.secs)+' left';tc='pos';s2=(I.est?'About ':'Clock is at ')+m+"'"+(I.est?' (estimate). ':'. ')+'Check the numbers now.'+(lv?' Clock set from the live match.':'');
   }else{
    a='Window closed';cl='fs neg';t='Window closed';tc='neg';s2='Wait for the next match, or press Reset.';
   }
@@ -1733,8 +1760,8 @@ function clockTick(){
  Object.keys(T).forEach(k=>{if(!fired[k]&&now>=T[k]){fired[k]=true;if(now-T[k]<=90000)ckAlert(k)}});
  if(I.k==='past')keepAwake(false);
 }
-function clkSet(ko,h2){
- clk.ko=ko;clk.h2=h2;clkSave();clkArm();clockTick();
+function clkSet(ko,h2,src){
+ clk.ko=ko;clk.h2=h2;clk.src=src||null;clkSave();clkArm();clockTick();
  if(ko||h2){ensureAudio();keepAwake(true)}else keepAwake(false);
 }
 function clockReset(){clkSet(null,null);$('ck_t').value='';$('ckalert').hidden=true}
@@ -1987,7 +2014,7 @@ function undoPaste(){
 }
 // ---- Live feed (optional): your own API-Sports key. It stays in this browser and is sent only to api-sports.io. ----
 const KEYK='u35_apikey';
-let apiKey='',live=null,lvList=[],lvBusy=false,lvT=0;
+let apiKey='',live=null,lvList=[],lvListAt=0,lvBusy=false,lvT=0;
 let sugs={},chkBusy=false,chkLast=0,scItems=[],scShowOut=false;
 const SCAN_TAG={go:'PASSES',soon:'COMING',risk:'AT RISK',nodata:'NO DATA',out:'OUT'},SCAN_TAGC={go:'go',soon:'',risk:'am',nodata:'am',out:'bad'};
 const avgCache={};
@@ -2045,7 +2072,7 @@ async function lvOpen(){
  if(lvBusy)return;
  lvBusy=true;lvMsg('Loading live matches…');
  try{
-  lvList=apiLive(await apiGet('/fixtures?live=all'));
+  lvList=apiLive(await apiGet('/fixtures?live=all'));lvListAt=Date.now();
   $('scres').hidden=true;
   $('lvlist').hidden=false;lvRender();
   lvMsg(lvList.length+' live now.'+(lvList.length?' Matches inside your entry window are listed first.':''));
@@ -2091,6 +2118,7 @@ async function lvPick(id){
  if(lvBusy)return;
  const f=lvList.find(x=>String(x.id)===String(id));
  if(!f)return;
+ ensureAudio();
  lvBusy=true;
  // Keep what was on screen so Undo can put it back, then clear it so old numbers never mix with the new match.
  undoSnap={};INP.concat(['name']).forEach(k=>{undoSnap[k]=$('i_'+k).value;$('i_'+k).value=''});
@@ -2104,11 +2132,12 @@ async function lvPick(id){
  const st=r[0]?apiStats(r[0],f.home.id,f.away.id):null;
  const vals=apiVals(f,st,{h:r[1],a:r[2]});
  lvWrite(vals);update();snap();
+ const synced=lvClock(f,lvListAt||Date.now());
  const miss=apiMissing(vals,true),pr=$('pres');
  pr.hidden=false;pr.className='pres'+(miss.length?' am':'');
  $('prt').textContent='Filled from API-Sports: '+lvSummary(vals)+'.'+(miss.length?' Not provided: '+miss.join(', ')+'. Type those in.'+lvWhy(st):' Check them against the screen.');
  $('pundo').hidden=false;
- lvMsg('Linked to '+f.home.name+' v '+f.away.name+'. Updated '+hhmmss()+'.'+(errs.length?' Problem: '+errs[0]:''),errs.length?'am':false);
+ lvMsg('Linked to '+f.home.name+' v '+f.away.name+'. Updated '+hhmmss()+'.'+(synced?' Clock synced to the match.':'')+(errs.length?' Problem: '+errs[0]:''),errs.length?'am':false);
  lvBusy=false;
 }
 async function lvRefresh(auto){
@@ -2124,9 +2153,10 @@ async function lvRefresh(auto){
  const fx=fj?apiOne(fj):null,st=sj?apiStats(sj,live.home.id,live.away.id):null;
  const vals=apiVals(fx,st,null);
  lvWrite(vals);update();snap();
+ const synced=fx?lvClock(fx,Date.now()):false;
  const fin=apiDone(fx);
  if(fin){$('lvauto').checked=false;lvAutoSync()}
- lvMsg((fin?'Match finished ('+fx.short+'). ':'')+'Updated '+hhmmss()+': '+lvSummary(vals)+'.'+(errs.length?' Problem: '+errs[0]:''),errs.length?'am':false);
+ lvMsg((fin?'Match finished ('+fx.short+'). ':'')+'Updated '+hhmmss()+': '+lvSummary(vals)+'.'+(synced?' Clock synced.':'')+(errs.length?' Problem: '+errs[0]:''),errs.length?'am':false);
  lvBusy=false;
 }
 // ---- Scanner: loads the live list, then checks each match near your window (statistics plus both teams' last-5 averages).
@@ -2154,7 +2184,7 @@ async function lvScan(){
  lvBusy=true;$('lvscan').disabled=true;
  try{
   lvMsg('Loading live matches…');
-  lvList=apiLive(await scGet('/fixtures?live=all'));
+  lvList=apiLive(await scGet('/fixtures?live=all'));lvListAt=Date.now();
   $('lvlist').hidden=true;
   const cand=scanPick(lvList,c);
   scItems=[];scShowOut=false;
@@ -2456,6 +2486,7 @@ document.addEventListener('change',e=>{
  if(e.target.id&&/^i_(min|gh|ga|sotH|sotA|xgh|xga)$/.test(e.target.id)){clearTimeout(snapTimer);snapTimer=setTimeout(snap,600)}
 });
 $('ck_snd').addEventListener('change',e=>{clk.snd=e.target.checked;clkSave();if(clk.snd)ensureAudio()});
+$('ck_lv').addEventListener('change',e=>{clk.lv=e.target.checked;if(!clk.lv)clk.src=null;clkSave();clockTick()});
 document.addEventListener('visibilitychange',()=>{if(!document.hidden){clockTick();if(clockInfo(clk,c,Date.now()).k!=='off'&&!wl)keepAwake(true);if(Date.now()-chkLast>30000)chkOpen(false)}});
 setTimeout(()=>chkOpen(false),1500);
 setInterval(()=>{if(!document.hidden)chkOpen(false)},120000);
