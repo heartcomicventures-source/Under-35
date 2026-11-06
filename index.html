@@ -445,6 +445,7 @@ body{touch-action:manipulation;-webkit-text-size-adjust:100%;-webkit-tap-highlig
     <p class="pres" id="lvmsg" role="status" hidden></p>
     <div id="scres" hidden>
      <div id="scrows"></div>
+     <p class="pace" id="scsunk" role="status" hidden></p>
      <button type="button" class="pu" id="scout" data-a="scout" hidden></button>
      <p class="pace" id="scnote">Scan checks every live match from 10 minutes before your window to its end: about 1 to 3 requests each. Tap a match to load it.</p>
     </div>
@@ -1273,7 +1274,23 @@ function covTag(cov,f){
  const none=sot<.25&&xg<.25;
  return{k:miss.length?'am':'ok',n:n,sot:sot,xg:xg,text:none?'Usually no shots or xG':miss.length?miss.join(' and ')+' often missing':'Shots and xG usually sent'};
 }
-function scanSort(items){return items.slice().sort((a,b)=>SCAN_RANK[a.k]-SCAN_RANK[b.k]||a.order-b.order)}
+// How well a league sends the numbers the rules need: 0 usually sent, 1 not enough history to say, 2 something often missing,
+// 3 usually nothing. With "skip xG" on, only shots on target count.
+function covTier(cov,f,c){
+ const t=covTag(cov,f);
+ if(!t)return 1;
+ const r=c&&c.xgSkip==='skip'?[t.sot]:[t.sot,t.xg];
+ if(r.every(x=>x>=.75))return 0;
+ if(r.every(x=>x<.25))return 3;
+ return 2;
+}
+// A match not yet passing (coming, at risk, missing data) in a league that usually sends nothing is listed last: it will not get its numbers.
+function scanSunk(x,cov,c){return x.k!=='go'&&x.k!=='out'&&covTier(cov,x.f,c)===3}
+// Order: how close to passing first; then leagues that usually send the numbers; ties keep scan order. cov and c are optional.
+function scanSort(items,cov,c){
+ const key=x=>[scanSunk(x,cov,c)?3.5:SCAN_RANK[x.k],covTier(cov,x.f,c),x.order];
+ return items.slice().sort((a,b)=>{const p=key(a),q=key(b);return p[0]-q[0]||p[1]-q[1]||p[2]-q[2]});
+}
 function scanCounts(items){const n={go:0,soon:0,risk:0,nodata:0,out:0};items.forEach(x=>{if(n[x.k]!=null)n[x.k]++});return n}
 // ---- Auto-settle: the regular-time result of a fixture (/fixtures?id=), and how an open bet settles on it.
 // FT: the final score. AET and PEN: the 90-minute score, because goal lines settle on regular time. PST, CANC, ABD, AWD, WO: void.
@@ -2239,11 +2256,12 @@ async function scGet(path){
  }
 }
 function scRender(){
- const all=scanSort(scItems),show=all.filter(x=>scShowOut||x.k!=='out'),nOut=all.filter(x=>x.k==='out').length;
+ const all=scanSort(scItems,cov,c),show=all.filter(x=>scShowOut||x.k!=='out'),nOut=all.filter(x=>x.k==='out').length,nSunk=show.filter(x=>scanSunk(x,cov,c)).length;
  $('scrows').innerHTML=show.length?show.map(x=>{
   const f=x.f;
   return '<button type="button" class="lvr'+(x.k==='out'?' out':'')+'" data-a="lvpick" data-id="'+esc(f.id)+'"><b>'+esc(f.home.name)+' v '+esc(f.away.name)+'</b><span class="lvs">'+esc(f.min)+"' "+esc(f.gh==null?'-':f.gh)+'–'+esc(f.ga==null?'-':f.ga)+'</span><small>'+esc(mktOn?x.why:x.why.replace(', add your odds',''))+'</small><span class="sct '+SCAN_TAGC[x.k]+'">'+SCAN_TAG[x.k]+'</span>'+covHtml(f)+'</button>';
  }).join(''):'<div class="lvempty">'+(all.length?'Every match checked fails a rule.':'No live match is near your window right now.')+'</div>';
+ const sk=$('scsunk');sk.hidden=!nSunk;sk.textContent=nSunk?(nSunk>1?nSunk+' matches are':'1 match is')+' listed last: that league usually sends no shots or xG.':'';
  const bo=$('scout');bo.hidden=!nOut;bo.textContent=scShowOut?'Hide the '+nOut+' that failed a rule':'Show the '+nOut+' that failed a rule';
  $('scres').hidden=false;
 }
