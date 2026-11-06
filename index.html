@@ -25,16 +25,16 @@ img{max-width:100%}
  /* Layout: one 360px control panel in the style of the reference. Bets left on top, a numbered chip for every bet in the session, match inputs that turn green or red as they pass or fail, a big verdict box, six rule rows, session stats with a goal check, then open bets and actions. */
  --xg1:#5fbdd4;--xg2:#f3a944;--xg3:var(--tx);
  --bg:#080c0f;--panel:#10151a;--card:#161c22;--line:#232b33;--tx:#edf1f3;--mut:#8693a0;
- --grn:#34d17f;--grnbg:#0e2a1c;--red:#ff5b60;--redbg:#2d1316;--amb:#f2b23d;--ambbg:#2a2110;--chip:#1b222a;
+ --grn:#34d17f;--grnbg:#0e2a1c;--red:#ff5b60;--redbg:#2d1316;--amb:#2fb7ff;--ambbg:#0a2236;--chip:#1b222a;
  --a97:var(--amb);--ab97:var(--ambbg);--a97dim:var(--amb);
  --display:Arial,"Helvetica Neue",Helvetica,sans-serif;
  --body:Arial,"Helvetica Neue",Helvetica,sans-serif;
  color-scheme:dark;
 }
 @media (prefers-color-scheme: light){
- :root:not([data-theme="dark"]){--xg1:#5fbdd4;--xg2:#f3a944;--xg3:var(--tx);--bg:#e5eaed;--panel:#ffffff;--card:#f0f3f5;--line:#d8dee3;--tx:#12181d;--mut:#5f6e7c;--grn:#0b8a4b;--grnbg:#dff4e8;--red:#cf2f35;--redbg:#fce7e8;--amb:#94600c;--ambbg:#fbf0d9;--chip:#e2e7eb;color-scheme:light}
+ :root:not([data-theme="dark"]){--xg1:#5fbdd4;--xg2:#f3a944;--xg3:var(--tx);--bg:#e5eaed;--panel:#ffffff;--card:#f0f3f5;--line:#d8dee3;--tx:#12181d;--mut:#5f6e7c;--grn:#0b8a4b;--grnbg:#dff4e8;--red:#cf2f35;--redbg:#fce7e8;--amb:#0057ff;--ambbg:#e6efff;--chip:#e2e7eb;color-scheme:light}
 }
-:root[data-theme="light"]{--xg1:#5fbdd4;--xg2:#f3a944;--xg3:var(--tx);--bg:#e5eaed;--panel:#ffffff;--card:#f0f3f5;--line:#d8dee3;--tx:#12181d;--mut:#5f6e7c;--grn:#0b8a4b;--grnbg:#dff4e8;--red:#cf2f35;--redbg:#fce7e8;--amb:#94600c;--ambbg:#fbf0d9;--chip:#e2e7eb;color-scheme:light}
+:root[data-theme="light"]{--xg1:#5fbdd4;--xg2:#f3a944;--xg3:var(--tx);--bg:#e5eaed;--panel:#ffffff;--card:#f0f3f5;--line:#d8dee3;--tx:#12181d;--mut:#5f6e7c;--grn:#0b8a4b;--grnbg:#dff4e8;--red:#cf2f35;--redbg:#fce7e8;--amb:#0057ff;--ambbg:#e6efff;--chip:#e2e7eb;color-scheme:light}
 
 @supports (color:color-mix(in srgb,red 50%,transparent)){
  :root{--a97:color-mix(in srgb,var(--amb) 97%,transparent);--ab97:color-mix(in srgb,var(--ambbg) 97%,transparent);--a97dim:color-mix(in srgb,var(--amb) 45%,transparent)}
@@ -273,7 +273,7 @@ section{padding:14px}
 #rsig.am{background:var(--ambbg);border-color:var(--amb);color:var(--amb)}
 #rsig.ok{background:var(--card);border-color:var(--grn);color:var(--grn)}
 #rsig.bad{background:var(--redbg);border-color:var(--red);color:var(--red)}
-/* Bet-tab signal boxes: one colour, amber at 97%. The state shows in the fill and the outline, and the heading says it in words.
+/* Bet-tab signal boxes: one colour, neon blue at 97% (the --amb tokens hold the neon blue). The state shows in the fill and the outline, and the heading says it in words.
    BET = filled, on track = outline, wait = dashed outline, no bet = no fill and a faint outline. */
 #sig.go{background:var(--ab97);border-style:solid;border-color:var(--a97);color:var(--a97)}
 #sig.ok{background:var(--card);border-style:solid;border-color:var(--a97);color:var(--a97)}
