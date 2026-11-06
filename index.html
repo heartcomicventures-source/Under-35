@@ -104,19 +104,22 @@ section{padding:14px}
 .btf .keyl{margin:0;min-width:0}
 .btf .full{grid-column:1/-1}
 .btf .btmh{margin:0;align-self:end;padding-bottom:12px}
-.btbtns{display:flex;gap:10px}
+.btbtns{display:flex;gap:10px;margin-bottom:10px}
 .btbtns .wide{flex:1;width:auto}
-#btsig{padding:10px 12px;border-radius:10px;font-size:12px;margin-bottom:10px;background:var(--card);border:1.5px solid var(--line);color:var(--mut)}
-#btsig b{display:block;font:700 22px/1.1 var(--display);letter-spacing:.05em;margin-bottom:3px}
-#btsig p{margin:3px 0 0;color:var(--tx);opacity:.9}
-#btsig.go{background:var(--grnbg);border-color:var(--grn);color:var(--grn)}
-#btsig.am{background:var(--ambbg);border-color:var(--amb);color:var(--amb)}
-#btsig.bad{background:var(--redbg);border-color:var(--red);color:var(--red)}
+#btsig,#fwsig{padding:10px 12px;border-radius:10px;font-size:12px;margin-bottom:10px;background:var(--card);border:1.5px solid var(--line);color:var(--mut)}
+#btsig b,#fwsig b{display:block;font:700 22px/1.1 var(--display);letter-spacing:.05em;margin-bottom:3px}
+#btsig p,#fwsig p{margin:3px 0 0;color:var(--tx);opacity:.9}
+#btsig.go,#fwsig.go{background:var(--grnbg);border-color:var(--grn);color:var(--grn)}
+#btsig.am,#fwsig.am{background:var(--ambbg);border-color:var(--amb);color:var(--amb)}
+#btsig.bad,#fwsig.bad{background:var(--redbg);border-color:var(--red);color:var(--red)}
 .bttw{overflow-x:auto;margin-bottom:10px}
 .bttb{width:100%;border-collapse:collapse;font-size:12px;font-variant-numeric:tabular-nums}
 .bttb th{font-size:11px;color:var(--mut);font-weight:600;text-align:right;padding:6px 8px;border-bottom:1px solid var(--line)}
 .bttb td{padding:7px 8px;text-align:right;border-bottom:1px solid var(--line)}
 .bttb th:first-child,.bttb td:first-child{text-align:left}
+.fwon{margin:0 0 10px}
+.fwhr{border:0;border-top:1px solid var(--line);margin:18px 0 14px}
+.fwsub{margin:0 0 6px;font-weight:600;color:var(--tx)}
 .lvauto{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--mut)}
 .lvauto input{width:16px;height:16px;accent-color:var(--grn)}
 #lvlist{margin-top:8px;background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden}
@@ -571,6 +574,29 @@ body{touch-action:manipulation;-webkit-text-size-adjust:100%;-webkit-tap-highlig
  </section>
 
  <section id="v-bt" hidden>
+  <div id="fwsig"><b id="fwh">FORWARD TEST</b><p id="fwt"></p></div>
+  <label class="lvauto fwon"><input type="checkbox" id="fw_on" checked>Save a snapshot of each match I scan or open</label>
+  <div class="btbtns"><button type="button" class="wide" id="fwgo" data-a="fwsettle">Check results now</button><button type="button" class="wide" data-a="fwcopy">Copy log</button></div>
+  <p class="pace" id="fwmsg" role="status" hidden></p>
+  <textarea id="fw_out" class="rout" readonly hidden aria-label="Log text to copy"></textarea>
+  <div id="fwres" hidden>
+   <div class="grid">
+    <div><small>Matches saved</small><b id="fw_n"></b></div>
+    <div><small>With a final score</small><b id="fw_done"></b></div>
+    <div><small>Passed every rule</small><b id="fw_in"></b></div>
+    <div><small>Win rate when passed</small><b id="fw_rate"></b></div>
+    <div><small>Likely true range (95%)</small><b id="fw_ci"></b></div>
+    <div><small>Odds needed to profit</small><b id="fw_fair"></b></div>
+    <div><small>Win rate when not passed</small><b id="fw_not"></b></div>
+    <div><small>Left out</small><b id="fw_skip"></b></div>
+   </div>
+   <p class="pace">Each rule on its own, across the finished matches:</p>
+   <div class="bttw"><table class="bttb"><thead><tr><th>Rule</th><th>Passed</th><th>Failed</th><th>No data</th></tr></thead><tbody id="fwtb"></tbody></table></div>
+  </div>
+  <p class="pace" id="fwnote"></p>
+  <button type="button" class="wide" id="fwclear" data-a="fwclear">Clear the log</button>
+  <hr class="fwhr">
+  <p class="fwsub">Backtest on finished matches</p>
   <div id="btsig"><b id="bth">BACKTEST</b><p id="btt">Replays finished matches against your rules to see how often they would have won. Run it on your hosted page or the standalone file.</p></div>
   <p class="pace" id="btmk"></p>
   <div class="btf">
@@ -588,7 +614,7 @@ body{touch-action:manipulation;-webkit-text-size-adjust:100%;-webkit-tap-highlig
     <div><small>Matches checked</small><b id="bt_n"></b></div>
     <div><small>Passed your rules</small><b id="bt_in"></b></div>
     <div><small>Win rate when passed</small><b id="bt_rate"></b></div>
-    <div><small id="bt_bel">Break-even rate</small><b id="bt_be"></b></div>
+    <div><small id="bt_bel">Win rate when not passed</small><b id="bt_be"></b></div>
     <div><small>Likely true range (95%)</small><b id="bt_ci"></b></div>
     <div><small>Odds needed to profit</small><b id="bt_fair"></b></div>
     <div><small>Win rate with no rules</small><b id="bt_base"></b></div>
@@ -1201,7 +1227,8 @@ function btDays(n,today){
  for(let i=n;i>=1;i--)out.push(new Date(base-i*864e5).toISOString().slice(0,10));
  return out;
 }
-// Counts, win rate against break-even at your minimum odds (through the same maths as the Record tab), the no-rules baseline, and a split by goals so far.
+// Counts, the win rate of the matches that passed with its 95% range, the no-rules baseline and the not-passed group, and a split by goals so far.
+// No price is assumed: "odds needed" comes from the win rate alone.
 function btSummary(rows,c){
  const a=Array.isArray(rows)?rows:[];
  const cnt={all:a.length,noavg:0,dead:0,out:0,inn:0},inn=[],base=[];
@@ -1210,14 +1237,13 @@ function btSummary(rows,c){
   else if(r.state==='dead')cnt.dead++;
   else{base.push(r);if(r.state==='in'){cnt.inn++;inn.push(r)}else cnt.out++}
  });
- const odds=c&&c.minOdds>1?c.minOdds:1.06;
- const rs=recordStats(inn.map(r=>({res:r.won?'won':'lost',odds:odds,stake:1,pnl:r.won?rnd(odds-1):-1})),1);
  const wins=x=>x.filter(r=>r.won).length;
+ const n=inn.length,w=wins(inn),ci=wilson(w,n),rate=n?w/n:null,rs={n:n,w:w,rate:rate,lo:ci.lo,hi:ci.hi};
  const groups={};
  inn.forEach(r=>{const k=Math.min(r.total,9);const g=groups[k]||(groups[k]={goals:k,n:0,w:0});g.n++;if(r.won)g.w++});
  const byGoals=Object.keys(groups).map(Number).sort((x,y)=>x-y).map(k=>{const g=groups[k];return{goals:k,n:g.n,w:g.w,rate:g.w/g.n,fair:g.w?Math.round(g.n/g.w*100)/100:null}});
  const bw=wins(base);
- return{cnt:cnt,odds:odds,rs:rs,baseN:base.length,baseW:bw,baseRate:base.length?bw/base.length:null,byGoals:byGoals,fair:rs.rate?Math.round(100/rs.rate)/100:null,fairSafe:rs.lo?Math.round(100/rs.lo)/100:null};
+ return{cnt:cnt,rs:rs,baseN:base.length,baseW:bw,baseRate:base.length?bw/base.length:null,notN:base.length-n,notW:bw-w,byGoals:byGoals,fair:rate?Math.round(100/rate)/100:null,fairSafe:ci.lo?Math.round(100/ci.lo)/100:null};
 }
 // ---- Scanner: which live matches near the entry window already pass the rules.
 // Matches from SCAN_LEAD minutes before the window to the end of it are checked, at most SCAN_MAX of them, closest to the window first.
@@ -1292,6 +1318,87 @@ function scanSort(items,cov,c){
  return items.slice().sort((a,b)=>{const p=key(a),q=key(b);return p[0]-q[0]||p[1]-q[1]||p[2]-q[2]});
 }
 function scanCounts(items){const n={go:0,soon:0,risk:0,nodata:0,out:0};items.forEach(x=>{if(n[x.k]!=null)n[x.k]++});return n}
+// ---- Forward test log. A snapshot of each live match in your entry window (what the feed said at that moment), settled later with the
+// final score. Raw numbers are kept, not verdicts, so the report can judge them again with whatever rules are in Settings now.
+const FW_KEEP=400,FW_TRIES=6,FW_BATCH=10,FW_DAY=20;
+// Headline for a win rate when no price is assumed: only the sample size says how far to trust it.
+function rateVerdict(n,w){
+ if(!n)return null;
+ if(n<REC_MIN)return{kind:'am',head:'TOO FEW TO TELL'};
+ return{kind:'',head:'WON '+pct1(w/n)};
+}
+function fwVals(r){
+ const v={noOdds:true},put=(k,x)=>{if(x!=null)v[k]=x};
+ put('min',r.m);put('gh',r.gh);put('ga',r.ga);put('sotH',r.sh);put('sotA',r.sa);put('xgh',r.xh);put('xga',r.xa);put('avgH',r.ah);put('avgA',r.aa);
+ return v;
+}
+// Save one look at a live match. vals: apiVals() output. Only matches inside the entry window that are not already decided are kept.
+// One snapshot per match: the first one that passed every rule, else the latest. Returns true when the list changed.
+function fwNote(list,f,vals,c,at){
+ if(!Array.isArray(list)||!f||f.id==null||!vals||vals.min==null||vals.gh==null||vals.ga==null)return false;
+ if(vals.min<c.minFrom||vals.min>c.minTo)return false;
+ const ev=evaluate(Object.assign({noOdds:true},vals),c);
+ if(ev.dead)return false;
+ const i=list.findIndex(x=>x.id===f.id),old=i>=0?list[i]:null;
+ if(old&&(old.r||old.p))return false;
+ const nm=((f.home&&f.home.name)||'Home')+' v '+((f.away&&f.away.name)||'Away'),g=k=>vals[k]==null?null:vals[k];
+ const r={id:f.id,at:at,n:nm.slice(0,40),lg:String(f.league||'').slice(0,40),co:String(f.country||'').slice(0,30),
+  m:vals.min,gh:vals.gh,ga:vals.ga,sh:g('sotH'),sa:g('sotA'),xh:g('xgh'),xa:g('xga'),
+  ah:vals.avgH!=null?vals.avgH:(old?old.ah:null),aa:vals.avgA!=null?vals.avgA:(old?old.aa:null),
+  p:ev.allPass?1:0,r:null,k:0,nx:at+(100-vals.min)*60000};
+ if(old)list[i]=r;else list.push(r);
+ if(list.length>FW_KEEP)list.sort((a,b)=>a.at-b.at).splice(0,list.length-FW_KEEP);
+ return true;
+}
+// Ready to ask for the final score: about 40 minutes after the snapshot (earlier when you tap the button).
+function fwDue(r,now,manual){return !!r&&!r.r&&now>=(manual?r.at+(95-r.m)*60000:r.nx)}
+// Fold the answer of /fixtures?id= (through apiFinal) into a snapshot. Returns 'final', 'void', 'gaveup' or 'wait'.
+function fwApply(r,fin,now){
+ if(fin&&fin.k==='final'){r.r=[fin.gh,fin.ga];return 'final'}
+ if(fin&&fin.k==='void'){r.r='v';return 'void'}
+ r.k=(r.k||0)+1;
+ if(r.k>=FW_TRIES){r.r='x';return 'gaveup'}
+ r.nx=now+(fin&&fin.k==='unclear'?3600000:600000);
+ return 'wait';
+}
+// What the finished snapshots say under the rules in Settings now. pass: every rule passed. fail: a rule failed. nodata: nothing failed but a number was missing.
+function fwReport(list,c){
+ const a=Array.isArray(list)?list:[];
+ const o={logged:a.length,waiting:0,voided:0,settled:0,outside:0,decided:0,pass:{n:0,w:0},fail:{n:0,w:0},nodata:{n:0,w:0},rules:{}};
+ ['Avg','Goals','SoT','xG'].forEach(k=>{o.rules[k]={p:{n:0,w:0},f:{n:0,w:0},e:0}});
+ a.forEach(r=>{
+  if(!r.r){o.waiting++;return}
+  if(!Array.isArray(r.r)){o.voided++;return}
+  o.settled++;
+  const v=fwVals(r);
+  if(v.min<c.minFrom||v.min>c.minTo){o.outside++;return}
+  const ev=evaluate(v,c);
+  if(ev.dead){o.decided++;return}
+  const tot=r.r[0]+r.r[1],won=ev.over?tot>ev.mg:tot<=ev.mg;
+  const bin=ev.allPass?o.pass:ev.R.some(x=>x.st==='f')?o.fail:o.nodata;
+  bin.n++;if(won)bin.w++;
+  ev.R.forEach(x=>{
+   const e=o.rules[x.s];if(!e)return;
+   if(x.st==='p'){e.p.n++;if(won)e.p.w++}else if(x.st==='f'){e.f.n++;if(won)e.f.w++}else e.e++;
+  });
+ });
+ const t=o.pass,ci=wilson(t.w,t.n);
+ o.tested=t.n+o.fail.n+o.nodata.n;
+ o.notN=o.fail.n+o.nodata.n;o.notW=o.fail.w+o.nodata.w;
+ o.rate=t.n?t.w/t.n:null;o.lo=ci.lo;o.hi=ci.hi;
+ o.fair=o.rate?Math.round(100/o.rate)/100:null;o.fairSafe=ci.lo?Math.round(100/ci.lo)/100:null;
+ return o;
+}
+// The log as a table you can paste into Notes or a spreadsheet.
+function fwCsv(list){
+ const q=x=>{const t=String(x==null?'':x);return /[",\n]/.test(t)?'"'+t.replace(/"/g,'""')+'"':t};
+ const head='date_utc,league,country,match,minute,home_goals,away_goals,sot_home,sot_away,xg_home,xg_away,avg_home,avg_away,final_home,final_away,result';
+ const rows=(Array.isArray(list)?list:[]).map(r=>{
+  const fin=Array.isArray(r.r);
+  return [new Date(r.at).toISOString().slice(0,16).replace('T',' '),r.lg,r.co,r.n,r.m,r.gh,r.ga,r.sh,r.sa,r.xh,r.xa,r.ah,r.aa,fin?r.r[0]:'',fin?r.r[1]:'',fin?'final':r.r==='v'?'void':r.r==='x'?'unknown':'waiting'].map(q).join(',');
+ });
+ return [head].concat(rows).join('\n');
+}
 // ---- Auto-settle: the regular-time result of a fixture (/fixtures?id=), and how an open bet settles on it.
 // FT: the final score. AET and PEN: the 90-minute score, because goal lines settle on regular time. PST, CANC, ABD, AWD, WO: void.
 function apiFinal(j){
@@ -1516,7 +1623,8 @@ function update(){
  lkSync(v.name);
  $('lbl').textContent='Day '+Math.min(s.day,c.days)+' of '+c.days+': next stake';
  $('stake').textContent=fmt(stk.amt);
- $('sub').textContent=v.odds>1?('Wins '+fmt(rnd(stk.amt*(v.odds-1)))+' at '+(v.noOdds?'your minimum odds ':'odds ')+v.odds):(stk.why||'Enter the odds to see the return');
+ // With the Market box hidden there is no real price, so no return is quoted at an assumed one.
+ $('sub').textContent=v.noOdds?(stk.why||''):v.odds>1?('Wins '+fmt(rnd(stk.amt*(v.odds-1)))+' at odds '+v.odds):(stk.why||'Enter the odds to see the return');
  const tk=$('tkt'),rawOdds=$('i_odds').value.trim();
  if(v.noOdds||!rawOdds)tk.hidden=true;
  else if(!(v.odds>1)){tk.hidden=false;tk.className='tkt bad';tk.textContent=FMT_HELP[c.fmt]||FMT_HELP.dec}
@@ -1545,7 +1653,7 @@ function update(){
  const cls=vd.k==='go'?'go':vd.k==='bad'?'bad':vd.k==='am'?'am':vd.k==='ok'?'ok':'';
  let h='<b>'+vd.head+'</b><p>'+esc(vd.text)+'</p>';
  if(!ev.dead){
-  if(v.odds>1)h+=v.noOdds?'<p>At your minimum odds of '+v.odds+', you must win more than '+(100/v.odds).toFixed(1)+'% of these bets to break even.</p>':'<p>Odds '+v.odds+' mean you must win more than '+(100/v.odds).toFixed(1)+'% of these bets to break even.</p>';
+  if(v.odds>1&&!v.noOdds)h+='<p>Odds '+v.odds+' mean you must win more than '+(100/v.odds).toFixed(1)+'% of these bets to break even.</p>';
  }
  const sg=$('sig');sg.className=cls;sg.innerHTML=h;
 
@@ -1559,7 +1667,7 @@ function update(){
  const po=v.odds>1?v.odds:c.minOdds,g=goal(c,s.bal,tg,left,po),pc=$('pace');
  if(g&&!fin){
   pc.hidden=false;pc.className='pace'+(g.over?' am':'');
-  pc.textContent='Goal ×'+c.targetMult+' ('+fmt(tg)+'): '+left+' bets left at odds '+po+' needs '+(g.f>=1?'more than your whole bankroll':Math.round(g.f*100)+'% of bankroll')+' on every bet'+(g.over?', and one loss ends it':'')+'. Your '+g.pct+'% '+(c.staking==='flat'?'stake':'max stake')+' reaches about ×'+g.best.toFixed(2)+' if every bet wins.';
+  pc.textContent=v.noOdds?'Goal ×'+c.targetMult+' ('+fmt(tg)+'): '+left+' bets left.':'Goal ×'+c.targetMult+' ('+fmt(tg)+'): '+left+' bets left at odds '+po+' needs '+(g.f>=1?'more than your whole bankroll':Math.round(g.f*100)+'% of bankroll')+' on every bet'+(g.over?', and one loss ends it':'')+'. Your '+g.pct+'% '+(c.staking==='flat'?'stake':'max stake')+' reaches about ×'+g.best.toFixed(2)+' if every bet wins.';
  }else pc.hidden=true;
 
  const nm=[v.name||null,v.min!=null?v.min+"'":null,(v.gh!=null&&v.ga!=null)?v.gh+'–'+v.ga:null].filter(Boolean).join(' · ');
@@ -1593,7 +1701,7 @@ function update(){
    return '<div class="ob"><span class="oi"><b>'+esc(o.name||'Match')+'</b><small>'+fmt(o.stake)+' at '+o.odds+'</small>'+(sg?'<small class="osg">'+esc(sg.text)+' Tap '+(pick==='won'?'Won':pick==='lost'?'Lost':'Void')+' to confirm.</small>':'')+'</span>'+bt('won','Won',' w')+bt('lost','Lost',' l')+bt('void','Void','')+'</div>';
   }).join('');
  }
- a+='<button class="buy" type="button" data-a="logbet"'+(why?' disabled':'')+'>LOG '+mkName(c.side,lineOf(c)).toUpperCase()+'</button><button class="neu" type="button" data-a="next">NEXT MATCH</button><p>'+(why?esc(why):'Place the bet with your bookmaker, then log it here.')+'</p>'+(v.noOdds?'<p class="pace" id="mknote">The Market box is off, so this bet is logged at your minimum odds of '+c.minOdds+'. If the real price is different, the profit shown is an estimate. Settings, Market box, turns real odds back on.</p>':'')+(live&&live.id!=null?'<p class="pace" id="asnote">This match is linked. After you log the bet, its final result is checked for you and Won, Lost or Void is suggested.</p>':apiKey?'<p class="pace" id="asnote">Tip: pick the match with Live matches or Scan first. A linked match gets its result checked for you after you log the bet.</p>':'');
+ a+='<button class="buy" type="button" data-a="logbet"'+(why?' disabled':'')+'>LOG '+mkName(c.side,lineOf(c)).toUpperCase()+'</button><button class="neu" type="button" data-a="next">NEXT MATCH</button><p>'+(why?esc(why):'Place the bet with your bookmaker, then log it here.')+'</p>'+(v.noOdds?'<p class="pace" id="mknote">The Market box is off, so bets are logged without a real price and the profit shown is an estimate. Settings, Market box, turns real odds back on.</p>':'')+(live&&live.id!=null?'<p class="pace" id="asnote">This match is linked. After you log the bet, its final result is checked for you and Won, Lost or Void is suggested.</p>':apiKey?'<p class="pace" id="asnote">Tip: pick the match with Live matches or Scan first. A linked match gets its result checked for you after you log the bet.</p>':'');
  $('acts').innerHTML=a;
 
  const eb=$('endbtn');
@@ -2097,6 +2205,102 @@ function covRender(){
   return '<div class="covr"><b>'+esc(nm[0]+(nm[1]?' · '+nm[1]:''))+'</b><span>'+n+' seen · shots '+pc(1)+'% · xG '+pc(2)+'%</span></div>';
  }).join(''):'<div class="covr">Nothing yet. It fills in as you open, refresh or scan matches.</div>';
 }
+// ---- Forward test (this browser only): snapshots of matches you scan or open, final scores fetched later.
+const FWK='u35_fw',FWON='u35_fwon',FWQ='u35_fwq';
+let fw=[],fwOn=true,fwBusy=false,fwLast=0,fwArm=0,fwArmT=0;
+function fwLoad(){
+ try{
+  const d=JSON.parse(localStorage.getItem(FWK)||'[]');
+  if(Array.isArray(d))fw=d.filter(r=>r&&r.id!=null&&typeof r.at==='number'&&typeof r.m==='number'&&typeof r.gh==='number'&&typeof r.ga==='number').slice(-FW_KEEP).map(r=>{
+   const ok=Array.isArray(r.r)&&r.r.length===2&&typeof r.r[0]==='number'&&typeof r.r[1]==='number';
+   r.r=ok?r.r:(r.r==='v'||r.r==='x'?r.r:null);
+   if(typeof r.nx!=='number')r.nx=r.at+(100-r.m)*60000;
+   if(typeof r.k!=='number')r.k=0;
+   return r;
+  });
+ }catch(e){}
+ try{fwOn=localStorage.getItem(FWON)!=='0'}catch(e){}
+}
+function fwSave(){try{localStorage.setItem(FWK,JSON.stringify(fw))}catch(e){}}
+function fwQuota(){try{const q=JSON.parse(localStorage.getItem(FWQ)||'null');return q&&q.d===dayKey()?q.n:0}catch(e){return 0}}
+function fwUse(n){try{localStorage.setItem(FWQ,JSON.stringify({d:dayKey(),n:fwQuota()+n}))}catch(e){}}
+function fwMsg(t,bad){const m=$('fwmsg');if(!m)return;m.textContent=t||'';m.hidden=!t;m.className='pace'+(bad?' am':'')}
+// st: the parsed statistics of a call that worked (never after an error), so a failed call is never saved as "no data".
+function fwSee(f,vals,st){
+ if(!fwOn||!st)return;
+ if(fwNote(fw,f,vals,c,Date.now())){fwSave();fwRender()}
+}
+async function fwSettle(manual){
+ if(fwBusy)return;
+ if(!apiKey){if(manual)fwMsg('Add your API-Sports key in Settings first.',true);return}
+ if(!manual&&(!fwOn||inFrame()))return;
+ const now=Date.now(),room=manual?FW_BATCH:Math.min(FW_BATCH,FW_DAY-fwQuota());
+ const due=fw.filter(r=>fwDue(r,now,manual)).slice(0,Math.max(0,room));
+ fwLast=now;
+ if(!due.length){if(manual)fwMsg(fw.some(r=>!r.r)?'Nothing is ready to check yet. A match is checked about 40 minutes after it was saved.':'Every saved match already has its result.');return}
+ fwBusy=true;$('fwgo').disabled=true;
+ let done=0,wait=0,err='';
+ for(const r of due){
+  try{
+   const res=fwApply(r,apiFinal(await apiGet('/fixtures?id='+encodeURIComponent(r.id))),Date.now());
+   fwUse(1);
+   if(res==='wait')wait++;else done++;
+  }catch(e){fwUse(1);err=e.message;break}
+ }
+ fwBusy=false;$('fwgo').disabled=false;
+ fwSave();fwRender();
+ if(manual)fwMsg(err&&!done&&!wait?err:'Checked '+(done+wait)+': '+done+' finished'+(wait?', '+wait+' not final yet':'')+'.'+(err?' Stopped early: '+err:''),!!err);
+}
+function fwCopy(){
+ if(!fw.length){fwMsg('Nothing saved yet.',true);return}
+ const txt=fwCsv(fw),out=$('fw_out');out.hidden=true;
+ const fb=()=>{out.value=txt;out.hidden=false;out.focus();out.select();try{out.setSelectionRange(0,txt.length)}catch(e){}fwMsg("Couldn't copy automatically. The text is selected below: press and hold it, then tap Copy.",true)};
+ try{
+  if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(txt).then(()=>fwMsg('Copied '+fw.length+' matches as a table. Paste it into Notes or a spreadsheet.')).catch(fb);
+  else fb();
+ }catch(e){fb()}
+}
+function fwClear(){
+ if(!fw.length)return;
+ if(fwArm){fw=[];fwSave();fwArm=0;clearTimeout(fwArmT);fwMsg('');fwRender();return}
+ fwArm=1;clearTimeout(fwArmT);fwArmT=setTimeout(()=>{fwArm=0;fwRender()},4000);fwRender();
+}
+function fwRender(){
+ if(!$('fwh'))return;
+ const rp=fwReport(fw,c),p=pct1,n=rp.pass.n;
+ let kind='',head,text;
+ const st=rp.logged+(rp.logged===1?' match':' matches')+' saved, '+rp.settled+' with a final score'+(rp.waiting?', '+rp.waiting+' waiting':'')+'.';
+ if(!rp.logged){
+  head='NOTHING SAVED YET';
+  text=fwOn?'Scan or open a live match in your entry window and the panel saves a snapshot of what the feed said. About 40 minutes later, the next time the panel is open, it fetches the final score. Then this page shows which rules would have won.':'Saving is off. Turn it on below.';
+ }else if(!rp.tested){
+  kind='am';head=rp.settled?'NOTHING TO TEST YET':'WAITING FOR RESULTS';
+  text=st+(rp.settled?' The finished ones are outside your current window or were already decided.':' Final scores arrive about 40 minutes after a match is saved, once the panel is open. Tap Check results now to try.');
+ }else if(!n){
+  kind='am';head='NOTHING PASSED YET';
+  text=st+' None of the '+rp.tested+' finished matches passed every rule, so there is no win rate for your rules yet.';
+ }else{
+  const vd=rateVerdict(n,rp.pass.w);kind=vd.kind;head=vd.head;
+  text=rp.pass.w+' of '+n+' that passed every rule won ('+p(rp.rate)+'). Likely true rate: '+p(rp.lo)+' to '+p(rp.hi)+'.'
+   +(rp.notN?' The '+rp.notN+' that did not pass won '+p(rp.notW/rp.notN)+'.':'')
+   +(n<REC_MIN?' Below '+REC_MIN+' matches this is mostly luck, so keep saving matches.':' That is a sample, not a promise.');
+ }
+ const sg=$('fwsig');sg.className=kind;$('fwh').textContent=head;$('fwt').textContent=text;
+ $('fw_on').checked=fwOn;
+ $('fwres').hidden=!rp.settled;
+ $('fw_n').textContent=String(rp.logged);
+ $('fw_done').textContent=String(rp.settled);
+ $('fw_in').textContent=String(n);
+ $('fw_rate').textContent=n?p(rp.rate):'–';
+ $('fw_ci').textContent=n?p(rp.lo)+' to '+p(rp.hi):'–';
+ $('fw_fair').textContent=rp.fair==null?'–':rp.fair.toFixed(2)+(rp.fairSafe==null?'':' to '+rp.fairSafe.toFixed(2));
+ $('fw_not').textContent=rp.notN?p(rp.notW/rp.notN)+' ('+rp.notN+')':'–';
+ $('fw_skip').textContent=String(rp.outside+rp.decided+rp.voided);
+ const cell=x=>x.n?x.n+' · '+Math.round(x.w/x.n*100)+'%':'–';
+ $('fwtb').innerHTML=[['Avg','Average goals'],['Goals','Goals so far'],['SoT','Shots on target'],['xG','xG']].map(r=>{const e=rp.rules[r[0]];return '<tr><td>'+r[1]+'</td><td>'+cell(e.p)+'</td><td>'+cell(e.f)+'</td><td>'+(e.e||'–')+'</td></tr>'}).join('');
+ $('fwnote').textContent='Each match is saved once, at the first moment it passed every rule, otherwise the last time it was seen in your entry window. Matches outside the window or already decided are not saved. Results use the 90-minute score. The table judges each rule alone and the others are not held equal, so treat it as a hint. A saved match costs 1 request when its score is fetched, at most '+FW_DAY+' a day on its own. Saved on this device only: use Copy log to keep a backup.';
+ const cl=$('fwclear');cl.hidden=!rp.logged;cl.textContent=fwArm?'Tap again to clear '+rp.logged+(rp.logged===1?' match':' matches'):'Clear the log';
+}
 let apiKey='',live=null,lvList=[],lvListAt=0,lvBusy=false,lvT=0;
 let sugs={},chkBusy=false,chkLast=0,scItems=[],scShowOut=false;
 const SCAN_TAG={go:'PASSES',soon:'COMING',risk:'AT RISK',nodata:'NO DATA',out:'OUT'},SCAN_TAGC={go:'go',soon:'',risk:'am',nodata:'am',out:'bad'};
@@ -2215,6 +2419,7 @@ async function lvPick(id){
  const st=r[0]?apiStats(r[0],f.home.id,f.away.id):null;
  covSee(f,st);
  const vals=apiVals(f,st,{h:r[1],a:r[2]});
+ fwSee(f,vals,st);
  lvWrite(vals);update();snap();
  const synced=lvClock(f,lvListAt||Date.now());
  const miss=apiMissing(vals,true).filter(x=>!(c.xgSkip==='skip'&&x==='xG')),pr=$('pres');
@@ -2237,6 +2442,7 @@ async function lvRefresh(auto){
  const fx=fj?apiOne(fj):null,st=sj?apiStats(sj,live.home.id,live.away.id):null;
  covSee(fx,st);
  const vals=apiVals(fx,st,null);
+ fwSee(fx,vals,st);
  lvWrite(vals);update();snap();
  const synced=fx?lvClock(fx,Date.now()):false;
  const fin=apiDone(fx);
@@ -2282,6 +2488,7 @@ async function lvScan(){
    if(errs.length){bad++;firstErr=firstErr||errs[0]}
    const sst=r[0]?apiStats(r[0],f.home.id,f.away.id):null;
    covSee(f,sst);
+   fwSee(f,apiVals(f,sst,{h:r[1],a:r[2]}),sst);
    const x=scanClass(f,sst,{h:r[1],a:r[2]},c);
    scItems.push({f:f,k:x.k,why:x.why,order:order});
   };
@@ -2334,11 +2541,12 @@ const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 const btClamp=(x,lo,hi,d)=>{const n=parseInt(x,10);return isFinite(n)?Math.max(lo,Math.min(hi,n)):d};
 function btMsg(t,bad){const m=$('btmsg');m.textContent=t||'';m.hidden=!t;m.className='pace'+(bad?' am':'')}
 function btOpen(){
- $('btmk').textContent='Tests '+mkName(c.side,lineOf(c))+' with the rules in Settings: entry window '+c.minFrom+'–'+c.minTo+', minimum odds '+c.minOdds+'.';
+ $('btmk').textContent='Tests '+mkName(c.side,lineOf(c))+' with the rules in Settings: entry window '+c.minFrom+'–'+c.minTo+'.';
  const mi=$('bt_min'),v=parseInt(mi.value,10);
  if(!(v>=c.minFrom&&v<=c.minTo))mi.value=String(c.minFrom);
  $('btmh').textContent='Any minute from '+c.minFrom+' to '+c.minTo+', your entry window.';
  $('btkey').hidden=!!apiKey;
+ fwRender();
 }
 // One API call, waiting out the per-minute limit a few times before giving up.
 async function btGet(path){
@@ -2358,21 +2566,19 @@ function btRender(sm,info){
   kind='am';head='NOTHING PASSED';
   text='None of the '+sm.cnt.all+' matches checked passed your rules for '+nm+' at minute '+info.minute+'. Try more days, more matches or a wider league filter.';
  }else{
-  kind=r.kind==='idle'?'am':r.kind;head=r.head;
-  text=r.w+' of '+n+' matches that passed would have won ('+p(r.rate)+'). At your minimum odds of '+sm.odds+' you need '+p(r.be)+' to break even. Likely true rate: '+p(r.lo)+' to '+p(r.hi)+'.'
-   +(r.kind==='bad'?' Even the generous end is under break-even, so on these rules this market loses money at those odds.'
-    :r.kind==='go'?' Even the cautious end beats break-even. That is a sample of past matches, not a promise.'
-    :n<REC_MIN?' Below '+REC_MIN+' matches the win rate is mostly luck. Check more days or matches.'
-    :' The range straddles break-even, so this sample cannot tell.');
+  const vd=rateVerdict(n,r.w);kind=vd.kind;head=vd.head;
+  text=r.w+' of '+n+' matches that passed would have won ('+p(r.rate)+'). Likely true rate: '+p(r.lo)+' to '+p(r.hi)+'.'
+   +(sm.fair==null?' None won, so no price would have broken even.':' To profit you would need odds of at least '+sm.fair.toFixed(2)+(sm.fairSafe==null?'':' (up to '+sm.fairSafe.toFixed(2)+' to be safe)')+'. Compare that with the real price on your platform.')
+   +(n<REC_MIN?' Below '+REC_MIN+' matches the win rate is mostly luck. Check more days or matches.':' That is a sample of past matches, not a promise.');
  }
  sg.className=kind;$('bth').textContent=head;$('btt').textContent=text;
  $('bt_n').textContent=String(sm.cnt.all);
  $('bt_in').textContent=String(n);
  $('bt_rate').textContent=n?p(r.rate):'–';
- $('bt_bel').textContent='Break-even at odds '+sm.odds;
- $('bt_be').textContent=n?p(r.be):'–';
+ $('bt_bel').textContent='Win rate when not passed';
+ $('bt_be').textContent=sm.notN?p(sm.notW/sm.notN)+' ('+sm.notN+')':'–';
  $('bt_ci').textContent=n?p(r.lo)+' to '+p(r.hi):'–';
- $('bt_fair').textContent=n?sm.fair.toFixed(2)+' to '+sm.fairSafe.toFixed(2):'–';
+ $('bt_fair').textContent=sm.fair==null?'–':sm.fair.toFixed(2)+(sm.fairSafe==null?'':' to '+sm.fairSafe.toFixed(2));
  $('bt_base').textContent=sm.baseN?p(sm.baseRate)+' ('+sm.baseN+')':'–';
  $('bt_skip').textContent=String(sm.cnt.noavg+sm.cnt.dead+info.skipped);
  $('bttb').innerHTML=sm.byGoals.map(g=>'<tr><td>'+(g.goals>=9?'9+':g.goals)+'</td><td>'+g.n+'</td><td>'+g.w+'</td><td>'+p(g.rate)+'</td><td>'+(g.fair==null?'–':g.fair.toFixed(2))+'</td></tr>').join('');
@@ -2522,6 +2728,9 @@ document.addEventListener('click',e=>{
  else if(k==='lvscan')lvScan();
  else if(k==='scout'){scShowOut=!scShowOut;scRender()}
  else if(k==='chk')chkOpen(true);
+ else if(k==='fwsettle')fwSettle(true);
+ else if(k==='fwcopy')fwCopy();
+ else if(k==='fwclear')fwClear();
  else if(k==='mommode'){momMode=a.dataset.m==='sot'?'sot':'xg';try{localStorage.setItem('u35_mommode',momMode)}catch(e){}momRender(true)}
  else if(k==='btgo')btStart();
  else if(k==='btstop'){btStop=true;btMsg('Stopping after the current step…')}
@@ -2571,17 +2780,19 @@ bookLoad();
 applyMarket();
 recheck();
 update();
-snapLoad();renderSnaps();clkLoad();clkArm();clockTick();covLoad();covRender();
+snapLoad();renderSnaps();clkLoad();clkArm();clockTick();covLoad();covRender();fwLoad();fwRender();
 setInterval(clockTick,1000);
 $('ck_t').addEventListener('change',e=>clkFromTime(e.target.value));
 document.addEventListener('change',e=>{
  if(e.target.id&&/^i_(min|gh|ga|sotH|sotA|xgh|xga)$/.test(e.target.id)){clearTimeout(snapTimer);snapTimer=setTimeout(snap,600)}
 });
 $('ck_snd').addEventListener('change',e=>{clk.snd=e.target.checked;clkSave();if(clk.snd)ensureAudio()});
+$('fw_on').addEventListener('change',e=>{fwOn=e.target.checked;try{localStorage.setItem(FWON,fwOn?'1':'0')}catch(err){}fwRender()});
 $('ck_lv').addEventListener('change',e=>{clk.lv=e.target.checked;if(!clk.lv)clk.src=null;clkSave();clockTick()});
-document.addEventListener('visibilitychange',()=>{if(!document.hidden){clockTick();if(clockInfo(clk,c,Date.now()).k!=='off'&&!wl)keepAwake(true);if(Date.now()-chkLast>30000)chkOpen(false)}});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden){clockTick();if(clockInfo(clk,c,Date.now()).k!=='off'&&!wl)keepAwake(true);if(Date.now()-chkLast>30000)chkOpen(false);if(Date.now()-fwLast>600000)fwSettle(false)}});
 setTimeout(()=>chkOpen(false),1500);
-setInterval(()=>{if(!document.hidden)chkOpen(false)},120000);
+setTimeout(()=>fwSettle(false),3500);
+setInterval(()=>{if(!document.hidden){chkOpen(false);if(Date.now()-fwLast>600000)fwSettle(false)}},120000);
 setInterval(()=>{
  if(dayKey()!==s.dayDate){recheck();save();update();return}
  const m=s.lockUntil>Date.now()?Math.ceil((s.lockUntil-Date.now())/60000):0;
