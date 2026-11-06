@@ -234,6 +234,10 @@ section{padding:14px}
 .pres{margin:6px 0 0;font-size:11px;color:var(--mut)}
 .pres.am{color:var(--amb)}
 .pres.bad{color:var(--red)}
+.lvstat{margin:8px 0 0;font-size:13px;line-height:1.35;font-weight:600;color:var(--mut)}
+.lvstat.am{color:var(--amb)}
+.lvstat.ok{color:var(--grn)}
+.lvstat small{display:block;margin-top:2px;font-size:11px;font-weight:400;color:var(--mut)}
 .pu{margin-left:6px;padding:1px 8px;border-radius:5px;background:var(--chip);border:1px solid var(--line);color:var(--tx);font-size:11px;font-weight:600}
 .tl{position:relative;height:6px;border-radius:3px;background:var(--chip);margin:10px 0 3px}
 .tl .w{position:absolute;top:0;bottom:0;background:var(--grnbg);border:1px solid var(--grn);border-radius:3px}
@@ -435,6 +439,7 @@ body{touch-action:manipulation;-webkit-text-size-adjust:100%;-webkit-tap-highlig
      <button type="button" class="pu" id="lvunlink" data-a="lvunlink" hidden>Unlink</button>
      <label class="lvauto" id="lvautow" hidden><input type="checkbox" id="lvauto">Auto every 30 s</label>
     </div>
+    <p class="lvstat" id="lvstat" role="status" hidden></p>
     <p class="lk" id="lk" hidden><span>Check this match on</span><a id="lk_sofa" target="_blank" rel="noopener noreferrer">Sofascore</a> <a id="lk_fs" target="_blank" rel="noopener noreferrer">FootyStats</a><a id="lk_bm" target="_blank" rel="noopener noreferrer">BetMines</a><small>Opens a web search for the match name below.</small></p>
     <p class="pres" id="lvmsg" role="status" hidden></p>
     <div id="scres" hidden>
@@ -1552,9 +1557,21 @@ function lkSync(name){
  });
  $('lk').hidden=!any;
 }
+// Under the Live matches buttons while a match is linked: which numbers the feed did not fill, kept up to date as you type them in.
+function lvStat(v){
+ const el=$('lvstat');
+ if(!live){el.hidden=true;el.textContent='';return}
+ const nm=(live.home.name+' v '+live.away.name).slice(0,60),skipped=c.xgSkip==='skip'&&v.xgh==null&&v.xga==null;
+ const miss=apiMissing(v,true).filter(x=>!(skipped&&x==='xG'));
+ el.hidden=false;
+ el.className='lvstat'+(miss.length?' am':' ok');
+ el.innerHTML=miss.length
+  ?'Linked to '+esc(nm)+'. Not filled: '+esc(miss.join(', '))+'. Type '+(miss.length>1?'them':'it')+' in.'+(live.why?'<small>'+esc(live.why.trim())+'</small>':'')
+  :'Linked to '+esc(nm)+'. Shots on target and xG are filled'+(skipped?' (xG skipped by your setting)':'')+'.';
+}
 function update(){
  const v=rd(),ev=evaluate(v,c),vd=verdict(ev,v,c),left=betsLeft(s,c),why=gate(v,ev),fin=s.ended||!!s.halt,locked=s.lockUntil>Date.now();
- lkSync(v.name);
+ lkSync(v.name);lvStat(v);
  const todayLeft=(fin||s.dayMsg||s.day>c.days)?0:Math.max(0,c.perDay-s.dayBets);
  $('lbl').textContent='Day '+Math.min(s.day,c.days)+' of '+c.days+': bets left today';
  $('bleft').textContent=String(todayLeft);
@@ -2279,7 +2296,7 @@ function lvAutoSync(){
  if(live&&$('lvauto').checked)lvT=setInterval(()=>{if(!document.hidden)lvRefresh(true)},30000);
 }
 function lvUnlink(quiet){
- live=null;lvControls(false);$('lvauto').checked=false;lvAutoSync();
+ live=null;lvControls(false);$('lvauto').checked=false;lvAutoSync();$('lvstat').hidden=true;
  if(!quiet)lvMsg('Unlinked. The numbers stay as they are.');
 }
 async function lvAvg(id,get){
@@ -2324,6 +2341,7 @@ async function lvPick(id){
  const errs=[],safe=p=>p.catch(e=>{errs.push(e.message);return null});
  const r=await Promise.all([safe(apiGet('/fixtures/statistics?fixture='+encodeURIComponent(f.id))),safe(lvAvg(f.home.id)),safe(lvAvg(f.away.id))]);
  const st=r[0]?apiStats(r[0],f.home.id,f.away.id):null;
+ live.why=lvWhy(st);
  covSee(f,st);
  const vals=apiVals(f,st,{h:r[1],a:r[2]});
  fwSee(f,vals,st);
@@ -2347,6 +2365,7 @@ async function lvRefresh(auto){
   lvBusy=false;return;
  }
  const fx=fj?apiOne(fj):null,st=sj?apiStats(sj,live.home.id,live.away.id):null;
+ if(sj)live.why=lvWhy(st);
  covSee(fx,st);
  const vals=apiVals(fx,st,null);
  fwSee(fx,vals,st);
