@@ -26,7 +26,7 @@ img{max-width:100%}
 <style>
 :root{
  /* Layout: one 360px control panel in the style of the reference. Bets left on top, a numbered chip for every bet in the session, match inputs that turn green or red as they pass or fail, a big verdict box, six rule rows, session stats with a goal check, then open bets and actions. */
- --xg1:#3987e5;--xg2:#d95926;
+ --xg1:var(--a97);--xg2:var(--tx);
  --bg:#080c0f;--panel:#10151a;--card:#161c22;--line:#232b33;--tx:#edf1f3;--mut:#8693a0;
  --grn:#34d17f;--grnbg:#0e2a1c;--red:#ff5b60;--redbg:#2d1316;--amb:#f2b23d;--ambbg:#2a2110;--chip:#1b222a;
  --a97:var(--amb);--ab97:var(--ambbg);--a97dim:var(--amb);
@@ -35,9 +35,9 @@ img{max-width:100%}
  color-scheme:dark;
 }
 @media (prefers-color-scheme: light){
- :root:not([data-theme="dark"]){--xg1:#2a78d6;--xg2:#eb6834;--bg:#e5eaed;--panel:#ffffff;--card:#f0f3f5;--line:#d8dee3;--tx:#12181d;--mut:#5f6e7c;--grn:#0b8a4b;--grnbg:#dff4e8;--red:#cf2f35;--redbg:#fce7e8;--amb:#94600c;--ambbg:#fbf0d9;--chip:#e2e7eb;color-scheme:light}
+ :root:not([data-theme="dark"]){--xg1:var(--a97);--xg2:var(--tx);--bg:#e5eaed;--panel:#ffffff;--card:#f0f3f5;--line:#d8dee3;--tx:#12181d;--mut:#5f6e7c;--grn:#0b8a4b;--grnbg:#dff4e8;--red:#cf2f35;--redbg:#fce7e8;--amb:#94600c;--ambbg:#fbf0d9;--chip:#e2e7eb;color-scheme:light}
 }
-:root[data-theme="light"]{--xg1:#2a78d6;--xg2:#eb6834;--bg:#e5eaed;--panel:#ffffff;--card:#f0f3f5;--line:#d8dee3;--tx:#12181d;--mut:#5f6e7c;--grn:#0b8a4b;--grnbg:#dff4e8;--red:#cf2f35;--redbg:#fce7e8;--amb:#94600c;--ambbg:#fbf0d9;--chip:#e2e7eb;color-scheme:light}
+:root[data-theme="light"]{--xg1:var(--a97);--xg2:var(--tx);--bg:#e5eaed;--panel:#ffffff;--card:#f0f3f5;--line:#d8dee3;--tx:#12181d;--mut:#5f6e7c;--grn:#0b8a4b;--grnbg:#dff4e8;--red:#cf2f35;--redbg:#fce7e8;--amb:#94600c;--ambbg:#fbf0d9;--chip:#e2e7eb;color-scheme:light}
 
 @supports (color:color-mix(in srgb,red 50%,transparent)){
  :root{--a97:color-mix(in srgb,var(--amb) 97%,transparent);--ab97:color-mix(in srgb,var(--ambbg) 97%,transparent);--a97dim:color-mix(in srgb,var(--amb) 45%,transparent)}
@@ -93,6 +93,7 @@ section{padding:14px}
 .mg input.a{border-color:var(--amb);color:var(--amb);background:var(--ambbg)}
 .exnote{margin:0 0 8px;font-size:11px;color:var(--amb)}
 .mg .mt{grid-column:1/-1}
+.mg .lnx{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0}
 .live{margin:0 0 10px}
 .lvrow{display:flex;align-items:center;flex-wrap:wrap;gap:8px}
 .lvbtn{height:34px;padding:0 14px}
@@ -160,12 +161,12 @@ section{padding:14px}
 .snage.am{color:var(--amb);font-weight:600}
 .snaps{margin-top:10px}
 /* xG graph: thin lines, hairline grid, a dashed limit, line keys instead of boxes */
-.xgcard{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px;margin-bottom:10px}
+.xgcard{margin-bottom:10px}
 .xgleg{display:flex;flex-wrap:wrap;gap:4px 12px;margin:0 0 8px;font-size:11px;color:var(--mut)}
 .xgk{display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
 .xgk b{color:var(--tx);font-weight:700;font-variant-numeric:tabular-nums}
 .xgk i{display:inline-block;flex:none}
-.xgk .ln{width:16px;height:0;border-top:2px solid var(--tx)}
+.xgk .ln{width:16px;height:0;border-top:1.5px solid var(--tx)}
 .xgk .ln.s1{border-top-color:var(--xg1)}
 .xgk .ln.s2{border-top-color:var(--xg2)}
 .xgk .ln.lim{border-top:2px dashed var(--tx);opacity:.7}
@@ -173,16 +174,16 @@ section{padding:14px}
 .xgbox{position:relative;touch-action:pan-y;border-radius:6px;-webkit-tap-highlight-color:transparent}
 .xgbox:focus-visible{outline:2px solid var(--grn);outline-offset:2px}
 .xgbox svg{display:block;width:100%;height:auto}
-.xgbox .gl{stroke:var(--line);stroke-width:1}
+.xgbox .gl{stroke:var(--line);stroke-width:1;opacity:.55}
 .xgbox .base{stroke:var(--mut);stroke-width:1;opacity:.5}
-.xgbox .win{fill:var(--mut);opacity:.16}
+.xgbox .win{fill:var(--mut);opacity:.1}
 .xgbox .tk{font:500 10px var(--body);fill:var(--mut)}
 .xgbox .lm{stroke:var(--tx);stroke-width:1.25;stroke-dasharray:4 3;opacity:.7}
-.xgbox .lmt{font:600 10px var(--body);fill:var(--tx);paint-order:stroke;stroke:var(--card);stroke-width:3px;stroke-linejoin:round}
-.xgbox .ls{fill:none;stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+.xgbox .lmt{font:600 10px var(--body);fill:var(--tx);paint-order:stroke;stroke:var(--panel);stroke-width:3px;stroke-linejoin:round}
+.xgbox .ls{fill:none;stroke-width:1.5;stroke-linejoin:round;stroke-linecap:round}
 .xgbox .ls.s1{stroke:var(--xg1)}
 .xgbox .ls.s2{stroke:var(--xg2)}
-.xgbox .dt{stroke:var(--card);stroke-width:2}
+.xgbox .dt{stroke:var(--panel);stroke-width:1.5}
 .xgbox .dt.s1{fill:var(--xg1)}
 .xgbox .dt.s2{fill:var(--xg2)}
 .xgbox .cx{stroke:var(--tx);stroke-width:1;opacity:.45}
@@ -199,7 +200,7 @@ section{padding:14px}
 .momseg button{min-height:36px;padding:0 14px;background:none;border:0;color:var(--mut);font:600 12px var(--body)}
 .momseg button+button{border-left:1px solid var(--line)}
 .momseg button[aria-pressed="true"]{background:var(--chip);color:var(--tx)}
-.xgbox .ma{stroke-width:1.5;stroke-linejoin:round;fill-opacity:.55}
+.xgbox .ma{stroke-width:1;stroke-linejoin:round;fill-opacity:.28}
 .xgbox .ma.s1{fill:var(--xg1);stroke:var(--xg1)}
 .xgbox .ma.s2{fill:var(--xg2);stroke:var(--xg2)}
 .xgtip .tr i.none{border-top-color:transparent}
@@ -387,7 +388,8 @@ body.compact{padding-block:10px}
 .compact .rules{margin-bottom:0}
 .compact .grid{margin-bottom:8px}
 .compact .pace{margin-bottom:0}
-.compact #sig,.compact #msig{margin-bottom:8px}
+.compact #msig{margin-bottom:8px}
+#sig{position:absolute;width:1px;height:1px;margin:-1px;padding:0;border:0;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap}
 .compact #banner{margin-bottom:8px}
 .compact .acts{margin-bottom:8px}
 .compact .btns{display:grid;grid-template-columns:1fr 1fr;gap:8px}
@@ -464,7 +466,7 @@ body{touch-action:manipulation;-webkit-text-size-adjust:100%;-webkit-tap-highlig
   <div class="match fold" id="fd-match">
    <button type="button" class="fhd" data-f="match" aria-expanded="true"><span class="ft">Match numbers</span><span class="fs" id="fs-match"></span><i class="chev"></i></button>
    <div class="fb">
-   <p class="exnote" id="exnote">Example numbers are loaded. Overwrite them, or press Next match to clear.</p>
+   <p class="exnote" id="exnote">Example numbers are loaded. Pick a live match or paste a stats line to replace them, or press Next match to clear.</p>
    <div class="live" id="live">
     <div class="lvrow">
      <button type="button" class="pgo lvbtn" id="lvopen" data-a="lvopen">Live matches</button>
@@ -495,14 +497,14 @@ body{touch-action:manipulation;-webkit-text-size-adjust:100%;-webkit-tap-highlig
     <div class="grp">Before kick-off</div>
     <label>Home avg total goals (last 5)<input id="i_avgH" inputmode="decimal" autocomplete="off" value="2.2"></label>
     <label>Away avg total goals (last 5)<input id="i_avgA" inputmode="decimal" autocomplete="off" value="2.4"></label>
-    <div class="grp">Live now</div>
-    <label class="mt">Minute<input id="i_min" inputmode="numeric" autocomplete="off" value="60"></label>
-    <label>Home goals<input id="i_gh" inputmode="numeric" autocomplete="off" value="1"></label>
-    <label>Away goals<input id="i_ga" inputmode="numeric" autocomplete="off" value="0"></label>
-    <label>Home shots on target<input id="i_sotH" inputmode="numeric" autocomplete="off" value="2"></label>
-    <label>Away shots on target<input id="i_sotA" inputmode="numeric" autocomplete="off" value="1"></label>
-    <label>Home xG<input id="i_xgh" inputmode="decimal" autocomplete="off" value="0.7"></label>
-    <label>Away xG<input id="i_xga" inputmode="decimal" autocomplete="off" value="0.9"></label>
+    <div class="grp lnx">Live now</div>
+    <label class="lnx">Minute<input tabindex="-1" id="i_min" inputmode="numeric" autocomplete="off" value="60"></label>
+    <label class="lnx">Home goals<input tabindex="-1" id="i_gh" inputmode="numeric" autocomplete="off" value="1"></label>
+    <label class="lnx">Away goals<input tabindex="-1" id="i_ga" inputmode="numeric" autocomplete="off" value="0"></label>
+    <label class="lnx">Home shots on target<input tabindex="-1" id="i_sotH" inputmode="numeric" autocomplete="off" value="2"></label>
+    <label class="lnx">Away shots on target<input tabindex="-1" id="i_sotA" inputmode="numeric" autocomplete="off" value="1"></label>
+    <label class="lnx">Home xG<input tabindex="-1" id="i_xgh" inputmode="decimal" autocomplete="off" value="0.7"></label>
+    <label class="lnx">Away xG<input tabindex="-1" id="i_xga" inputmode="decimal" autocomplete="off" value="0.9"></label>
     <label class="mt mbox">Match name (optional)<input id="i_name" type="text" autocomplete="off" maxlength="40" value="Example match"></label>
    </div>
    <div class="tl"><i class="w" id="tw"></i><i class="n" id="tn" hidden></i></div>
@@ -668,7 +670,7 @@ body{touch-action:manipulation;-webkit-text-size-adjust:100%;-webkit-tap-highlig
   </div>
   <button class="wide pri" type="button" data-a="apply">Apply and start new session</button>
  </section>
- <footer>Numbers are typed in, or pulled from your own API-Sports key if you add one. Not connected to a bookmaker. No bet is guaranteed.</footer>
+ <footer>Numbers come from a pasted stats line, or are pulled from your own API-Sports key if you add one. Not connected to a bookmaker. No bet is guaranteed.</footer>
 </main>
 
 <script>
@@ -840,7 +842,7 @@ function signalAll(v,c){
   const s=am.slice().sort((a,b)=>b.passed-a.passed||(b.cur?1:0)-(a.cur?1:0)||a.line-b.line)[0];
   out={k:'am',head:'WAIT',pick:null,text:'Closest fit is '+s.name+'. '+s.text};
  }else if(rows.every(r=>r.k==='idle')){
-  out={k:'idle',head:'WAITING FOR MATCH NUMBERS',pick:null,text:'Type the numbers in, or pick a live match. All nine lines update as you type.'};
+  out={k:'idle',head:'WAITING FOR MATCH NUMBERS',pick:null,text:'Pick a live match or paste a stats line. All nine lines update as the numbers come in.'};
  }else if(win==='closed'){
   out={k:'bad',head:'WINDOW CLOSED',pick:null,text:'The window closed at minute '+c.minTo+'. Nothing to bet on this match. Move on to the next one.'};
  }else if(!live){
@@ -1660,11 +1662,12 @@ function lvStat(v){
  const el=$('lvstat');
  if(!live){el.hidden=true;el.textContent='';return}
  const nm=(live.home.name+' v '+live.away.name).slice(0,60),skipped=c.xgSkip==='skip'&&v.xgh==null&&v.xga==null;
+ const EX={'minute or score':'min 62 score 1-0','shots on target':'sot 2 1','xG':'xg 0.7 0.9','average goals':'avg 2.1 2.3'};
  const miss=apiMissing(v,true).filter(x=>!(skipped&&x==='xG'));
  el.hidden=false;
  el.className='lvstat'+(miss.length?' am':' ok');
  el.innerHTML=miss.length
-  ?'Linked to '+esc(nm)+'. Not filled: '+esc(miss.join(', '))+'. Type '+(miss.length>1?'them':'it')+' in.'+(live.why?'<small>'+esc(live.why.trim())+'</small>':'')
+  ?'Linked to '+esc(nm)+'. Not filled: '+esc(miss.join(', '))+'. Add '+(miss.length>1?'them':'it')+' with the stats line below, for example: '+esc(miss.map(x=>EX[x]||'').filter(Boolean).join(' '))+'.'+(live.why?'<small>'+esc(live.why.trim())+'</small>':'')
   :'Linked to '+esc(nm)+'. Shots on target and xG are filled'+(skipped?' (xG skipped by your setting)':'')+'.';
 }
 let msK='idle';
@@ -2081,7 +2084,7 @@ function xgRender(force){
  $('xgbox').setAttribute('aria-label','xG by minute. '+(L?'Latest at minute '+L.m+': '+(M.over?'total '+xgF(L.t)+', ':'')+'home '+xgF(L.h)+', away '+xgF(L.a)+'. Use the left and right arrow keys to read each point.':'No readings yet.'));
  $('fs-xg').textContent=L?(M.over?xgF(L.t)+' total':xgF(L.h)+' · '+xgF(L.a))+" at "+L.m+"'":'No readings';
  const lastIn=snaps.length&&!n;
- $('xgnote').textContent=n===0?(lastIn?'The numbers have no xG yet. Not every league has it.':'No xG readings yet. Link a live match, or type the minute and both xG values. A point is added each time they change.')
+ $('xgnote').textContent=n===0?(lastIn?'The numbers have no xG yet. Not every league has it.':'No xG readings yet. Link a live match, or paste a stats line with the minute and both xG values (min 62 xg 0.7 0.9). A point is added each time they change.')
   :n===1?'One reading so far, at '+M.pts[0].m+"'. The line starts with the second."
   :n+' readings, '+M.pts[0].m+"' to "+L.m+"'. The graph starts when you link the match; earlier minutes cannot be fetched.";
  // table twin of the chart
@@ -2491,7 +2494,7 @@ async function lvPick(id){
  const synced=lvClock(f,lvListAt||Date.now());
  const miss=apiMissing(vals,true).filter(x=>!(c.xgSkip==='skip'&&x==='xG')),pr=$('pres');
  pr.hidden=false;pr.className='pres'+(miss.length?' am':'');
- $('prt').textContent='Filled from API-Sports: '+lvSummary(vals)+'.'+(c.xgSkip==='skip'&&vals.xgh==null&&vals.xga==null?' xG is skipped (your setting).':'')+(miss.length?' Not provided: '+miss.join(', ')+'. Type those in.'+lvWhy(st):' Check them against the screen.');
+ $('prt').textContent='Filled from API-Sports: '+lvSummary(vals)+'.'+(c.xgSkip==='skip'&&vals.xgh==null&&vals.xga==null?' xG is skipped (your setting).':'')+(miss.length?' Not provided: '+miss.join(', ')+'. Add those with the stats line below.'+lvWhy(st):' Check them against the screen.');
  $('pundo').hidden=false;
  lvMsg('Linked to '+f.home.name+' v '+f.away.name+'. Updated '+hhmmss()+'.'+(synced?' Clock synced to the match.':'')+(errs.length?' Problem: '+errs[0]:''),errs.length?'am':false);
  lvBusy=false;
