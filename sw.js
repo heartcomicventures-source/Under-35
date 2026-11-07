@@ -20,11 +20,17 @@ self.addEventListener('push',function(e){
 self.addEventListener('notificationclick',function(e){
   e.notification.close();
   // Only ever open this app: a link to anywhere else falls back to the app's own address.
-  var base=self.registration.scope,u=new URL((e.notification.data&&e.notification.data.u)||'./',base);
-  if(u.origin!==new URL(base).origin)u=new URL(base);
-  u=u.href;
+  var base=new URL(self.registration.scope),u=new URL((e.notification.data&&e.notification.data.u)||'./',base);
+  if(u.origin!==base.origin)u=new URL(base.href);
+  // The site's front page is a landing page, so an alert for the app itself opens the panel.
+  if(u.pathname===base.pathname||u.pathname===base.pathname+'index.html')u=new URL('panel.html',base);
+  var want=u.origin+u.pathname;
   e.waitUntil(self.clients.matchAll({type:'window',includeUncontrolled:true}).then(function(list){
-    for(var i=0;i<list.length;i++){if('focus' in list[i])return list[i].focus()}
-    return self.clients.openWindow(u);
+    for(var i=0;i<list.length;i++){
+      var c=list[i],cu='';
+      try{var x=new URL(c.url);cu=x.origin+x.pathname}catch(err){}
+      if(cu===want&&'focus' in c)return c.focus();
+    }
+    return self.clients.openWindow(u.href);
   }));
 });

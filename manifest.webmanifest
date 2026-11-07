@@ -2,7 +2,7 @@
   "name": "SPORTHUB",
   "short_name": "SPORTHUB",
   "id": "./",
-  "start_url": "./",
+  "start_url": "panel.html",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
