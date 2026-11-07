@@ -846,20 +846,18 @@ body.pg3 .v2[data-cur="3"] [data-pg]:not([data-pg~="3"]){display:none!important}
 /* ===== Build 63: the "Day x of y: bets left today" block (heading, big number, count line) is taken off the screen. The same counts are in the Session figures. ===== */
 #v-bet .stk{display:none!important}
 
-/* ===== Build 65: Success percentage and ROI under the minute and score, the odds for this bet, and small Under / Over chips ===== */
+/* ===== Build 65: Success percentage (with the Under or Over it is for) next to the minute and score, and small Under / Over chips ===== */
 #msig .mst{margin:12px 0 0}
-#msig .msod{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin:8px 0 12px}
-#msig .msod>div{min-width:0;flex:1}
-#msig .msod label{display:block;font:var(--t-label);color:var(--mut)}
-#msig #ms_note{margin:2px 0 0;font:var(--t-label);color:var(--mut)}
-#msig .msod input{flex:none;width:112px;min-height:44px;padding:8px 10px;font:400 16px/22px var(--body);text-align:right;background:var(--card);color:var(--tx);border:1px solid var(--line);border-radius:8px}
-#msig .msm .scr{font-variant-numeric:normal}
+#msig .msv{display:flex;align-items:baseline;flex-wrap:wrap;column-gap:8px}
+#msig #ms_oc{font:var(--t-label);color:var(--mut)}
+#msig #ms_sc{font-variant-numeric:normal}
+#msig #ms_note{margin:8px 0 12px;font:var(--t-label);color:var(--mut)}
 #msig .msc{flex-direction:row;justify-content:center;align-items:baseline;gap:0;min-height:0;padding:9px 6px;border-radius:8px}
 #msig .msc i,#msig .msc em{font:600 16px/22px var(--body);letter-spacing:0}
 #msig .msc span{margin:0 6px;font:400 16px/22px var(--body);color:var(--mut)}
 @media (min-width:900px){
- #msig .mst{margin-top:8px}#msig .mst>div{padding-top:8px;padding-bottom:8px}#msig .msod{margin:2px 0 6px}
- /* the left column is taller now (it holds the percentage row and the odds box), so the Session figures on the right get roomier spacing */
+ #msig .mst{margin-top:8px}#msig .mst>div{padding-top:8px;padding-bottom:8px}#msig #ms_note{margin:6px 0 8px}
+ /* the Session figures on the right get roomier spacing so the two columns end near each other */
  #fd-stats .grid>div{padding-top:16px;padding-bottom:16px}
 }
 </style>
@@ -1649,8 +1647,6 @@ function recordStats(book,plan,mk){
  }
  return o;
 }
-// Odds are optional: a number from 1.01 to 1000.
-function parseOdds(v){const x=num(v);return x!=null&&x>1&&x<=1000?Math.round(x*100)/100:null}
 function pcdf(k,l){let t=Math.exp(-l),s=t;for(let i=1;i<=k&&i<200;i++){t*=l/i;s+=t}return Math.min(1,s)}
 // Success percentage for the live match: the chance that the line in use wins, from the minute, the score and the numbers entered.
 // Goals still to come are Poisson. The pace is the xG seen so far (else 0.3 per shot on target, else the goals) blended with the last-5
@@ -1668,6 +1664,12 @@ function liveProb(v,side,line){
  if(side==='over'){const k=Math.ceil(line)-G;p=k<=0?1:1-pcdf(k-1,lam)}
  else{const k=Math.floor(line)-G;p=k<0?0:pcdf(k,lam)}
  return{p:Math.max(0,Math.min(1,p)),lam:lam};
+}
+// The outcome with the high chance on this line: the Under or the Over, whichever is likelier for the match in play (the line's own side when they are level).
+function liveOutcome(v,side,line){
+ const P=liveProb(v,side==='over'?'over':'under',line);if(!P)return null;
+ if(P.p>=0.5)return{side:side==='over'?'over':'under',p:P.p,lam:P.lam};
+ return{side:side==='over'?'under':'over',p:1-P.p,lam:P.lam};
 }
 const REC_TAG='U35DATA ';
 // Text you can paste into Notes or a message: a short summary plus one data line that recordImport can read back.
@@ -2272,22 +2274,6 @@ function msigWhen(){
 const SIGCLS={bet:'go',soon:'ok',lean:'ok',wait:'am',no:'bad',lost:'dn',won:'dn',idle:''};
 const SIGWORD={bet:'bet now',soon:'on track',lean:'leans this way',wait:'wait',no:'no bet',lost:'already lost',won:'already won',idle:'no numbers yet'};
 // The card above the verdict: which of the nine goal lines fits, and when to bet it. The pick can be switched to in one tap.
-// Success percentage and ROI for the live match, with the odds for this bet. ROI = success percentage x odds - 1 (the odds typed here, else the typical odds in Settings).
-let typOdds=null;
-const msStat=document.createElement('div');msStat.id='msstat';
-msStat.innerHTML='<div class="grid mst"><div><small>Success percentage</small><b id="ms_sp">–</b></div><div><small>ROI</small><b id="ms_roi">–</b></div></div><div class="msod"><div><label for="bet_od">Odds for this bet</label><p id="ms_note"></p></div><input id="bet_od" inputmode="decimal" autocomplete="off" placeholder="Optional" aria-describedby="ms_note"></div>';
-const odIn=msStat.querySelector('#bet_od'),spEl=msStat.querySelector('#ms_sp'),roiEl=msStat.querySelector('#ms_roi'),noteEl=msStat.querySelector('#ms_note');
-function msStatsUpdate(v){
- const P=liveProb(v,c.side==='over'?'over':'under',lineOf(c)),p=P?P.p:null,od=parseOdds(odIn.value)||typOdds;
- const pc=p==null?null:p>=1?100:p<=0?0:Math.min(99,Math.max(1,Math.round(p*100)));
- spEl.textContent=pc==null?'–':pc+'%';
- const r=pc!=null&&od?pc/100*od-1:null;
- roiEl.textContent=r==null?'–':(r>=0?'+':'-')+Math.abs(r*100).toFixed(1)+'%';
- odIn.placeholder=typOdds?'Typical '+typOdds.toFixed(2):'Optional';
- noteEl.textContent=p==null?'Enter the minute and the score to see it.':!od?'Add the odds, or typical odds in Settings, to see ROI.':'An estimate. ROI = success percentage × odds − 1.';
-}
-odIn.addEventListener('input',()=>msStatsUpdate(rd()));
-function setTypOdds(v,keep){typOdds=parseOdds(v);if(!keep){try{if(typOdds)localStorage.setItem('u35_odds',String(typOdds));else localStorage.removeItem('u35_odds')}catch(e){}update()}}
 function msigRender(v){
  const el=$('msig'),S=signalAll(v,c),pin=pinOf(c);
  let head=S.head,text=S.text,cls=S.k==='idle'?'':S.k;
@@ -2299,17 +2285,18 @@ function msigRender(v){
  }
  const chip=(side,label)=>{const r=S.sides[side],on=c.side===side;return '<div class="msc '+SIGCLS[r.st]+(on?' sel':'')+'" role="img" aria-label="'+esc(label+': '+SIGWORD[r.st]+(r.st==='bet'||r.st==='soon'||r.st==='lean'||r.st==='wait'?' ('+r.name+')':''))+'"'+(on?' aria-current="true"':'')+'><i>'+label+'</i><span aria-hidden="true">/</span><em>'+r.lbl+'</em></div>'};
  const ctx=[v.min!=null?v.min+"'":null,(v.gh!=null&&v.ga!=null)?v.gh+'-'+v.ga:null].filter(Boolean).join(' ');
- const ctxH='<span class="scr">'+esc(ctx)+'</span>';
- const mline=v.name||ctx?'<div class="msm">'+(v.name?'<span>'+esc(v.name)+'</span>':'')+(ctx?'<em>'+ctxH+'</em>':'')+'</div>':'';
+ const mline=v.name?'<div class="msm"><span>'+esc(v.name)+'</span></div>':'';
+ // Success percentage: the chance of the Under or Over with the high chance for this match in play, and which one it is
+ const OC=liveOutcome(v,c.side,lineOf(c));
+ const spc=OC?(OC.p>=1?100:OC.p<=0?0:Math.min(99,Math.max(1,Math.round(OC.p*100)))):null;
+ const stat='<div id="msstat"><div class="grid mst"><div><small>Success percentage</small><span class="msv"><b id="ms_sp">'+(spc==null?'–':spc+'%')+'</b>'+(OC?'<span id="ms_oc">'+esc(mkName(OC.side,lineOf(c)))+'</span>':'')+'</span></div><div><small>Minute and score</small><b id="ms_sc">'+esc(ctx||'–')+'</b></div></div><p id="ms_note">'+(OC?'An estimate from the live numbers, not a promise.':'Enter the minute and the score to see it.')+'</p></div>';
  msK=S.k;msHead=head;msCls=cls;
  const from=c.basis==='live'?'the score and shots on target':'the score, shots on target, xG and average goals';
- const h='<div class="msh" aria-live="polite"><small>Which market, and when</small>'+mline+'</div><div id="msslot"></div><div id="mswhen"></div><div class="msh" aria-live="polite"><p>'+esc(text)+'</p>'+(S.why&&S.why.length?'<ul class="msy">'+S.why.map(w=>'<li><span class="msyn">'+esc(w.name)+'</span> '+esc(w.text)+'</li>').join('')+'</ul>':'')+'</div>'
+ const h='<div class="msh" aria-live="polite"><small>Which market, and when</small>'+mline+'</div>'+stat+'<div id="mswhen"></div><div class="msh" aria-live="polite"><p>'+esc(text)+'</p>'+(S.why&&S.why.length?'<ul class="msy">'+S.why.map(w=>'<li><span class="msyn">'+esc(w.name)+'</span> '+esc(w.text)+'</li>').join('')+'</ul>':'')+'</div>'
   +'<div class="msg">'+chip('under','Under')+chip('over','Over')+'</div>'
   +(pin?'<p class="msn">The market is held at '+esc(mkName(pin.side,pin.line))+' in Settings.</p><button type="button" class="msu" data-a="unpin">Let the panel choose</button>':'<p class="msn">The panel picks the line itself from '+from+'. Each line uses its own limits from Settings.</p>');
  el.hidden=false;el.className=cls;
  if(el.dataset.h!==h){el.dataset.h=h;el.innerHTML=h}
- const sl=$('msslot');if(sl)sl.replaceWith(msStat);
- msStatsUpdate(v);
  msigWhen();
 }
 // The decision and the Log button, pinned to the bottom of the Bet tab so Log is always one tap away.
@@ -3493,7 +3480,6 @@ function nextMatch(focus){
  $('scres').hidden=true;scItems=[];
  lvUnlink(true);lvMsg('');
  INP.concat(['name']).forEach(k=>{$('i_'+k).value=''});
- odIn.value='';
  $('exnote').hidden=true;
  undoSnap=null;$('pundo').hidden=true;$('pres').hidden=true;$('paste').value='';
  clockReset();snapReset();
@@ -3624,8 +3610,6 @@ function buildForm(){
   '<label>Market<select id="f_pin"><option value=""'+(pinOf(c)?'':' selected')+'>Auto: the panel decides</option>'+MKT_ALL.map(a=>{const k=mkKey(a[0],a[1]);return '<option value="'+k+'"'+(c.pin===k?' selected':'')+'>'+mkName(a[0],a[1])+'</option>'}).join('')+'</select></label>'+
    '<label>Decide from<select id="f_basis"><option value="live"'+(c.basis==='live'?' selected':'')+'>Score and shots on target</option><option value="all"'+(c.basis==='live'?'':' selected')+'>Also xG and average goals</option></select></label>'+
    '<p class="pace">Auto picks the Under or Over line that fits the live numbers. Pick a line to hold it instead.</p>'+
-   '<label>Typical odds<input id="f_odds" inputmode="decimal" autocomplete="off" placeholder="For example 1.85" value="'+(typOdds||'')+'"></label>'+
-   '<p class="pace">Used for ROI when you leave the odds for a bet empty.</p>'+
    fg('sd','Discipline',grid(['days','perDay','dayLoss','cool','maxStreak'])+
    sel('gate','Betting gate',[['block','Only when all rules pass'],['warn','Warn only']]))+
   fg('sm',mkName(c.side,lineOf(c))+' rules',(c.side==='over'?grid(c.basis==='live'?['minFrom','minTo','ovGoals','ovSot']:['ovAvg','minFrom','minTo','ovGoals','ovSot','ovXg']):grid(c.basis==='live'?['minFrom','minTo','goalsBelow','sotMax']:['avgMax','minFrom','minTo','goalsBelow','sotMax','xgMax']))+
@@ -3641,7 +3625,6 @@ function buildForm(){
   $('f_basis').onchange=e=>setBasis(e.target.value);
  $('f_theme').value=theme;$('f_theme').onchange=e=>setTheme(e.target.value);
  $('f_pages').value=pgMode;$('f_pages').onchange=e=>setPages(e.target.value);
- $('f_odds').onchange=e=>setTypOdds(e.target.value);
  applyFold();pgTag();
 }
 function read(){
@@ -3737,7 +3720,6 @@ if(!s)fresh();
 keyLoad();
 pnLoad();
 bookLoad();
-try{setTypOdds(localStorage.getItem('u35_odds'),true)}catch(e){}
 
 recheck();
 update();
