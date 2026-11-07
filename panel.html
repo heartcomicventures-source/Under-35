@@ -860,6 +860,12 @@ body.pg3 .v2[data-cur="3"] [data-pg]:not([data-pg~="3"]){display:none!important}
  /* the Session figures on the right get roomier spacing so the two columns end near each other */
  #fd-stats .grid>div{padding-top:16px;padding-bottom:16px}
 }
+
+/* ===== Build 66: the request count is in front of the Live matches and Scan buttons, up to two lines. Where there is no room for both side by side it sits on its own line above them. ===== */
+.lvrow #apiq{flex:1 1 160px;min-width:0;margin:0;text-align:left}
+.lvrow #apiq.lvl1,.lvrow #apiq.lvl2{flex-basis:100%}
+.lvrow .lvbs{display:flex;flex:none;gap:8px}
+.lvrow .lvbs .lvbtn{padding:0 10px}
 </style>
 </head>
 <body>
@@ -889,8 +895,8 @@ body.pg3 .v2[data-cur="3"] [data-pg]:not([data-pg~="3"]){display:none!important}
    <p class="exnote" id="exnote">Example numbers are loaded. Pick a live match or paste a stats line to replace them, or press Next match to clear.</p>
    <div class="live" id="live">
     <div class="lvrow">
-     <button type="button" class="pgo lvbtn" id="lvopen" data-a="lvopen">Live matches</button>
-     <button type="button" class="pgo lvbtn" id="lvscan" data-a="lvscan">Scan</button>
+     <p class="pace apiq" id="apiq" role="status"></p>
+     <span class="lvbs"><button type="button" class="pgo lvbtn" id="lvopen" data-a="lvopen">Live matches</button><button type="button" class="pgo lvbtn" id="lvscan" data-a="lvscan">Scan</button></span>
      <button type="button" class="pu" id="lvrefresh" data-a="lvrefresh" hidden>Refresh</button>
      <button type="button" class="pu" id="lvunlink" data-a="lvunlink" hidden>Unlink</button>
      <label class="lvauto" id="lvautow" hidden><input type="checkbox" id="lvauto">Auto every <span id="lvautot">30</span> s</label>
@@ -898,7 +904,6 @@ body.pg3 .v2[data-cur="3"] [data-pg]:not([data-pg~="3"]){display:none!important}
     <p class="lvstat" id="lvstat" role="status" hidden></p>
     <p class="lk" id="lk" hidden><span>Check this match on</span><a id="lk_sofa" target="_blank" rel="noopener noreferrer">Sofascore</a> <a id="lk_fs" target="_blank" rel="noopener noreferrer">FootyStats</a><a id="lk_bm" target="_blank" rel="noopener noreferrer">BetMines</a><small>Opens a web search for the match name below.</small></p>
     <p class="pres" id="lvmsg" role="status" hidden></p>
-    <p class="pace apiq" id="apiq" role="status" hidden></p>
     <div id="scres" hidden>
      <div id="scrows"></div>
      <p class="pace" id="scsunk" role="status" hidden></p>
@@ -1153,7 +1158,7 @@ body.pg3 .v2[data-cur="3"] [data-pg]:not([data-pg~="3"]){display:none!important}
  </section>
  <div class="pgnav" id="pgnav" hidden><button type="button" data-go="back">Back</button><button type="button" data-go="next">Next</button></div>
  <p class="pgsr" id="pgsr" role="status" aria-live="polite"></p>
- <footer>Numbers come from a pasted stats line, or are pulled from your own API-Sports key if you add one. Not connected to a bookmaker. No bet is guaranteed.<span class="bld"><span id="buildno">Build 65 · 7 Nov 2026</span> <a id="aboutlk" class="abl" href="./?about">About SportHub</a> <button type="button" class="pu" id="reloadnew" data-a="reload">Reload latest</button></span></footer>
+ <footer>Numbers come from a pasted stats line, or are pulled from your own API-Sports key if you add one. Not connected to a bookmaker. No bet is guaranteed.<span class="bld"><span id="buildno">Build 66 · 7 Nov 2026</span> <a id="aboutlk" class="abl" href="./?about">About SportHub</a> <button type="button" class="pu" id="reloadnew" data-a="reload">Reload latest</button></span></footer>
 </main>
 
 <script>
@@ -3271,9 +3276,8 @@ function apiQLevel(){
 function apiQSet(lim,used){apiQ.d=dayKey();apiQ.lim=lim;apiQ.rem=Math.max(0,lim-used);apiQ.est=false;apiQ.at=Date.now();try{localStorage.setItem(APIQK,JSON.stringify(apiQ))}catch(e){}apiQShow()}
 function apiQText(){
  const f=x=>Number(x).toLocaleString('en-US'),lv=apiQLevel();
- if(apiQ.rem!=null)return 'API requests left today: '+(apiQ.est?'about ':'')+f(apiQ.rem)+(apiQ.lim?' of '+f(apiQ.lim):'')+'.'+(lv===2?' Almost out, so auto-refresh is slowed down.':lv===1?' Running low.':'');
- if(apiQ.n)return 'API requests made today on this '+pnDev()+': '+f(apiQ.n)+'.';
- return '';
+ if(apiQ.rem!=null&&apiQ.d===dayKey())return 'API requests left today: '+(apiQ.est?'about ':'')+f(apiQ.rem)+(apiQ.lim?' of '+f(apiQ.lim):'')+'.'+(lv===2?' Almost out, so auto-refresh is slowed down.':lv===1?' Running low.':'');
+ return 'API requests made today on this device: '+f(apiQ.d===dayKey()?apiQ.n:0)+'.';
 }
 function apiQShow(){
  const t=apiQText(),lv=apiQLevel();
