@@ -823,6 +823,25 @@ body #pause,body #theme{border-radius:10px}
 #msig .msm{display:block;text-align:center}
 #banner{background:none!important;border:1px solid var(--line)!important;border-radius:10px;box-shadow:none}
 @media (min-width:900px){#fd-stats .grid>div{padding-top:8px;padding-bottom:8px}#msig,#msig.go,#msig.am,#msig.bad{padding-top:12px;padding-bottom:12px}}
+
+/* ===== Build 62: Bet and Settings in three pages on a phone ===== */
+#pgstrip,#pgnav{margin-left:20px;margin-right:20px}
+@media (max-width:420px){#pgstrip,#pgnav{margin-left:16px;margin-right:16px}}
+#pgstrip{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));margin-top:16px;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+#pgstrip[hidden],#pgnav[hidden]{display:none!important}
+#pgstrip button{display:flex;align-items:center;justify-content:center;gap:6px;min-height:44px;padding:0 6px;font:600 14px/20px var(--body);white-space:nowrap;background:none;color:var(--mut);border:0;border-left:1px solid var(--line);border-radius:0}
+#pgstrip button:first-child{border-left:0}
+#pgstrip button i{font-style:normal}
+#pgstrip button.on{background:var(--tx);color:var(--bg)}
+#pgnav{display:flex;gap:12px;margin-top:8px;margin-bottom:8px}
+#pgnav button{flex:1;min-height:48px;font:600 16px/22px var(--body);background:none;color:var(--tx);border:1px solid var(--line);border-radius:10px}
+#pgnav button[data-go="next"]:not(:disabled){background:var(--tx);color:var(--bg);border-color:var(--tx)}
+#pgnav button:disabled{visibility:hidden}
+.pgsr{position:absolute;width:1px;height:1px;margin:-1px;padding:0;border:0;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap}
+body.pg3 .v2[data-cur="1"] [data-pg]:not([data-pg~="1"]),
+body.pg3 .v2[data-cur="2"] [data-pg]:not([data-pg~="2"]),
+body.pg3 .v2[data-cur="3"] [data-pg]:not([data-pg~="3"]){display:none!important}
+@media (min-width:600px){#form label.pgset{display:none}}
 </style>
 </head>
 <body>
@@ -834,6 +853,7 @@ body #pause,body #theme{border-radius:10px}
   <button id="pause" type="button" aria-label="Pause or resume betting">❚❚</button>
  </header>
  <nav class="tabs"><button type="button" class="on" data-t="bet">Bet</button><button type="button" data-t="rec">Record</button><button type="button" data-t="bt">Backtest</button><button type="button" data-t="set">Settings</button></nav>
+ <nav class="pgstrip" id="pgstrip" aria-label="Pages" hidden><button type="button" data-go="1"><i>1</i><span></span></button><button type="button" data-go="2"><i>2</i><span></span></button><button type="button" data-go="3"><i>3</i><span></span></button></nav>
  <p class="ckalert" id="ckalert" role="status" hidden></p>
 
  <section id="v-bet" class="v2">
@@ -1113,7 +1133,9 @@ body #pause,body #theme{border-radius:10px}
   </div>
   <button class="wide pri" type="button" data-a="apply">Apply and start new session</button>
  </section>
- <footer>Numbers come from a pasted stats line, or are pulled from your own API-Sports key if you add one. Not connected to a bookmaker. No bet is guaranteed.<span class="bld"><span id="buildno">Build 61 · 7 Nov 2026</span> <a id="aboutlk" class="abl" href="./?about">About SportHub</a> <button type="button" class="pu" id="reloadnew" data-a="reload">Reload latest</button></span></footer>
+ <div class="pgnav" id="pgnav" hidden><button type="button" data-go="back">Back</button><button type="button" data-go="next">Next</button></div>
+ <p class="pgsr" id="pgsr" role="status" aria-live="polite"></p>
+ <footer>Numbers come from a pasted stats line, or are pulled from your own API-Sports key if you add one. Not connected to a bookmaker. No bet is guaranteed.<span class="bld"><span id="buildno">Build 62 · 7 Nov 2026</span> <a id="aboutlk" class="abl" href="./?about">About SportHub</a> <button type="button" class="pu" id="reloadnew" data-a="reload">Reload latest</button></span></footer>
 </main>
 
 <script>
@@ -2142,7 +2164,7 @@ function avgMigrate(c){
 }
 function load(){try{const d=JSON.parse(localStorage.getItem(KEY)||'null');if(d&&d.v===2&&d.c&&d.s&&Array.isArray(d.s.open)&&!OLDDEF(d)){const old=d.c.avgDef!==2;c={...D,...d.c};GONE.forEach(k=>{delete c[k]});if(old)avgMigrate(c);s=d.s;if(!Array.isArray(s.sres))s.sres=[];hist=Array.isArray(d.h)?d.h:[];ses=d.n||1}}catch(e){}}
 const HOST_THEME=document.documentElement.getAttribute('data-theme');
-let theme='auto';
+let theme='auto';let pgMode='3';const pgCur={bet:1,set:1};
 function effTheme(){if(theme!=='auto')return theme;if(HOST_THEME==='light'||HOST_THEME==='dark')return HOST_THEME;try{return matchMedia('(prefers-color-scheme: light)').matches?'light':'dark'}catch(e){return'dark'}}
 function setTheme(v,keep){theme=v==='light'||v==='dark'?v:'auto';const r=document.documentElement;if(theme==='auto'){if(HOST_THEME)r.setAttribute('data-theme',HOST_THEME);else r.removeAttribute('data-theme')}else r.setAttribute('data-theme',theme);if(!keep){try{localStorage.setItem('u35_theme',theme)}catch(e){}}const b=document.getElementById('theme');if(b){b.title=effTheme()==='light'?'Switch to dark mode':'Switch to light mode'}const sl=document.getElementById('f_theme');if(sl)sl.value=theme}
 let mktOn=false;
@@ -3538,6 +3560,7 @@ function buildForm(){
   '<label>Theme<select id="f_theme"><option value="auto">Auto (follow device)</option><option value="light">Light</option><option value="dark">Dark</option></select></label>'+
   '<label>Panel size<select id="f_size"><option value="normal"'+(size==='normal'?' selected':'')+'>Normal</option><option value="compact"'+(size==='compact'?' selected':'')+'>Compact</option></select></label>'+
   '<label>Match name box<select id="f_mkt"><option value="hide"'+(mktOn?'':' selected')+'>Hidden</option><option value="show"'+(mktOn?' selected':'')+'>Shown: name each bet</option></select></label>'+
+  '<label class="pgset">Phone layout<select id="f_pages"><option value="3">Three pages</option><option value="off">One long page</option></select></label>'+
   '<label>Market<select id="f_pin"><option value=""'+(pinOf(c)?'':' selected')+'>Auto: the panel decides</option>'+MKT_ALL.map(a=>{const k=mkKey(a[0],a[1]);return '<option value="'+k+'"'+(c.pin===k?' selected':'')+'>'+mkName(a[0],a[1])+'</option>'}).join('')+'</select></label>'+
    '<label>Decide from<select id="f_basis"><option value="live"'+(c.basis==='live'?' selected':'')+'>Score and shots on target</option><option value="all"'+(c.basis==='live'?'':' selected')+'>Also xG and average goals</option></select></label>'+
    '<p class="pace">Auto picks the Under or Over line that fits the live numbers. Pick a line to hold it instead.</p>'+
@@ -3555,7 +3578,8 @@ function buildForm(){
   $('f_pin').onchange=e=>setPin(e.target.value);
   $('f_basis').onchange=e=>setBasis(e.target.value);
  $('f_theme').value=theme;$('f_theme').onchange=e=>setTheme(e.target.value);
- applyFold();
+ $('f_pages').value=pgMode;$('f_pages').onchange=e=>setPages(e.target.value);
+ applyFold();pgTag();
 }
 function read(){
  const o={...c},k=(v,a,b)=>Math.min(b,Math.max(a,v));
@@ -3656,6 +3680,66 @@ update();
 snapLoad();renderSnaps();clkLoad();clkArm();clockTick();covLoad();covRender();fwLoad();fwRender();
 setInterval(clockTick,1000);
 function reloadLatest(){try{const u=new URL(location.href);u.searchParams.set('v',String(Date.now()));location.replace(u.toString())}catch(e){try{location.reload()}catch(e2){}}}
+// ===== Build 62: on a phone, Bet and Settings come in three pages =====
+// Nothing is moved in the page. Each block is tagged with the page it belongs to (data-pg), and the page that is not open is hidden by CSS.
+const PG_MQ=window.matchMedia?matchMedia('(max-width:599px)'):null;
+const PG_NAMES={bet:['Match','Signal','Session'],set:['Display','Rules','Data']};
+function pgOn(){return pgMode!=='off'&&!!PG_MQ&&PG_MQ.matches}
+function pgView(){return !$('v-bet').hidden?'bet':!$('v-set').hidden?'set':''}
+function pgTag(){
+ const all=(sel,p)=>document.querySelectorAll(sel).forEach(e=>e.setAttribute('data-pg',p));
+ ['#v-bet .stk','#chips','#fd-clock','#fd-match'].forEach(x=>all(x,'1'));
+ ['#fd-rules','#msig','#snage','#fd-xg','#fd-mom'].forEach(x=>all(x,'2'));
+ ['#fd-stats','#banner','#acts','#chkmsg','#v-bet .cz'].forEach(x=>all(x,'3'));
+ [...$('form').children].forEach(e=>{const f=e.querySelector('[id^="f_"]');e.setAttribute('data-pg',f&&/^f_(theme|size|mkt|pages)$/.test(f.id)?'1':'2')});
+ ['#fd-sl','#fd-pn','#fd-bk'].forEach(x=>all(x,'3'));
+ all('#v-set > button.wide.pri','2');
+}
+function pgRender(top){
+ const on=pgOn(),v=pgView(),st=$('pgstrip'),nv=$('pgnav');
+ document.body.classList.toggle('pg3',on);
+ ['bet','set'].forEach(k=>{const e=$('v-'+k);if(on&&v===k)e.setAttribute('data-cur',pgCur[k]);else e.removeAttribute('data-cur')});
+ if(!on||!v){st.hidden=true;nv.hidden=true;return}
+ pgTag();
+ const n=pgCur[v],names=PG_NAMES[v];
+ st.hidden=false;nv.hidden=false;
+ st.setAttribute('aria-label',(v==='bet'?'Bet':'Settings')+' pages');
+ [...st.children].forEach((b,i)=>{b.lastChild.textContent=names[i];b.classList.toggle('on',i+1===n);if(i+1===n)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});
+ nv.querySelector('[data-go="back"]').disabled=n<2;
+ nv.querySelector('[data-go="next"]').disabled=n>2;
+ $('pgsr').textContent=names[n-1]+', page '+n+' of 3';
+ if(top)window.scrollTo(0,0);
+}
+function pgGo(v,n){pgCur[v]=Math.max(1,Math.min(3,n));pgRender(true)}
+function setPages(v){pgMode=v==='off'?'off':'3';try{localStorage.setItem('u35_pages',pgMode)}catch(e){}pgRender()}
+try{pgMode=localStorage.getItem('u35_pages')==='off'?'off':'3'}catch(e){}
+document.addEventListener('click',e=>{
+ const g=e.target.closest('[data-go]');
+ if(g){const v=pgView();if(!v)return;const d=g.dataset.go;pgGo(v,d==='back'?pgCur[v]-1:d==='next'?pgCur[v]+1:+d);return}
+ if(e.target.closest('[data-t]')){pgRender();return}
+ const a=e.target.closest('[data-a]');
+ if(a&&(a.dataset.a==='apply'||a.dataset.a==='next')){pgCur.bet=1;pgRender(true)}
+});
+// swipe left for the next page, right for the one before
+let tsx=0,tsy=0,tst=0,tsok=false;
+document.addEventListener('touchstart',e=>{
+ tsok=false;
+ if(e.touches.length!==1||!pgOn()||!pgView())return;
+ const t=e.touches[0];
+ if(t.clientX<24||t.clientX>innerWidth-24)return;
+ if(e.target.closest&&e.target.closest('.xgbox,.tl,input,textarea,select,[data-noswipe]'))return;
+ tsx=t.clientX;tsy=t.clientY;tst=Date.now();tsok=true;
+},{passive:true});
+document.addEventListener('touchcancel',()=>{tsok=false},{passive:true});
+document.addEventListener('touchend',e=>{
+ if(!tsok)return;tsok=false;
+ const t=e.changedTouches[0],dx=t.clientX-tsx,dy=t.clientY-tsy,v=pgView();
+ if(!v||Date.now()-tst>700||Math.abs(dx)<70||Math.abs(dx)<Math.abs(dy)*2)return;
+ try{if(String(getSelection()).length)return}catch(err){}
+ pgGo(v,pgCur[v]+(dx<0?1:-1));
+},{passive:true});
+if(PG_MQ){const f=()=>pgRender();if(PG_MQ.addEventListener)PG_MQ.addEventListener('change',f);else if(PG_MQ.addListener)PG_MQ.addListener(f)}
+pgRender();
 document.body.classList.add('dockon');
 if(window.IntersectionObserver){new IntersectionObserver(es=>{const e=es[es.length-1];$('dock').hidden=!!(e&&e.isIntersecting)},{rootMargin:'0px 0px -96px 0px'}).observe($('acts'))}
 $('reloadnew').hidden=inFrame();$('aboutlk').hidden=inFrame();
