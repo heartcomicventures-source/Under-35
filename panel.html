@@ -897,6 +897,49 @@ body.pg3 .v2[data-cur="3"] [data-pg]:not([data-pg~="3"]){display:none!important}
  :where(#msig,.xgcard,#banner,.grid){animation:none;box-shadow:inset 0 0 18px 1px rgba(var(--glr),calc(.12*var(--gla)))!important}
  .dock::before{animation:none;box-shadow:inset 0 0 10px 0 rgba(var(--glr),calc(.16*var(--gla)))}
 }
+
+/* ===== Build 69: hovering a box or a container lights it green ===== */
+:root{--glh:1}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--glh:.85}}
+:root[data-theme="light"]{--glh:.85}
+/* the glow rises to a steady, stronger green inside the box and stays while the pointer is on it */
+@keyframes u35glh{
+ 0%{box-shadow:inset 0 0 6px 0 rgba(var(--glr),calc(.07*var(--gla)))}
+ 100%{box-shadow:inset 0 0 16px 1px rgba(var(--glr),calc(.34*var(--glh)))}
+}
+@keyframes u35glhr{
+ 0%{box-shadow:inset 0 0 10px 0 rgba(var(--glr),calc(.05*var(--gla)))}
+ 100%{box-shadow:inset 0 0 28px 2px rgba(var(--glr),calc(.26*var(--glh)))}
+}
+/* only for a real pointer (Mac, trackpad, mouse): on a phone a tap would leave the green stuck on */
+@media (hover:hover) and (pointer:fine){
+ /* small boxes: the edge turns green too */
+ :where(.msc:not(.go),.badge:not(.go),#chips i:not(.w),.lvr,button:not(.fhd):not(.w):not(.tabs button):not(#pgstrip button):not(.momseg button):not(:disabled),input:not([type=checkbox]):not([type=radio]):not([type=range]):not(.p):not(:disabled),select:not(:disabled),textarea:not(.rout):not(:disabled)):where(:hover){animation:u35glh .25s ease-out both;border-color:rgba(var(--glr),calc(.75*var(--glh)))!important}
+ /* the segments of the page strip and the Momentum switch: the glow only, so their dividers stay put */
+ :where(#pgstrip button:not(:disabled),.momseg button:not(:disabled)):where(:hover){animation:u35glh .25s ease-out both}
+ .dock:hover::before{animation:u35glh .25s ease-out both}
+ /* containers: the big areas glow; the strips are small enough for the small glow */
+ @supports selector(:has(a)){
+  :where(.fold,.sfold,.match,.clk,.sum,.ob,.rules,#lvlist,.paste,#msig,.xgcard,#banner,.grid):where(:hover):where(:not(:has(:is(.msc:not(.go),.badge:not(.go),#chips i:not(.w),.lvr,button:not(.fhd):not(.w):not(.tabs button):not(#pgstrip button):not(.momseg button):not(:disabled),input:not([type=checkbox]):not([type=radio]):not([type=range]):not(.p):not(:disabled),select:not(:disabled),textarea:not(.rout):not(:disabled),#pgstrip button:not(:disabled),.momseg button:not(:disabled),.fold,.sfold,.match,.clk,.sum,.ob,.rules,#lvlist,.paste,#msig,.xgcard,#banner,.grid,#pgstrip,.momseg):hover))){animation:u35glhr .3s ease-out both}
+  :where(#pgstrip,.momseg):where(:hover):where(:not(:has(:is(.msc:not(.go),.badge:not(.go),#chips i:not(.w),.lvr,button:not(.fhd):not(.w):not(.tabs button):not(#pgstrip button):not(.momseg button):not(:disabled),input:not([type=checkbox]):not([type=radio]):not([type=range]):not(.p):not(:disabled),select:not(:disabled),textarea:not(.rout):not(:disabled),#pgstrip button:not(:disabled),.momseg button:not(:disabled),.fold,.sfold,.match,.clk,.sum,.ob,.rules,#lvlist,.paste,#msig,.xgcard,#banner,.grid,#pgstrip,.momseg):hover))){animation:u35glh .25s ease-out both}
+ }
+ @supports not selector(:has(a)){
+  :where(.fold,.sfold,.match,.clk,.sum,.ob,.rules,#lvlist,.paste,#msig,.xgcard,#banner,.grid):where(:hover){animation:u35glhr .3s ease-out both}
+  :where(#pgstrip,.momseg):where(:hover){animation:u35glh .25s ease-out both}
+ }
+}
+@media (hover:hover) and (pointer:fine) and (prefers-reduced-motion:reduce){
+ /* still: the same green, no ramp */
+ :where(.msc:not(.go),.badge:not(.go),#chips i:not(.w),.lvr,button:not(.fhd):not(.w):not(.tabs button):not(#pgstrip button):not(.momseg button):not(:disabled),input:not([type=checkbox]):not([type=radio]):not([type=range]):not(.p):not(:disabled),select:not(:disabled),textarea:not(.rout):not(:disabled)):where(:hover){animation:none;box-shadow:inset 0 0 16px 1px rgba(var(--glr),calc(.30*var(--glh)))!important;border-color:rgba(var(--glr),calc(.75*var(--glh)))!important}
+ :where(#pgstrip button:not(:disabled),.momseg button:not(:disabled),#pgstrip,.momseg):where(:hover){animation:none;box-shadow:inset 0 0 16px 1px rgba(var(--glr),calc(.30*var(--glh)))!important}
+ .dock:hover::before{animation:none;box-shadow:inset 0 0 16px 1px rgba(var(--glr),calc(.30*var(--glh)))}
+ @supports selector(:has(a)){
+  :where(.fold,.sfold,.match,.clk,.sum,.ob,.rules,#lvlist,.paste,#msig,.xgcard,#banner,.grid):where(:hover):where(:not(:has(:is(.msc:not(.go),.badge:not(.go),#chips i:not(.w),.lvr,button:not(.fhd):not(.w):not(.tabs button):not(#pgstrip button):not(.momseg button):not(:disabled),input:not([type=checkbox]):not([type=radio]):not([type=range]):not(.p):not(:disabled),select:not(:disabled),textarea:not(.rout):not(:disabled),#pgstrip button:not(:disabled),.momseg button:not(:disabled),.fold,.sfold,.match,.clk,.sum,.ob,.rules,#lvlist,.paste,#msig,.xgcard,#banner,.grid,#pgstrip,.momseg):hover))){animation:none;box-shadow:inset 0 0 26px 2px rgba(var(--glr),calc(.24*var(--glh)))!important}
+ }
+ @supports not selector(:has(a)){
+  :where(.fold,.sfold,.match,.clk,.sum,.ob,.rules,#lvlist,.paste,#msig,.xgcard,#banner,.grid):where(:hover){animation:none;box-shadow:inset 0 0 26px 2px rgba(var(--glr),calc(.24*var(--glh)))!important}
+ }
+}
 </style>
 </head>
 <body>
@@ -1189,7 +1232,7 @@ body.pg3 .v2[data-cur="3"] [data-pg]:not([data-pg~="3"]){display:none!important}
  </section>
  <div class="pgnav" id="pgnav" hidden><button type="button" data-go="back">Back</button><button type="button" data-go="next">Next</button></div>
  <p class="pgsr" id="pgsr" role="status" aria-live="polite"></p>
- <footer>Numbers come from a pasted stats line, or are pulled from your own API-Sports key if you add one. Not connected to a bookmaker. No bet is guaranteed.<span class="bld"><span id="buildno">Build 68 · 7 Nov 2026</span> <a id="aboutlk" class="abl" href="./?about">About SportHub</a> <button type="button" class="pu" id="reloadnew" data-a="reload">Reload latest</button></span></footer>
+ <footer>Numbers come from a pasted stats line, or are pulled from your own API-Sports key if you add one. Not connected to a bookmaker. No bet is guaranteed.<span class="bld"><span id="buildno">Build 69 · 7 Nov 2026</span> <a id="aboutlk" class="abl" href="./?about">About SportHub</a> <button type="button" class="pu" id="reloadnew" data-a="reload">Reload latest</button></span></footer>
 </main>
 
 <script>
