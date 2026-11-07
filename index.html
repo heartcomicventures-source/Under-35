@@ -129,6 +129,12 @@ h2{font-size:clamp(28px,4.2vw,42px);line-height:1.1;font-weight:800;max-width:20
 .rl .v{font:700 15px/1 var(--mono);color:var(--grn)}
 .rl small{display:block;color:var(--mut);font-size:13.5px;margin-top:2px}
 .note{margin-top:16px;color:var(--mut);font-size:14.5px}
+@media (min-width:861px){
+  .rules{align-items:stretch}
+  .rside{display:flex;flex-direction:column}
+  .rside .grid{flex:1;grid-template-columns:minmax(0,1fr);grid-auto-rows:1fr}
+  .rside .card{display:flex;flex-direction:column;justify-content:center}
+}
 
 /* minute window */
 .tl{margin-top:34px;background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:26px 22px 20px}
@@ -238,7 +244,7 @@ footer p{max-width:52em}
     <li><span class="ck"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5l3.2 3.2L13 4.8"/></svg></span><span>Shots on target<small>Each team at or below your limit</small></span><span class="v">2 · 1</span></li>
     <li><span class="ck"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5l3.2 3.2L13 4.8"/></svg></span><span>xG<small>Each team at or below your limit</small></span><span class="v">0.7 · 0.9</span></li>
    </ul>
-   <div>
+   <div class="rside">
     <div class="grid g2" style="margin-top:0">
      <div class="card"><h3>Under and Over</h3><p>Switch sides in Settings. The panel picks the goal line itself from the score and the shots on target, and says which lines also pass.</p></div>
      <div class="card"><h3>Your limits</h3><p>Every number is yours to change: averages, minute window, goals, shots on target and xG. Each line keeps its own limits.</p></div>

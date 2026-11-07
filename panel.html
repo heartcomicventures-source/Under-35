@@ -488,31 +488,51 @@ body{touch-action:manipulation;-webkit-text-size-adjust:100%;-webkit-tap-highlig
 }
 
 /* Desktop: 900 px and wider gets two columns. Phones and narrow windows keep the single column: the wrappers vanish there. */
-.cl,.cr,.chs{display:contents}
+.cl,.cr,.cs,.cy,.cz,.chs{display:contents}
 @media (min-width:900px){
  body{padding-block:28px}
  .panel{max-width:1120px}
  header{padding:14px 22px}
  .tabs{padding:0 14px}
  .tabs button{flex:none;padding:13px 26px}
+ .compact .tabs button{padding:8px 26px}
  section{padding:20px 22px}
  .compact section{padding:14px 22px}
  section.v2:not([hidden]){display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:32px;align-items:start}
  #v-bet.v2:not([hidden]),#v-rec.v2:not([hidden]){grid-template-columns:minmax(340px,430px) minmax(0,1fr)}
- .cl,.cr,.chs{display:block;min-width:0}
- /* Bet tab, right column: the decision and its Log button come before the charts and the session numbers. */
- #v-bet .cr{display:flex;flex-direction:column}
- #v-bet .cr>#banner{order:-1}
- #v-bet .cr>.chs,#v-bet .cr>#fd-stats{order:1}
- #v-bet .cr>.btns{order:2}
- #v-bet .cr>#log{order:3}
+ .cl,.cr,.cs,.cy,.cz{display:block;min-width:0}
+ /* Bet tab. Top: inputs on the left; the decision, its Log button and the session numbers on the right.
+    Then both charts across the full width, and the session buttons last. */
+ #v-bet.v2:not([hidden]){grid-template-rows:auto auto minmax(auto,1fr) auto auto}
+ #v-bet .cl{grid-column:1;grid-row:1/4}
+ #v-bet .cr{grid-column:2;grid-row:1}
+ #v-bet .cy{grid-column:2;grid-row:2}
+ #v-bet .cs{grid-column:2;grid-row:3}
+ #v-bet .chs{grid-column:1/-1;grid-row:4;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:24px;align-items:start;margin:6px 0 10px}
+ #v-bet .cz{grid-column:1/-1;grid-row:5}
+ #v-bet .cz .btns{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+ #v-bet .cz .btns .wide{margin:0}
+ /* The two charts share their rows, so the plots line up whatever the legend does. */
+ body:not(.compact) #v-bet .chs{grid-template-rows:auto auto auto auto auto}
+ body:not(.compact) #v-bet .chs .fold,body:not(.compact) #v-bet .chs .fb,body:not(.compact) #v-bet .chs .xgcard{display:contents}
+ #v-bet #fd-xg .xgcard>*{grid-column:1}
+ #v-bet #fd-mom .xgcard>*{grid-column:2}
+ body:not(.compact) #v-bet .xgcard::before{grid-row:1;align-self:center;font:var(--t-h2);color:var(--tx);margin:0 0 8px}
+ body:not(.compact) #v-bet #fd-xg .xgcard::before{content:"xG graph";grid-column:1}
+ body:not(.compact) #v-bet #fd-mom .xgcard::before{content:"Momentum";grid-column:2}
+ body:not(.compact) #v-bet .xgcard>.momseg{grid-row:1;justify-self:end;align-self:center}
+ body:not(.compact) #v-bet .xgcard>.xgleg{grid-row:2}
+ body:not(.compact) #v-bet .xgcard>.xgbox{grid-row:3}
+ body:not(.compact) #v-bet .xgcard>.pace{grid-row:4}
+ body:not(.compact) #v-bet .xgcard>.xgtab{grid-row:5}
+ /* Clock card: two tidy columns instead of a ragged wrap. */
+ #v-bet .ckrow{display:grid;grid-template-columns:auto auto;justify-content:start;gap:10px 28px}
+ #v-bet .ckrow .pu{justify-self:start}
  .fwhr{display:none}
  #v-set>.wide.pri{grid-column:1/-1}
  #v-set .cr>.sfold:first-child>.fhd,#v-set #form>*:first-child{margin-top:0}
  .cr>.fold:first-child{margin-top:0}
-}
-@media (min-width:1180px){
- .chs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:16px;align-items:start}
+ #v-bet .cs>.fold:first-child{margin-top:10px}
 }
 @media (hover:hover) and (min-width:900px){
  .tabs button:hover{color:var(--tx)}
@@ -612,7 +632,7 @@ body{touch-action:manipulation;-webkit-text-size-adjust:100%;-webkit-tap-highlig
   <div id="msig" hidden></div>
   <div id="sig" aria-live="polite"></div>
   <p class="snage" id="snage" hidden></p>
-
+ </div>
   <div class="chs">
   <div class="fold" id="fd-xg">
    <button type="button" class="fhd" data-f="xg" aria-expanded="true"><span class="ft">xG graph</span><span class="fs" id="fs-xg"></span><i class="chev"></i></button>
@@ -646,6 +666,7 @@ body{touch-action:manipulation;-webkit-text-size-adjust:100%;-webkit-tap-highlig
   </div>
 
   </div>
+ <div class="cs">
   <div class="fold" id="fd-stats">
    <button type="button" class="fhd" data-f="stats" aria-expanded="true"><span class="ft">Session</span><span class="fs" id="fs-stats"></span><i class="chev"></i></button>
    <div class="fb">
@@ -659,9 +680,13 @@ body{touch-action:manipulation;-webkit-text-size-adjust:100%;-webkit-tap-highlig
   </div>
    </div>
   </div>
+  </div>
+ <div class="cy">
   <div id="banner" hidden></div>
   <div id="acts" class="acts"></div>
   <p class="pace" id="chkmsg" role="status" hidden></p>
+ </div>
+ <div class="cz">
   <div class="btns">
    <button class="wide" id="endbtn" type="button" data-a="end">End session</button>
    <button class="wide" type="button" data-a="log">Session log</button>
