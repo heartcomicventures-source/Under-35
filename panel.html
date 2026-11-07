@@ -674,6 +674,9 @@ body:not(.compact) #v-bet #fd-mom .xgcard::before{content:"Momentum";--ic:var(--
 }
 
 /* ===== Build 60: simple and spacious. A flat page on one ground: no banner picture, no big boxes, no icons. Sections are separated by space and a thin line; only small things (buttons, fields, the Under / Over cells, the 1-12 chips) have an outline. Text is normal case. Layout, logic and markup are the same as build 59. ===== */
+/* Body text is 14 px (regular). Names, headings, buttons, tabs and status words stay 16 px semibold; fields stay 16 px so the iPhone does not zoom when you tap one. */
+:root{--t-body:400 14px/20px var(--body);--t-sub:400 14px/20px var(--body);--t-label:400 14px/20px var(--body)}
+.xgbox .tk,.xgbox .lmt{font-size:calc(14px*var(--k,1))}
 /* one ground: the panel colour is the page colour in both themes */
 :root,:root:not([data-theme="dark"]),:root:not([data-theme="light"]),:root[data-theme="dark"],:root[data-theme="light"]{--panel:var(--bg)}
 body{background:var(--bg)}
