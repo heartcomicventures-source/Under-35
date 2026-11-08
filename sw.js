@@ -22,13 +22,15 @@ self.addEventListener('notificationclick',function(e){
   // Only ever open this app: a link to anywhere else falls back to the app's own address.
   var base=new URL(self.registration.scope),u=new URL((e.notification.data&&e.notification.data.u)||'./',base);
   if(u.origin!==base.origin)u=new URL(base.href);
-  // The site's front page is a landing page, so an alert for the app itself opens the panel.
+  // The panel answers at three addresses: the site's front address, index.html and panel.html. They are one app, so an alert for it
+  // focuses a window open at any of them, and opens panel.html (the Home Screen address) when none is open.
+  function key(x){return (x.pathname===base.pathname||x.pathname===base.pathname+'index.html')?x.origin+base.pathname+'panel.html':x.origin+x.pathname}
   if(u.pathname===base.pathname||u.pathname===base.pathname+'index.html')u=new URL('panel.html',base);
-  var want=u.origin+u.pathname;
+  var want=key(u);
   e.waitUntil(self.clients.matchAll({type:'window',includeUncontrolled:true}).then(function(list){
     for(var i=0;i<list.length;i++){
       var c=list[i],cu='';
-      try{var x=new URL(c.url);cu=x.origin+x.pathname}catch(err){}
+      try{cu=key(new URL(c.url))}catch(err){}
       if(cu===want&&'focus' in c)return c.focus();
     }
     return self.clients.openWindow(u.href);

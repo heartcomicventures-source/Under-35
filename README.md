@@ -8,17 +8,16 @@ This repository is the whole site. Publish it with GitHub Pages (Settings, Pages
 
 | File | What it is |
 | --- | --- |
-| `index.html` | Landing page. Opened from a Home Screen icon or an installed app, it goes straight to the panel. `index.html?about` always stays on the landing page. |
-| `panel.html` | The panel itself. One file, nothing else to load. |
+| `index.html` | The panel itself. The site address (`https://<your-name>.github.io/Under-35/`) opens it directly. One file, nothing else to load. |
+| `panel.html` | The same panel, kept so Home Screen icons and old links keep working. |
 | `sw.js` | Service worker. It only shows lock-screen alerts and opens the panel when one is tapped. It does not cache pages. |
 | `manifest.webmanifest` | Home Screen / install settings. Starts at `panel.html`. |
 | `icon-192.png`, `icon-512.png` | Icons. |
-| `img/` | Screenshots for the landing page. |
 | `worker/` | The optional alert server (Cloudflare Worker). |
 
 **Phone:** one column. **Computer (a window 900 px wide or more):** two columns, with the inputs on the left and the decision on the right. The phone layout is the same as before.
 
-**If you used an older version:** the existing Home Screen icon keeps working. It lands on the landing page for a moment and moves on to `panel.html`. Your data lives in the browser's storage for this site, so nothing is lost. After you update, tap Reload latest in Settings.
+**If you used an older version:** the site no longer has a landing page. Its address now opens the panel, and your existing Home Screen icon and any `panel.html` link keep working. Your data lives in the browser's storage for this site and is shared by both addresses, so nothing is lost. After you update, tap Reload latest in Settings.
 
 ## Lock-screen alerts (optional)
 
