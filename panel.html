@@ -868,34 +868,37 @@ body.pg3 .v2[data-cur="3"] [data-pg]:not([data-pg~="3"]){display:none!important}
 .lvrow .lvbs .lvbtn{padding:0 10px}
 
 /* ===== Build 68: a soft INNER green glow on every box, non stop; boxes that are already green get none ===== */
-:root{--glr:47,210,122;--gla:1}
+:root{--glr:47,210,122;--gla:1;--glm:1;--glmh:1}
+/* Settings > Display > Glow: Soft is the default; Bright is stronger; Off stops the breathing glow (the green under a mouse pointer stays) */
+:root[data-glow="bright"]{--glm:1.7;--glmh:1.3}
 @media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--glr:10,150,80;--gla:.55}}
 :root[data-theme="light"]{--glr:10,150,80;--gla:.55}
 /* small boxes (buttons, chips, fields): the glow sits inside the edge and breathes slowly */
 @keyframes u35gl{
- 0%,100%{box-shadow:inset 0 0 6px 0 rgba(var(--glr),calc(.07*var(--gla)))}
- 50%{box-shadow:inset 0 0 14px 1px rgba(var(--glr),calc(.26*var(--gla)))}
+ 0%,100%{box-shadow:inset 0 0 6px 0 rgba(var(--glr),calc(.07*var(--gla)*var(--glm)))}
+ 50%{box-shadow:inset 0 0 14px 1px rgba(var(--glr),calc(.26*var(--gla)*var(--glm)))}
 }
 /* large areas (the verdict, the Session figures, the charts): a wider, even softer glow */
 @keyframes u35glr{
- 0%,100%{box-shadow:inset 0 0 10px 0 rgba(var(--glr),calc(.05*var(--gla)))}
- 50%{box-shadow:inset 0 0 26px 2px rgba(var(--glr),calc(.18*var(--gla)))}
+ 0%,100%{box-shadow:inset 0 0 10px 0 rgba(var(--glr),calc(.05*var(--gla)*var(--glm)))}
+ 50%{box-shadow:inset 0 0 26px 2px rgba(var(--glr),calc(.18*var(--gla)*var(--glm)))}
 }
 /* :where keeps the specificity at zero, so the clock flash above still wins while it runs.
    Green boxes (.go badge, .go chip, .w chip or button, .p field, the focused or green text areas) are left out: the glow does not sit on top of green. */
-:where(.msc:not(.go),.badge:not(.go),.momseg,#pgstrip,#chips i:not(.w),.lvr,
+:where(:root:not([data-glow="off"])) :where(.msc:not(.go),.badge:not(.go),.momseg,#pgstrip,#chips i:not(.w),.lvr,
  button:not(.fhd):not(.w):not(.tabs button):not(#pgstrip button):not(.momseg button),
  input:not([type=checkbox]):not([type=radio]):not([type=range]):not(.p),select,textarea:not(:focus):not(.rout)){animation:u35gl 3.6s ease-in-out infinite}
-:where(#msig,.xgcard,#banner,.grid){animation:u35glr 3.6s ease-in-out infinite}
+:where(:root:not([data-glow="off"])) :where(#msig,.xgcard,#banner,.grid){animation:u35glr 3.6s ease-in-out infinite}
 /* the floating bar is flat (its own shadow rule is !important), so its glow lives on a layer behind its text */
-.dock::before{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;animation:u35gl 3.6s ease-in-out infinite}
+.dock::before{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none}
+:where(:root:not([data-glow="off"])) .dock::before{animation:u35gl 3.6s ease-in-out infinite}
 @media (prefers-reduced-motion:reduce){
  /* still, but still green. !important because the flat skin sets box-shadow:none on most of these */
- :where(.msc:not(.go),.badge:not(.go),.momseg,#pgstrip,#chips i:not(.w),.lvr,
+ :where(:root:not([data-glow="off"])) :where(.msc:not(.go),.badge:not(.go),.momseg,#pgstrip,#chips i:not(.w),.lvr,
   button:not(.fhd):not(.w):not(.tabs button):not(#pgstrip button):not(.momseg button),
-  input:not([type=checkbox]):not([type=radio]):not([type=range]):not(.p),select,textarea:not(:focus):not(.rout)){animation:none;box-shadow:inset 0 0 10px 0 rgba(var(--glr),calc(.16*var(--gla)))!important}
- :where(#msig,.xgcard,#banner,.grid){animation:none;box-shadow:inset 0 0 18px 1px rgba(var(--glr),calc(.12*var(--gla)))!important}
- .dock::before{animation:none;box-shadow:inset 0 0 10px 0 rgba(var(--glr),calc(.16*var(--gla)))}
+  input:not([type=checkbox]):not([type=radio]):not([type=range]):not(.p),select,textarea:not(:focus):not(.rout)){animation:none;box-shadow:inset 0 0 10px 0 rgba(var(--glr),calc(.16*var(--gla)*var(--glm)))!important}
+ :where(:root:not([data-glow="off"])) :where(#msig,.xgcard,#banner,.grid){animation:none;box-shadow:inset 0 0 18px 1px rgba(var(--glr),calc(.12*var(--gla)*var(--glm)))!important}
+ :where(:root:not([data-glow="off"])) .dock::before{animation:none;box-shadow:inset 0 0 10px 0 rgba(var(--glr),calc(.16*var(--gla)*var(--glm)))}
 }
 
 /* ===== Build 69: hovering a box or a container lights it green ===== */
@@ -904,17 +907,17 @@ body.pg3 .v2[data-cur="3"] [data-pg]:not([data-pg~="3"]){display:none!important}
 :root[data-theme="light"]{--glh:.85}
 /* the glow rises to a steady, stronger green inside the box and stays while the pointer is on it */
 @keyframes u35glh{
- 0%{box-shadow:inset 0 0 6px 0 rgba(var(--glr),calc(.07*var(--gla)))}
- 100%{box-shadow:inset 0 0 16px 1px rgba(var(--glr),calc(.34*var(--glh)))}
+ 0%{box-shadow:inset 0 0 6px 0 rgba(var(--glr),calc(.07*var(--gla)*var(--glm)))}
+ 100%{box-shadow:inset 0 0 16px 1px rgba(var(--glr),calc(.34*var(--glh)*var(--glmh)))}
 }
 @keyframes u35glhr{
- 0%{box-shadow:inset 0 0 10px 0 rgba(var(--glr),calc(.05*var(--gla)))}
- 100%{box-shadow:inset 0 0 28px 2px rgba(var(--glr),calc(.26*var(--glh)))}
+ 0%{box-shadow:inset 0 0 10px 0 rgba(var(--glr),calc(.05*var(--gla)*var(--glm)))}
+ 100%{box-shadow:inset 0 0 28px 2px rgba(var(--glr),calc(.26*var(--glh)*var(--glmh)))}
 }
 /* only for a real pointer (Mac, trackpad, mouse): on a phone a tap would leave the green stuck on */
 @media (hover:hover) and (pointer:fine){
  /* small boxes: the edge turns green too */
- :where(.msc:not(.go),.badge:not(.go),#chips i:not(.w),.lvr,button:not(.fhd):not(.w):not(.tabs button):not(#pgstrip button):not(.momseg button):not(:disabled),input:not([type=checkbox]):not([type=radio]):not([type=range]):not(.p):not(:disabled),select:not(:disabled),textarea:not(.rout):not(:disabled)):where(:hover){animation:u35glh .25s ease-out both;border-color:rgba(var(--glr),calc(.75*var(--glh)))!important}
+ :where(.msc:not(.go),.badge:not(.go),#chips i:not(.w),.lvr,button:not(.fhd):not(.w):not(.tabs button):not(#pgstrip button):not(.momseg button):not(:disabled),input:not([type=checkbox]):not([type=radio]):not([type=range]):not(.p):not(:disabled),select:not(:disabled),textarea:not(.rout):not(:disabled)):where(:hover){animation:u35glh .25s ease-out both;border-color:rgba(var(--glr),calc(.75*var(--glh)*var(--glmh)))!important}
  /* the segments of the page strip and the Momentum switch: the glow only, so their dividers stay put */
  :where(#pgstrip button:not(:disabled),.momseg button:not(:disabled)):where(:hover){animation:u35glh .25s ease-out both}
  .dock:hover::before{animation:u35glh .25s ease-out both}
@@ -930,16 +933,28 @@ body.pg3 .v2[data-cur="3"] [data-pg]:not([data-pg~="3"]){display:none!important}
 }
 @media (hover:hover) and (pointer:fine) and (prefers-reduced-motion:reduce){
  /* still: the same green, no ramp */
- :where(.msc:not(.go),.badge:not(.go),#chips i:not(.w),.lvr,button:not(.fhd):not(.w):not(.tabs button):not(#pgstrip button):not(.momseg button):not(:disabled),input:not([type=checkbox]):not([type=radio]):not([type=range]):not(.p):not(:disabled),select:not(:disabled),textarea:not(.rout):not(:disabled)):where(:hover){animation:none;box-shadow:inset 0 0 16px 1px rgba(var(--glr),calc(.30*var(--glh)))!important;border-color:rgba(var(--glr),calc(.75*var(--glh)))!important}
- :where(#pgstrip button:not(:disabled),.momseg button:not(:disabled),#pgstrip,.momseg):where(:hover){animation:none;box-shadow:inset 0 0 16px 1px rgba(var(--glr),calc(.30*var(--glh)))!important}
- .dock:hover::before{animation:none;box-shadow:inset 0 0 16px 1px rgba(var(--glr),calc(.30*var(--glh)))}
+ :where(.msc:not(.go),.badge:not(.go),#chips i:not(.w),.lvr,button:not(.fhd):not(.w):not(.tabs button):not(#pgstrip button):not(.momseg button):not(:disabled),input:not([type=checkbox]):not([type=radio]):not([type=range]):not(.p):not(:disabled),select:not(:disabled),textarea:not(.rout):not(:disabled)):where(:hover){animation:none;box-shadow:inset 0 0 16px 1px rgba(var(--glr),calc(.30*var(--glh)*var(--glmh)))!important;border-color:rgba(var(--glr),calc(.75*var(--glh)*var(--glmh)))!important}
+ :where(#pgstrip button:not(:disabled),.momseg button:not(:disabled),#pgstrip,.momseg):where(:hover){animation:none;box-shadow:inset 0 0 16px 1px rgba(var(--glr),calc(.30*var(--glh)*var(--glmh)))!important}
+ .dock:hover::before{animation:none;box-shadow:inset 0 0 16px 1px rgba(var(--glr),calc(.30*var(--glh)*var(--glmh)))}
  @supports selector(:has(a)){
-  :where(.fold,.sfold,.match,.clk,.sum,.ob,.rules,#lvlist,.paste,#msig,.xgcard,#banner,.grid):where(:hover):where(:not(:has(:is(.msc:not(.go),.badge:not(.go),#chips i:not(.w),.lvr,button:not(.fhd):not(.w):not(.tabs button):not(#pgstrip button):not(.momseg button):not(:disabled),input:not([type=checkbox]):not([type=radio]):not([type=range]):not(.p):not(:disabled),select:not(:disabled),textarea:not(.rout):not(:disabled),#pgstrip button:not(:disabled),.momseg button:not(:disabled),.fold,.sfold,.match,.clk,.sum,.ob,.rules,#lvlist,.paste,#msig,.xgcard,#banner,.grid,#pgstrip,.momseg):hover))){animation:none;box-shadow:inset 0 0 26px 2px rgba(var(--glr),calc(.24*var(--glh)))!important}
+  :where(.fold,.sfold,.match,.clk,.sum,.ob,.rules,#lvlist,.paste,#msig,.xgcard,#banner,.grid):where(:hover):where(:not(:has(:is(.msc:not(.go),.badge:not(.go),#chips i:not(.w),.lvr,button:not(.fhd):not(.w):not(.tabs button):not(#pgstrip button):not(.momseg button):not(:disabled),input:not([type=checkbox]):not([type=radio]):not([type=range]):not(.p):not(:disabled),select:not(:disabled),textarea:not(.rout):not(:disabled),#pgstrip button:not(:disabled),.momseg button:not(:disabled),.fold,.sfold,.match,.clk,.sum,.ob,.rules,#lvlist,.paste,#msig,.xgcard,#banner,.grid,#pgstrip,.momseg):hover))){animation:none;box-shadow:inset 0 0 26px 2px rgba(var(--glr),calc(.24*var(--glh)*var(--glmh)))!important}
  }
  @supports not selector(:has(a)){
-  :where(.fold,.sfold,.match,.clk,.sum,.ob,.rules,#lvlist,.paste,#msig,.xgcard,#banner,.grid):where(:hover){animation:none;box-shadow:inset 0 0 26px 2px rgba(var(--glr),calc(.24*var(--glh)))!important}
+  :where(.fold,.sfold,.match,.clk,.sum,.ob,.rules,#lvlist,.paste,#msig,.xgcard,#banner,.grid):where(:hover){animation:none;box-shadow:inset 0 0 26px 2px rgba(var(--glr),calc(.24*var(--glh)*var(--glmh)))!important}
  }
 }
+
+/* ===== Build 70: success percentage check, automatic settling note, quiet hours ===== */
+#pcsig{font:var(--t-body);padding:2px 0 2px 14px;margin-bottom:10px;background:none;border:0;border-left:2px solid var(--line);color:var(--mut)}
+#pcsig b{font:var(--t-h1);display:block;letter-spacing:.02em;margin-bottom:3px;color:var(--tx)}
+#pcsig p{margin:3px 0 0;color:var(--tx);opacity:.9}
+#pcsig.go{border-left-color:var(--grn)}
+#pcsig.am{border-left-color:var(--mut)}
+#pcgrid{margin-bottom:10px}
+.autonote{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 10px}
+.autonote .pace{flex:1 1 220px;min-width:0;margin:0}
+#fd-qh .two label.keyl{min-width:0}
+#fd-qh input[type=time]{width:100%}
 </style>
 </head>
 <body>
@@ -1087,6 +1102,7 @@ body.pg3 .v2[data-cur="3"] [data-pg]:not([data-pg~="3"]){display:none!important}
   <div id="banner" hidden></div>
   <div id="acts" class="acts"></div>
   <p class="pace" id="chkmsg" role="status" hidden></p>
+  <div class="autonote" id="autonote" hidden><p class="pace" id="automsg" role="status"></p><button type="button" class="pu" id="autoundo" data-a="autoundo">Undo</button></div>
  </div>
  <div class="cz">
   <div class="btns">
@@ -1133,6 +1149,17 @@ body.pg3 .v2[data-cur="3"] [data-pg]:not([data-pg~="3"]){display:none!important}
 
  <section id="v-bt" class="v2" hidden>
  <div class="cl">
+  <p class="fwsub">Success percentage check</p>
+  <div id="pcsig"><b id="pch">Success percentage check</b><p id="pct"></p></div>
+  <div class="grid" id="pcgrid">
+   <div><small>Bets checked</small><b id="pc_n"></b></div>
+   <div><small>Actually won</small><b id="pc_won"></b></div>
+   <div><small>Panel said (average)</small><b id="pc_exp"></b></div>
+   <div><small>Difference</small><b id="pc_gap"></b></div>
+  </div>
+  <div class="bttw" id="pctw"><table class="bttb"><thead><tr><th>Panel said</th><th>Bets</th><th>Won</th><th>Result</th></tr></thead><tbody id="pctb"></tbody></table></div>
+  <p class="pace" id="pcnote"></p>
+  <hr class="fwhr">
   <div id="fwsig"><b id="fwh">Forward test</b><p id="fwt"></p></div>
   <label class="lvauto fwon"><input type="checkbox" id="fw_on" checked>Save a snapshot of each match I scan or open</label>
   <div class="btbtns"><button type="button" class="wide" id="fwgo" data-a="fwsettle">Check results now</button><button type="button" class="wide" data-a="fwcopy">Copy log</button></div>
@@ -1198,6 +1225,8 @@ body.pg3 .v2[data-cur="3"] [data-pg]:not([data-pg~="3"]){display:none!important}
     <div class="two"><button type="button" class="wide" data-a="keysave">Save key</button><button type="button" class="wide" data-a="keytest">Test</button></div>
     <button type="button" class="wide" data-a="keyforget" id="keyforget">Remove key</button>
     <p class="pace" id="keymsg" role="status" hidden></p>
+    <label class="lvauto" id="autosetw"><input type="checkbox" id="auto_set" checked>Settle finished matches automatically</label>
+    <p class="pace">Works for bets you log while a live match is linked. When the final score is in, the bet is marked Won, Lost or Void on its own, and you can undo it from the Bet tab.</p>
     <p class="pace apiq" id="apiq2" hidden></p>
     <details class="covd" id="covd"><summary>Data coverage seen so far</summary><p class="pace">Learned in this browser from the matches you open, refresh or scan. A tag shows in the lists once a league has been seen in 2 matches. Matches only count when the statistics call worked.</p><div id="covrows"></div><button type="button" class="wide" data-a="covclear">Clear coverage history</button></details>
     <p class="pace">Optional. With a key, Live matches on the Bet tab fills the minute, score, shots on target, xG and last-5 average total goals (scored plus conceded) for you. The key stays in this browser and is sent only to api-sports.io. It is never part of a copied record. Each refresh uses 2 requests. The Backtest tab uses the same key.</p>
@@ -1216,6 +1245,16 @@ body.pg3 .v2[data-cur="3"] [data-pg]:not([data-pg~="3"]){display:none!important}
     <p class="pace">Optional. A small server of your own (a Cloudflare Worker) watches live matches with your API-Sports key and sends an alert to your lock screen or desktop when a match passes your rules, for example BET UNDER 3.5 · Arsenal v Chelsea · 62' · 1–1. It looks about once a minute and sends one alert per match. It uses your Market choice and entry minutes, and stays quiet while the panel is paused, in cool-off, or done for the day. Your API key is kept on your own server, so keep its address and password to yourself. On iPhone this works only from the Home Screen app. On a computer it works in Chrome, Edge, Firefox and Safari while the browser is open (a minimised window is fine). Up to five devices can be on at once and each gets every alert. Only one of them needs to set the rules: a device that joins a server that already has rules just receives alerts, until you tick the box above.</p>
    </div>
   </div>
+  <div class="fold sfold" id="fd-qh">
+   <button type="button" class="fhd" data-f="qh" aria-expanded="true"><span class="ft">Quiet hours</span><span class="fs" id="fs-qh">Off</span><i class="chev"></i></button>
+   <div class="fb">
+    <label class="lvauto"><input type="checkbox" id="qh_on">Hold alerts during quiet hours</label>
+    <div class="two"><label class="keyl">From<input type="time" id="qh_from" value="23:00" aria-label="Quiet hours start"></label><label class="keyl">Until<input type="time" id="qh_to" value="07:00" aria-label="Quiet hours end"></label></div>
+    <p class="pace" id="qh_msg" role="status"></p>
+    <p class="pace am" id="qh_old" hidden>Your alert server is an older version, so lock-screen alerts still arrive during quiet hours. Update its worker.js file to apply them.</p>
+    <p class="pace">While it is quiet the panel stays silent: no sound or buzz from the match clock and no lock-screen alerts. Everything else keeps working, so the numbers and the verdict are there when you look. The hours follow this device's clock.</p>
+   </div>
+  </div>
   <div class="fold sfold" id="fd-bk">
    <button type="button" class="fhd" data-f="bk" aria-expanded="true"><span class="ft">Back up and restore</span><i class="chev"></i></button>
    <div class="fb">
@@ -1232,7 +1271,7 @@ body.pg3 .v2[data-cur="3"] [data-pg]:not([data-pg~="3"]){display:none!important}
  </section>
  <div class="pgnav" id="pgnav" hidden><button type="button" data-go="back">Back</button><button type="button" data-go="next">Next</button></div>
  <p class="pgsr" id="pgsr" role="status" aria-live="polite"></p>
- <footer>Numbers come from a pasted stats line, or are pulled from your own API-Sports key if you add one. Not connected to a bookmaker. No bet is guaranteed.<span class="bld"><span id="buildno">Build 69 · 7 Nov 2026</span> <a id="aboutlk" class="abl" href="./?about">About SportHub</a> <button type="button" class="pu" id="reloadnew" data-a="reload">Reload latest</button></span></footer>
+ <footer>Numbers come from a pasted stats line, or are pulled from your own API-Sports key if you add one. Not connected to a bookmaker. No bet is guaranteed.<span class="bld"><span id="buildno">Build 70 · 7 Nov 2026</span> <a id="aboutlk" class="abl" href="./?about">About SportHub</a> <button type="button" class="pu" id="reloadnew" data-a="reload">Reload latest</button></span></footer>
 </main>
 
 <script>
@@ -1466,7 +1505,9 @@ function settleBet(s,c,id,kind,k,now,t){
  if(i<0)return false;
  if(!s.sres)s.sres=[];
  const p=s.open.splice(i,1)[0];
- s.log.unshift({t:t,name:p.name||'Match',res:kind,mk:p.mk});
+ const le={t:t,name:p.name||'Match',res:kind,mk:p.mk};
+ if(typeof p.p==='number')le.p=p.p;
+ s.log.unshift(le);
  const same=p.day===s.day;
  if(kind!=='void'){
   s.n++;s.res.push(kind==='won');
@@ -1750,6 +1791,49 @@ function liveOutcome(v,side,line){
  if(P.p>=0.5)return{side:side==='over'?'over':'under',p:P.p,lam:P.lam};
  return{side:side==='over'?'under':'over',p:1-P.p,lam:P.lam};
 }
+// ---- Does the Success percentage hold up? Settled bets that saved the chance the panel gave them when they were logged, in bands.
+const CAL_MIN=20,CAL_BAND_MIN=8;
+const CAL_BANDS=[[0,.5,'Under 50%'],[.5,.6,'50-59%'],[.6,.7,'60-69%'],[.7,.8,'70-79%'],[.8,.9,'80-89%'],[.9,1.0001,'90-100%']];
+function calibStats(book){
+ const all=(Array.isArray(book)?book:[]).filter(x=>x&&(x.res==='won'||x.res==='lost'));
+ const b=all.filter(x=>typeof x.p==='number'&&x.p>=0&&x.p<=1);
+ const w=b.filter(x=>x.res==='won').length,n=b.length;
+ const o={n:n,w:w,old:all.length-n,rate:null,exp:null,lo:null,hi:null,gap:null,bands:[],kind:'idle',head:'Not enough yet',text:'Bets you log from now on save the Success percentage the panel showed. This page then compares it with how they finished.'};
+ o.bands=CAL_BANDS.map(x=>{
+  const m=b.filter(y=>y.p>=x[0]&&y.p<x[1]),bw=m.filter(y=>y.res==='won').length,bn=m.length;
+  const e=bn?m.reduce((a,y)=>a+y.p,0)/bn:null,ci=wilson(bw,bn);
+  let k='none';
+  if(bn&&bn<CAL_BAND_MIN)k='few';
+  else if(bn)k=e>ci.hi?'low':e<ci.lo?'high':'ok';
+  return{label:x[2],n:bn,w:bw,rate:bn?bw/bn:null,exp:e,k:k};
+ });
+ if(!n)return o;
+ o.rate=w/n;o.exp=b.reduce((a,y)=>a+y.p,0)/n;
+ const ci=wilson(w,n);o.lo=ci.lo;o.hi=ci.hi;
+ o.gap=Math.round((o.rate-o.exp)*100);
+ const said=Math.round(o.exp*100)+'%',got=w+' of '+n+' won ('+Math.round(o.rate*100)+'%)';
+ if(n<CAL_MIN){o.kind='am';o.head='Too few to tell';o.text=got+', against about '+said+' said. Below '+CAL_MIN+' bets with a saved percentage this is mostly luck: '+(CAL_MIN-n)+' to go.'}
+ else if(o.exp>o.hi){o.kind='am';o.head='The percentage runs high';o.text=got+', but the panel said about '+said+'. Your results are about '+Math.abs(o.gap)+' points lower, so read the percentage as optimistic.'}
+ else if(o.exp<o.lo){o.kind='go';o.head='The percentage runs low';o.text=got+', and the panel said about '+said+'. Your results are about '+o.gap+' points better than it says.'}
+ else{o.kind='go';o.head='The percentage holds up';o.text=got+', and the panel said about '+said+'. That is within the normal range for '+n+' bets.'}
+ return o;
+}
+// ---- Quiet hours: a daily window, which may cross midnight, when alerts are held. Times are HH:MM on the clock of the zone given (else this device's).
+function qhMin(t){const m=/^(\d{1,2}):(\d{2})$/.exec(String(t||''));if(!m)return null;const h=+m[1],n=+m[2];return h<24&&n<60?h*60+n:null}
+function qhLocal(now,tz){
+ try{
+  const f=new Intl.DateTimeFormat('en-GB',{timeZone:tz||undefined,hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).formatToParts(new Date(now));
+  return (+f.find(x=>x.type==='hour').value%24)*60+(+f.find(x=>x.type==='minute').value);
+ }catch(e){const d=new Date(now);return d.getHours()*60+d.getMinutes()}
+}
+// quiet: is it inside the window now. mins: minutes until it ends (when quiet) or until it starts (when not).
+function quietNow(q,now,tz){
+ const a=q&&q.on?qhMin(q.from):null,b=q&&q.on?qhMin(q.to):null;
+ if(a==null||b==null||a===b)return{quiet:false,mins:0,on:false};
+ const t=qhLocal(now==null?Date.now():now,(q&&q.tz)||tz);
+ const inside=a<b?(t>=a&&t<b):(t>=a||t<b);
+ return inside?{quiet:true,mins:((b-t+1440)%1440)||1440,on:true}:{quiet:false,mins:((a-t+1440)%1440)||1440,on:true};
+}
 const REC_TAG='U35DATA ';
 // Text you can paste into Notes or a message: a short summary plus one data line that recordImport can read back.
 function recordExport(book,stamp){
@@ -1758,7 +1842,7 @@ function recordExport(book,stamp){
  const lines=['Goal-line record'+(stamp?' ('+stamp+')':'')];
  lines.push(r.n?'Settled '+r.n+' ('+r.w+'-'+r.l+'), win rate '+pct1(r.rate):'No settled bets yet.');
  lines.push('To restore: open the Record tab, paste this whole message into the restore box and tap Restore.');
- lines.push(REC_TAG+JSON.stringify(b.map(x=>({a:x.at||0,r:x.res==='won'?'w':'l',m:x.mk||'u3.5'}))));
+ lines.push(REC_TAG+JSON.stringify(b.map(x=>{const o={a:x.at||0,r:x.res==='won'?'w':'l',m:x.mk||'u3.5'};if(typeof x.p==='number')o.p=x.p;return o})));
  return lines.join('\n');
 }
 // Reads both the current format and older copies that also carried odds, stake and profit (those three are ignored).
@@ -1773,7 +1857,9 @@ function recordImport(text){
   if(!x||typeof x!=='object')continue;
   const at=Number(x.a);
   if(x.r!=='w'&&x.r!=='l')continue;
-  out.push({at:isFinite(at)?at:0,res:x.r==='w'?'won':'lost',mk:/^[uo][0-9]\.5$/.test(String(x.m))?String(x.m):'u3.5'});
+  const e={at:isFinite(at)?at:0,res:x.r==='w'?'won':'lost',mk:/^[uo][0-9]\.5$/.test(String(x.m))?String(x.m):'u3.5'};
+  if(typeof x.p==='number'&&x.p>=0&&x.p<=1)e.p=x.p;
+  out.push(e);
  }
  return out.length?out:null;
 }
@@ -2257,7 +2343,7 @@ const NUM=Object.keys(FD);
 const KEY='u35_v2';
 const INP=['avgH','avgA','min','gh','ga','sotH','sotA','xgh','xga'];
 let c={...D},s,hist=[],ses=1,showLog=false,size='normal',lastLock=-1;
-let fold={clock:true,match:true,rules:true,xg:true,mom:true,stats:true,sd:true,sm:true,sl:true,pn:true,bk:true};
+let fold={clock:true,match:true,rules:true,xg:true,mom:true,stats:true,sd:true,sm:true,sl:true,pn:true,qh:true,bk:true};
 function applyFold(){
  Object.keys(fold).forEach(k=>{
   const el=$('fd-'+k);if(!el)return;
@@ -2289,6 +2375,38 @@ let theme='auto';let pgMode='3';const pgCur={bet:1,set:1};
 function effTheme(){if(theme!=='auto')return theme;if(HOST_THEME==='light'||HOST_THEME==='dark')return HOST_THEME;try{return matchMedia('(prefers-color-scheme: light)').matches?'light':'dark'}catch(e){return'dark'}}
 function setTheme(v,keep){theme=v==='light'||v==='dark'?v:'auto';const r=document.documentElement;if(theme==='auto'){if(HOST_THEME)r.setAttribute('data-theme',HOST_THEME);else r.removeAttribute('data-theme')}else r.setAttribute('data-theme',theme);if(!keep){try{localStorage.setItem('u35_theme',theme)}catch(e){}}const b=document.getElementById('theme');if(b){b.title=effTheme()==='light'?'Switch to dark mode':'Switch to light mode'}const sl=document.getElementById('f_theme');if(sl)sl.value=theme}
 let mktOn=false;
+// ---- Quiet hours (the window maths is quietNow in the logic block)
+const QHK='u35_quiet';
+var qh={on:false,from:'23:00',to:'07:00'},pnVer=null;
+const qhTz=()=>{try{return Intl.DateTimeFormat().resolvedOptions().timeZone||''}catch(e){return ''}};
+const qhPayload=()=>({on:qh.on,from:qh.from,to:qh.to,tz:qhTz()});
+const qhFmt=t=>{const m=qhMin(t);if(m==null)return t;return new Date(2000,0,1,Math.floor(m/60),m%60).toLocaleTimeString([],{hour:'numeric',minute:'2-digit'})};
+const qhDur=m=>{m=Math.max(1,Math.round(m));return m<60?m+' min':Math.floor(m/60)+' h'+(m%60?' '+(m%60)+' min':'')};
+function qhRender(){
+ const fs=$('fs-qh'),msg=$('qh_msg');if(!fs||!msg)return;
+ const r=quietNow(qh,Date.now()),ok=qhMin(qh.from)!=null&&qhMin(qh.to)!=null&&qh.from!==qh.to;
+ if(!qh.on){fs.textContent='Off';msg.textContent='Off. Alerts sound whenever a match passes.'}
+ else if(!ok){fs.textContent='Check times';msg.textContent='Pick two different times.'}
+ else if(r.quiet){fs.textContent='Quiet now';msg.textContent='Quiet now. Alerts are held for '+qhDur(r.mins)+', until '+qhFmt(qh.to)+'.'}
+ else{fs.textContent=qhFmt(qh.from)+' to '+qhFmt(qh.to);msg.textContent='Alerts are on. Quiet hours start in '+qhDur(r.mins)+', at '+qhFmt(qh.from)+'.'}
+ $('qh_old').hidden=!(qh.on&&pn.on&&pnVer!=null&&pnVer<2);
+}
+function qhLoad(){
+ try{const o=JSON.parse(localStorage.getItem(QHK)||'null');if(o&&typeof o==='object'){qh.on=!!o.on;if(qhMin(o.from)!=null)qh.from=o.from;if(qhMin(o.to)!=null)qh.to=o.to}}catch(e){}
+ try{const o2=JSON.parse(localStorage.getItem('u35_pnv')||'null');if(o2&&typeof o2.v==='number'&&o2.url===pn.url)pnVer=o2.v}catch(e){}
+ $('qh_on').checked=qh.on;$('qh_from').value=qh.from;$('qh_to').value=qh.to;qhRender();
+}
+function qhChange(){
+ qh.on=$('qh_on').checked;
+ if(qhMin($('qh_from').value)!=null)qh.from=$('qh_from').value;
+ if(qhMin($('qh_to').value)!=null)qh.to=$('qh_to').value;
+ try{localStorage.setItem(QHK,JSON.stringify(qh))}catch(e){}
+ qhRender();pnSyncSoon();
+ if(qh.on&&pn.on&&pn.url)pnPing().catch(()=>{});   // learn whether the server is new enough to hold alerts
+}
+// ---- Glow: how strong the green glow on the boxes is (Soft, Bright, Off). Off stops the breathing glow; the green under a mouse pointer stays.
+var glow='soft';
+function setGlow(v,keep){glow=v==='off'||v==='bright'?v:'soft';document.documentElement.setAttribute('data-glow',glow);if(!keep){try{localStorage.setItem('u35_glow',glow)}catch(e){}}}
 function setMkt(v,keep){mktOn=v==='show';document.body.classList.toggle('nomkt',!mktOn);if(!keep){try{localStorage.setItem('u35_mkt',mktOn?'show':'hide')}catch(e){}}}
 function setSize(v){size=v==='compact'?'compact':'normal';document.body.classList.toggle('compact',size==='compact');applyFold();try{localStorage.setItem('u35_size',size)}catch(e){}}
 function fresh(){s=newState(dayKey());showLog=false;sugs={}}
@@ -2486,7 +2604,7 @@ function renderLog(){
   h+='<div class="sum"><p><span>Bets settled</span><b>'+s.n+'</b></p><p><span>Won</span><b>'+s.w+' ('+rate+'%)</b></p><p><span>Lost</span><b>'+(s.n-s.w)+'</b></p><p><span>Longest loss streak</span><b>'+s.maxSt+'</b></p></div>';
  }
  h+=s.log.length
-  ?s.log.map(r=>'<div class="row"><span>'+esc(r.t)+'</span><span>'+esc(r.name)+'</span><b class="'+(r.res==='won'?'pos':r.res==='lost'?'neg':'')+'">'+(r.res==='won'?'Won':r.res==='lost'?'Lost':'Void')+'</b></div>').join('')
+  ?s.log.map(r=>'<div class="row"><span>'+esc(r.t)+'</span><span>'+esc(r.name)+(r.auto?' (automatic)':'')+'</span><b class="'+(r.res==='won'?'pos':r.res==='lost'?'neg':'')+'">'+(r.res==='won'?'Won':r.res==='lost'?'Lost':'Void')+'</b></div>').join('')
   :'<p class="mut">No bets yet. Log one to start the log.</p>';
  if(hist.length)h+='<p class="mut" style="margin-top:10px">Previous sessions</p>'+hist.map(x=>'<div class="row"><span>#'+x.ses+'</span><span>'+x.n+' bets</span><b>'+x.w+' won</b></div>').join('');
  L.innerHTML=h;
@@ -2496,7 +2614,10 @@ function logBet(){
  const v=rd(),ev=evaluate(v,c);
  if(gate(v,ev))return;
  const mk=mkKey(c.side,lineOf(c)),nm2=(v.name||'Match')+' · '+mkName(c.side,lineOf(c));
- addBet(s,c,{name:nm2,mk:mk,fx:live&&live.id!=null?{id:live.id}:null},dayKey());
+ const LP=liveProb(v,c.side,lineOf(c)),it={name:nm2,mk:mk,fx:live&&live.id!=null?{id:live.id}:null,at:Date.now()};
+ if(v.min!=null)it.min=v.min;
+ if(LP)it.p=Math.round(LP.p*1000)/1000;
+ addBet(s,c,it,dayKey());
  save();
  nextMatch(false);
 }
@@ -2571,13 +2692,16 @@ function recRestore(){
  if(book.length&&!rsArm){rsArm=1;clearTimeout(rsT);rsT=setTimeout(()=>{rsArm=0;rmsg('')},6000);rmsg('This replaces your current record of '+book.length+' bets with '+a.length+'. Tap Restore again to continue.',true);return}
  book=a;bookSave();rsArm=0;clearTimeout(rsT);inp.value='';$('r_out').hidden=true;renderRec();rmsg('Restored '+a.length+' bets.');
 }
-function settle(id,kind){
+function settle(id,kind,auto){
  const t=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
- if(!settleBet(s,c,id,kind,dayKey(),Date.now(),t))return;
+ if(!settleBet(s,c,id,kind,dayKey(),Date.now(),t))return false;
  delete sugs[id];chkMsg('');
- const le=s.log[0];if(le&&(le.res==='won'||le.res==='lost')){book.push({at:Date.now(),res:le.res,mk:le.mk||'u3.5'});bookSave()}
+ const le=s.log[0];
+ if(le&&auto)le.auto=1;
+ if(le&&(le.res==='won'||le.res==='lost')){const bk={at:Date.now(),res:le.res,mk:le.mk||'u3.5'};if(typeof le.p==='number')bk.p=le.p;book.push(bk);bookSave()}
  if(s.halt)showLog=true;
  save();update();
+ return true;
 }
 function newSession(){
  if(s.open.length)return;
@@ -2650,7 +2774,7 @@ function ckAlert(k){
  if(k==='open'||k==='test')dockPulse();
  ['ckbox'].forEach(id=>{const b=$(id);b.classList.remove('flash');void b.offsetWidth;b.classList.add('flash')});
  const hd=document.querySelector('[data-f="clock"]');if(hd){hd.classList.remove('flash');void hd.offsetWidth;hd.classList.add('flash')}
- if(clk.snd){
+ if(clk.snd&&(k==='test'||!quietNow(qh,Date.now()).quiet)){
   ensureAudio();
   if(k==='open'||k==='test'){beep(3,880);buzz([250,120,250,120,250])}
   else if(k==='close'){beep(2,660);buzz([200,100,200])}
@@ -3072,6 +3196,7 @@ function fwRender(){
 }
 let apiKey='',live=null,lvList=[],lvListAt=0,lvBusy=false,lvT=0;
 let sugs={},chkBusy=false,chkLast=0,scItems=[],scShowOut=false;
+let autoSet=true,autoUndo=null,noAuto={};
 const SCAN_TAG={go:'Passes',soon:'Coming',risk:'At risk',nodata:'No data',out:'Out'},SCAN_TAGC={go:'go',soon:'',risk:'am',nodata:'am',out:'bad'};
 const avgCache={};
 function keyLoad(){try{apiKey=(localStorage.getItem(KEYK)||'').trim()}catch(e){apiKey=''}$('apikey').value=apiKey}
@@ -3158,6 +3283,7 @@ async function pnPing(){
  if(!j||j.name!=='sporthub-alerts')throw new Error('That address is not a SportHub alert server. Check it matches your Worker address.');
  if(!j.password)throw new Error('The server has no TOKEN yet. Add the TOKEN variable to the Worker.');
  if(!j.kv)throw new Error('The server has no storage yet. Bind a KV namespace named STORE to the Worker.');
+ pnVer=typeof j.v==='number'?j.v:1;try{localStorage.setItem('u35_pnv',JSON.stringify({url:pn.url,v:pnVer}))}catch(e){}qhRender();
  return j;
 }
 // Why the server should stay quiet right now, taken from the same session rules the panel uses.
@@ -3172,9 +3298,9 @@ function pnHold(){
 }
 async function pnSyncNow(force){
  if(!pn.on||pn.sync===false||!apiKey||inFrame())return;
- const mute=pnHold(),h=JSON.stringify([c,apiKey,mute.off,mute.until,mute.why]);
+ const mute=pnHold(),h=JSON.stringify([c,apiKey,mute.off,mute.until,mute.why,qhPayload()]);
  if(!force&&h===pnLast)return;
- try{await pnReq('/sync','POST',{cfg:c,key:apiKey,mute:mute});pnLast=h}catch(e){}
+ try{await pnReq('/sync','POST',{cfg:c,key:apiKey,mute:mute,quiet:qhPayload()});pnLast=h}catch(e){}
 }
 function pnSyncSoon(){
  if(!pn||!pn.on||pn.sync===false)return;
@@ -3250,6 +3376,7 @@ async function pnCheck(){
   if(t.at)p.push('last look '+pnAgo(t.at)+(t.mode==='hot'?', a match is near your window':t.mode==='warm'?', a match is getting close':', resting until a match is close'));
   if(t.last)p.push('last alert '+pnAgo(t.last.at)+': '+t.last.t+', '+t.last.b);
   if(st.hold&&(st.hold.off||st.hold.until>st.now))p.push('paused: '+(st.hold.why||'by the panel'));
+  if(st.qnow&&st.qnow.quiet)p.push('quiet hours are holding alerts now');
   if(t.rem!=null)p.push(t.rem+' API requests left today');
   const bad=!st.phones||!st.key||!!t.err;
   pnMsg('Server reachable. '+p.join('. ')+'.'+(t.err?' Last problem: '+t.err:'')+(!st.phones?' '+pnTap()+' Turn on to add this '+pnDev()+'.':''),bad);
@@ -3535,24 +3662,58 @@ async function lvScan(){
 // ---- Auto-settle: open bets logged while a match was linked remember its fixture. Once it has finished, the result is worked out
 // from the final score and shown on the bet; you confirm with one tap. Nothing is settled without that tap.
 function chkMsg(t,bad){const m=$('chkmsg');m.textContent=t||'';m.hidden=!t;m.className='pace'+(bad?' am':'')}
+// A match cannot be over before its 90th minute, so a bet is not looked up until then (a bet with no saved time is always looked up).
+function chkDue(o,now){
+ if(!o.at)return true;
+ const rem=o.min!=null?Math.max(0,90-o.min)+(o.min<45?15:0):0;
+ return now>=o.at+Math.max(0,rem-1)*60000;
+}
+function autoSig(){return [s.nid,s.placed,s.n,s.log.length,s.open.length,s.day,book.length].join('|')}
+// Marks every finished bet on its own. One snapshot is kept so the whole batch can be undone while nothing else has changed.
+function autoApply(found){
+ const snapS=JSON.stringify(s),snapB=JSON.stringify(book),done=[];
+ found.forEach(x=>{
+  if(noAuto[x.o.id])return;
+  if(settle(x.o.id,x.sg.res,true)){x.done=true;done.push({id:x.o.id,name:x.o.name||'Match',res:x.sg.res,text:x.sg.text,fid:x.o.fx.id})}
+ });
+ if(!done.length)return 0;
+ autoUndo={snapS:snapS,snapB:snapB,sig:autoSig(),items:done};
+ const W=done.filter(x=>x.res==='won').length,L=done.filter(x=>x.res==='lost').length,V=done.length-W-L;
+ const one=done[0],lab=r=>r==='won'?'Won':r==='lost'?'Lost':'Void';
+ $('automsg').textContent=done.length===1?'Settled automatically: '+one.name+' · '+lab(one.res)+'. '+one.text:done.length+' bets settled automatically: '+W+' won, '+L+' lost'+(V?', '+V+' void':'')+'.';
+ $('autonote').hidden=false;$('autoundo').hidden=false;
+ return done.length;
+}
+function autoUndoRun(){
+ const u=autoUndo;if(!u)return;
+ if(autoSig()!==u.sig){$('automsg').textContent="Can't undo now: something was logged or settled since. Mark the result by hand if it is wrong.";$('autoundo').hidden=true;autoUndo=null;return}
+ s=JSON.parse(u.snapS);book=JSON.parse(u.snapB);bookSave();
+ u.items.forEach(x=>{noAuto[x.id]=1;sugs[x.id]={fid:x.fid,res:x.res,text:x.text}});
+ autoUndo=null;$('autonote').hidden=true;
+ save();update();
+ chkMsg('Undone. Tap the highlighted button on each bet to settle it yourself.');
+}
 async function chkOpen(manual){
  if(chkBusy)return;
- const withFx=s.open.filter(o=>o.fx&&o.fx.id!=null),todo=withFx.filter(o=>!(sugs[o.id]&&sugs[o.id].fid===o.fx.id));
+ const now0=Date.now();
+ const withFx=s.open.filter(o=>o.fx&&o.fx.id!=null),todo=withFx.filter(o=>!(sugs[o.id]&&sugs[o.id].fid===o.fx.id)&&(manual||chkDue(o,now0)));
  if(!withFx.length){if(manual)chkMsg('None of your open bets is linked to a match. Log a bet while a live match is linked to get results automatically.');return}
- if(!todo.length){if(manual)chkMsg('Every result is already ready. Tap the highlighted button on each bet.');return}
+ if(!todo.length){if(manual&&withFx.every(o=>sugs[o.id]&&sugs[o.id].fid===o.fx.id))chkMsg('Every result is already ready. Tap the highlighted button on each bet.');return}
  if(!apiKey){if(manual)chkMsg('Add your API-Sports key in Settings first.',true);return}
  if(!manual&&inFrame())return;
  chkBusy=true;chkLast=Date.now();
- let err='',got=0;
+ let err='',got=0,auto=0;const found=[];
  for(const o of todo){
   try{
    const sg=settleSuggest(o.mk,apiFinal(await apiGet('/fixtures?id='+encodeURIComponent(o.fx.id))));
-   if(sg){sugs[o.id]=Object.assign({fid:o.fx.id},sg);got++}
+   if(sg)found.push({o:o,sg:sg,done:false});
   }catch(e){err=err||e.message}
  }
  chkBusy=false;
+ if(autoSet&&found.length)auto=autoApply(found);
+ found.forEach(x=>{if(!x.done&&s.open.some(o=>o.id===x.o.id)){sugs[x.o.id]=Object.assign({fid:x.o.fx.id},x.sg);got++}});
  if(got)update();
- if(manual)chkMsg(err&&!got?err:got?got+(got>1?' results are':' result is')+' ready. Tap the highlighted button to confirm.':'Not finished yet. Check again after full time.',!!err&&!got);
+ if(manual)chkMsg(auto&&!got?'':err&&!got?err:got?got+(got>1?' results are':' result is')+' ready. Tap the highlighted button to confirm.':'Not finished yet. Check again after full time.',!!err&&!got&&!auto);
 }
 function nextMatch(focus){
  $('scres').hidden=true;scItems=[];
@@ -3570,7 +3731,27 @@ let btRun=false,btStop=false,btReq=0;
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 const btClamp=(x,lo,hi,d)=>{const n=parseInt(x,10);return isFinite(n)?Math.max(lo,Math.min(hi,n)):d};
 function btMsg(t,bad){const m=$('btmsg');m.textContent=t||'';m.hidden=!t;m.className='pace'+(bad?' am':'')}
+const PC_RES={ok:'On target',low:'Lower than said',high:'Higher than said',few:'Too few',none:''};
+function pcRender(){
+ const r=calibStats(book),has=r.n>0;
+ const sg=$('pcsig');sg.className=r.kind==='go'||r.kind==='am'||r.kind==='bad'?r.kind:'';
+ $('pch').textContent=r.head;$('pct').textContent=r.text;
+ $('pc_n').textContent=has?String(r.n):'0';
+ $('pc_won').textContent=has?r.w+' ('+pc0(r.rate)+')':'-';
+ $('pc_exp').textContent=has?pc0(r.exp):'-';
+ $('pc_gap').textContent=has?(r.gap>0?'+':'')+r.gap+' points':'-';
+ const tb=$('pctb');tb.innerHTML='';
+ r.bands.filter(b=>b.n>0).forEach(b=>{
+  const tr=document.createElement('tr');
+  [b.label,String(b.n),b.w+' ('+pc0(b.rate)+')',PC_RES[b.k]].forEach(t=>{const td=document.createElement('td');td.textContent=t;tr.appendChild(td)});
+  tb.appendChild(tr);
+ });
+ $('pctw').hidden=!has;
+ $('pcnote').textContent=r.old?r.old+' earlier bet'+(r.old>1?'s have':' has')+' no saved percentage and '+(r.old>1?'are':'is')+' left out.':'';
+ $('pcnote').hidden=!r.old;
+}
 function btOpen(){
+ pcRender();
  $('btmk').textContent='Tests '+mkName(c.side,lineOf(c))+' with the rules in Settings: entry window '+c.minFrom+'–'+c.minTo+'.';
  const mi=$('bt_min'),v=parseInt(mi.value,10);
  if(!(v>=c.minFrom&&v<=c.minTo))mi.value=String(c.minFrom);
@@ -3685,6 +3866,7 @@ function buildForm(){
   '<label>Panel size<select id="f_size"><option value="normal"'+(size==='normal'?' selected':'')+'>Normal</option><option value="compact"'+(size==='compact'?' selected':'')+'>Compact</option></select></label>'+
   '<label>Match name box<select id="f_mkt"><option value="hide"'+(mktOn?'':' selected')+'>Hidden</option><option value="show"'+(mktOn?' selected':'')+'>Shown: name each bet</option></select></label>'+
   '<label class="pgset">Phone layout<select id="f_pages"><option value="3">Three pages</option><option value="off">One long page</option></select></label>'+
+  '<label>Glow<select id="f_glow"><option value="soft">Soft</option><option value="bright">Bright</option><option value="off">Off (saves battery)</option></select></label>'+
   '<label>Market<select id="f_pin"><option value=""'+(pinOf(c)?'':' selected')+'>Auto: the panel decides</option>'+MKT_ALL.map(a=>{const k=mkKey(a[0],a[1]);return '<option value="'+k+'"'+(c.pin===k?' selected':'')+'>'+mkName(a[0],a[1])+'</option>'}).join('')+'</select></label>'+
    '<label>Decide from<select id="f_basis"><option value="live"'+(c.basis==='live'?' selected':'')+'>Score and shots on target</option><option value="all"'+(c.basis==='live'?'':' selected')+'>Also xG and average goals</option></select></label>'+
    '<p class="pace">Auto picks the Under or Over line that fits the live numbers. Pick a line to hold it instead.</p>'+
@@ -3703,6 +3885,7 @@ function buildForm(){
   $('f_basis').onchange=e=>setBasis(e.target.value);
  $('f_theme').value=theme;$('f_theme').onchange=e=>setTheme(e.target.value);
  $('f_pages').value=pgMode;$('f_pages').onchange=e=>setPages(e.target.value);
+ $('f_glow').value=glow;$('f_glow').onchange=e=>setGlow(e.target.value);
  applyFold();pgTag();
 }
 function read(){
@@ -3749,6 +3932,7 @@ document.addEventListener('click',e=>{
  else if(k==='lvscan')lvScan();
  else if(k==='scout'){scShowOut=!scShowOut;scRender()}
  else if(k==='chk')chkOpen(true);
+ else if(k==='autoundo')autoUndoRun();
  else if(k==='fwsettle')fwSettle(true);
  else if(k==='fwcopy')fwCopy();
  else if(k==='fwclear')fwClear();
@@ -3792,11 +3976,13 @@ try{const f=JSON.parse(localStorage.getItem('u35_fold')||'null');if(f&&typeof f=
 try{const z=localStorage.getItem('u35_size');if(z)setSize(z)}catch(e){}
 try{setMkt(localStorage.getItem('u35_mkt')==='show'?'show':'hide',true)}catch(e){setMkt('hide',true)}
 try{setTheme(localStorage.getItem('u35_theme')||'auto',true)}catch(e){setTheme('auto',true)}
+try{setGlow(localStorage.getItem('u35_glow')||'soft',true)}catch(e){setGlow('soft',true)}
 applyFold();
 load();
 if(!s)fresh();
 keyLoad();
 pnLoad();
+qhLoad();['qh_on','qh_from','qh_to'].forEach(id=>$(id).addEventListener('change',qhChange));setInterval(qhRender,30000);
 bookLoad();
 
 recheck();
@@ -3814,9 +4000,9 @@ function pgTag(){
  const all=(sel,p)=>document.querySelectorAll(sel).forEach(e=>e.setAttribute('data-pg',p));
  ['#v-bet .stk','#chips','#fd-match'].forEach(x=>all(x,'1'));
  ['#fd-clock','#fd-rules','#snage','#fd-xg','#fd-mom'].forEach(x=>all(x,'2'));
- ['#fd-stats','#banner','#acts','#chkmsg','#v-bet .cz'].forEach(x=>all(x,'3'));
- [...$('form').children].forEach(e=>{const f=e.querySelector('[id^="f_"]');e.setAttribute('data-pg',f&&/^f_(theme|size|mkt|pages)$/.test(f.id)?'1':'2')});
- ['#fd-sl','#fd-pn','#fd-bk'].forEach(x=>all(x,'3'));
+ ['#fd-stats','#banner','#acts','#chkmsg','#autonote','#v-bet .cz'].forEach(x=>all(x,'3'));
+ [...$('form').children].forEach(e=>{const f=e.querySelector('[id^="f_"]');e.setAttribute('data-pg',f&&/^f_(theme|size|mkt|pages|glow)$/.test(f.id)?'1':'2')});
+ ['#fd-sl','#fd-pn','#fd-qh','#fd-bk'].forEach(x=>all(x,'3'));
  all('#v-set > button.wide.pri','2');
 }
 function pgRender(top){
@@ -3884,6 +4070,9 @@ $('ck_snd').addEventListener('change',e=>{clk.snd=e.target.checked;clkSave();if(
 $('fw_on').addEventListener('change',e=>{fwOn=e.target.checked;try{localStorage.setItem(FWON,fwOn?'1':'0')}catch(err){}fwRender()});
 $('ck_lv').addEventListener('change',e=>{clk.lv=e.target.checked;if(!clk.lv)clk.src=null;clkSave();clockTick()});
 document.addEventListener('visibilitychange',()=>{if(!document.hidden){clockTick();if(clockInfo(clk,c,Date.now()).k!=='off'&&!wl)keepAwake(true);if(Date.now()-chkLast>30000)chkOpen(false);if(Date.now()-fwLast>600000)fwSettle(false)}});
+try{autoSet=localStorage.getItem('u35_autoset')!=='0'}catch(e){}
+$('auto_set').checked=autoSet;
+$('auto_set').addEventListener('change',e=>{autoSet=e.target.checked;try{localStorage.setItem('u35_autoset',autoSet?'1':'0')}catch(err){}if(autoSet)chkOpen(false)});
 setTimeout(()=>chkOpen(false),1500);
 setTimeout(()=>fwSettle(false),3500);
 setInterval(()=>{if(!document.hidden){chkOpen(false);if(Date.now()-fwLast>600000)fwSettle(false)}},120000);
