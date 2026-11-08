@@ -955,6 +955,15 @@ body.pg3 .v2[data-cur="3"] [data-pg]:not([data-pg~="3"]){display:none!important}
 .autonote .pace{flex:1 1 220px;min-width:0;margin:0}
 #fd-qh .two label.keyl{min-width:0}
 #fd-qh input[type=time]{width:100%}
+
+/* Build 71: Skip leagues */
+#fd-sk .skr{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:44px;padding:2px 0;border-top:1px solid var(--line)}
+#fd-sk .skr:first-child{border-top:0}
+#fd-sk .skr span{min-width:0;overflow-wrap:anywhere}
+#fd-sk .skr .pu{flex:none;min-width:44px;min-height:44px}
+#fd-sk .wide{margin-top:2px}
+#lvskipw{padding:10px 10px 4px;border-top:1px solid var(--line)}
+#lvskipw .keyl{margin-bottom:6px}
 </style>
 </head>
 <body>
@@ -1002,6 +1011,10 @@ body.pg3 .v2[data-cur="3"] [data-pg]:not([data-pg~="3"]){display:none!important}
     <div id="lvlist" hidden>
      <input id="lvfilter" type="text" placeholder="Filter by team or league" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Filter live matches">
      <div id="lvrows"></div>
+    </div>
+    <div id="lvskipw" hidden>
+     <label class="keyl" id="lv_skipl">Skip a league<select id="lv_skip" aria-label="Skip a league: hide its matches from this list, from Scan and from alerts"><option value="">Choose a league…</option></select></label>
+     <p class="pace" id="lvskipn" role="status" hidden></p>
     </div>
    </div>
    <div id="msig" hidden></div>
@@ -1242,7 +1255,7 @@ body.pg3 .v2[data-cur="3"] [data-pg]:not([data-pg~="3"]){display:none!important}
     <button type="button" class="wide" id="pnoff" data-a="pnoff" hidden>Turn off</button>
     <label class="lvauto" id="pnsyncw" hidden><input type="checkbox" id="pn_sync" checked>This device sets the rules and API key the server uses</label>
     <p class="pace" id="pnmsg" role="status" hidden></p>
-    <p class="pace">Optional. A small server of your own (a Cloudflare Worker) watches live matches with your API-Sports key and sends an alert to your lock screen or desktop when a match passes your rules, for example BET UNDER 3.5 · Arsenal v Chelsea · 62' · 1–1. It looks about once a minute and sends one alert per match. It uses your Market choice and entry minutes, and stays quiet while the panel is paused, in cool-off, or done for the day. Your API key is kept on your own server, so keep its address and password to yourself. On iPhone this works only from the Home Screen app. On a computer it works in Chrome, Edge, Firefox and Safari while the browser is open (a minimised window is fine). Up to five devices can be on at once and each gets every alert. Only one of them needs to set the rules: a device that joins a server that already has rules just receives alerts, until you tick the box above.</p>
+    <p class="pace">Optional. A small server of your own (a Cloudflare Worker) watches live matches with your API-Sports key and sends an alert to your lock screen or desktop when a match passes your rules, for example BET UNDER 3.5 · Arsenal v Chelsea · 62' · 1–1. It looks about once a minute and sends one alert per match. It uses your Market choice and entry minutes, and stays quiet while the panel is paused, in cool-off, done for the day or inside your quiet hours, and it ignores the leagues you skip. Your API key is kept on your own server, so keep its address and password to yourself. On iPhone this works only from the Home Screen app. On a computer it works in Chrome, Edge, Firefox and Safari while the browser is open (a minimised window is fine). Up to five devices can be on at once and each gets every alert. Only one of them needs to set the rules: a device that joins a server that already has rules just receives alerts, until you tick the box above.</p>
    </div>
   </div>
   <div class="fold sfold" id="fd-qh">
@@ -1253,6 +1266,19 @@ body.pg3 .v2[data-cur="3"] [data-pg]:not([data-pg~="3"]){display:none!important}
     <p class="pace" id="qh_msg" role="status"></p>
     <p class="pace am" id="qh_old" hidden>Your alert server is an older version, so lock-screen alerts still arrive during quiet hours. Update its worker.js file to apply them.</p>
     <p class="pace">While it is quiet the panel stays silent: no sound or buzz from the match clock and no lock-screen alerts. Everything else keeps working, so the numbers and the verdict are there when you look. The hours follow this device's clock.</p>
+   </div>
+  </div>
+  <div class="fold sfold" id="fd-sk">
+   <button type="button" class="fhd" data-f="sk" aria-expanded="true"><span class="ft">Skip leagues</span><span class="fs" id="fs-sk">None</span><i class="chev"></i></button>
+   <div class="fb">
+    <p class="pace">Matches in these leagues are left out of Live matches and Scan, and no lock-screen alert is sent for them. You can also skip a league straight from the list under Live matches or Scan.</p>
+    <div id="sk_list"></div>
+    <label class="keyl">League to skip<input id="sk_in" list="sk_dl" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Name, or Name · Country" aria-label="League to skip"></label>
+    <datalist id="sk_dl"></datalist>
+    <button type="button" class="wide" id="sk_add" data-a="skadd">Skip this league</button>
+    <p class="pace" id="sk_msg" role="status" hidden></p>
+    <p class="pace am" id="sk_old" hidden>Your alert server is an older version, so lock-screen alerts still arrive for skipped leagues. Update its worker.js file to apply the list there.</p>
+    <p class="pace">A name alone (for example Premier League) skips that name in every country. Pick a suggestion, or type Name · Country, to skip just one.</p>
    </div>
   </div>
   <div class="fold sfold" id="fd-bk">
@@ -1271,7 +1297,7 @@ body.pg3 .v2[data-cur="3"] [data-pg]:not([data-pg~="3"]){display:none!important}
  </section>
  <div class="pgnav" id="pgnav" hidden><button type="button" data-go="back">Back</button><button type="button" data-go="next">Next</button></div>
  <p class="pgsr" id="pgsr" role="status" aria-live="polite"></p>
- <footer>Numbers come from a pasted stats line, or are pulled from your own API-Sports key if you add one. Not connected to a bookmaker. No bet is guaranteed.<span class="bld"><span id="buildno">Build 70 · 7 Nov 2026</span> <a id="aboutlk" class="abl" href="./?about">About SportHub</a> <button type="button" class="pu" id="reloadnew" data-a="reload">Reload latest</button></span></footer>
+ <footer>Numbers come from a pasted stats line, or are pulled from your own API-Sports key if you add one. Not connected to a bookmaker. No bet is guaranteed.<span class="bld"><span id="buildno">Build 71 · 7 Nov 2026</span> <a id="aboutlk" class="abl" href="./?about">About SportHub</a> <button type="button" class="pu" id="reloadnew" data-a="reload">Reload latest</button></span></footer>
 </main>
 
 <script>
@@ -1579,7 +1605,7 @@ function apiFixture(r){
   if(!f.id||!t.home||!t.away)return null;
   return{id:f.id,short:String(st.short||''),min:nOrNull(st.elapsed),
    home:{id:t.home.id,name:String(t.home.name||'Home')},away:{id:t.away.id,name:String(t.away.name||'Away')},
-   gh:nOrNull(g.home),ga:nOrNull(g.away),league:String(l.name||''),country:String(l.country||'')};
+   gh:nOrNull(g.home),ga:nOrNull(g.away),league:String(l.name||''),leagueId:nOrNull(l.id),country:String(l.country||'')};
  }catch(e){return null}
 }
 // Live list: only matches that are in play (they have a minute).
@@ -1833,6 +1859,51 @@ function quietNow(q,now,tz){
  const t=qhLocal(now==null?Date.now():now,(q&&q.tz)||tz);
  const inside=a<b?(t>=a&&t<b):(t>=a||t<b);
  return inside?{quiet:true,mins:((b-t+1440)%1440)||1440,on:true}:{quiet:false,mins:((a-t+1440)%1440)||1440,on:true};
+}
+// ---- Skip leagues: leagues left out of Live matches, Scan and the lock-screen alerts.
+// An entry is {id, n, c}: the API's league id when it is known, the league name, and the country ('' means any country).
+const LG_MAX=60;
+const lgNorm=(t,n)=>String(t==null?'':t).trim().toLowerCase().slice(0,n);
+const lgKey=e=>lgNorm(e&&e.n,40)+'|'+lgNorm(e&&e.c,30);
+function lgMatch(x,f){
+ if(!x||!f)return false;
+ if(x.id!=null&&f.leagueId!=null)return Number(x.id)===Number(f.leagueId);
+ const n=lgNorm(x.n,40);
+ if(!n||lgNorm(f.league,40)!==n)return false;
+ const c=lgNorm(x.c,30);
+ return !c||lgNorm(f.country,30)===c;
+}
+const lgSkipped=(f,list)=>Array.isArray(list)&&list.length>0&&list.some(x=>lgMatch(x,f));
+const lgLabel=e=>String(e.n)+' · '+(e.c?e.c:'any country');
+function lgClean(list){
+ const out=[],seen={};
+ (Array.isArray(list)?list:[]).forEach(x=>{
+  if(!x||typeof x!=='object'||out.length>=LG_MAX)return;
+  const n=String(x.n==null?'':x.n).trim().slice(0,60),c=String(x.c==null?'':x.c).trim().slice(0,40);
+  if(!n)return;
+  const id=x.id==null||x.id===''?null:Number(x.id);
+  const e={id:id!=null&&isFinite(id)?id:null,n:n,c:c},k=e.id!=null?'#'+e.id:lgKey(e);
+  if(seen[k])return;
+  seen[k]=1;out.push(e);
+ });
+ return out;
+}
+// Reads what you type: "Name" (any country) or "Name · Country". A league the panel has already seen keeps its id.
+function lgParse(text,known){
+ const t=String(text||'').trim(),i=t.indexOf('·');
+ const n=(i<0?t:t.slice(0,i)).trim(),c=i<0?'':t.slice(i+1).trim();
+ if(!n)return null;
+ const hit=c?(Array.isArray(known)?known:[]).find(e=>e&&lgNorm(e.n,40)===lgNorm(n,40)&&lgNorm(e.c,30)===lgNorm(c,30)):null;
+ return{id:hit&&hit.id!=null?hit.id:null,n:hit?hit.n:n,c:hit?hit.c:c};
+}
+// Adds one entry. Returns {ok,list,why,entry}: why says so when nothing was added.
+function lgAdd(list,e){
+ const cur=lgClean(list),ne=lgClean([e])[0];
+ if(!ne)return{ok:false,list:cur,why:'Type a league name first.'};
+ const dup=cur.find(x=>(x.id!=null&&ne.id!=null)?x.id===ne.id:lgKey(x)===lgKey(ne));
+ if(dup)return{ok:false,list:cur,why:dup.n+' is already skipped.'};
+ if(cur.length>=LG_MAX)return{ok:false,list:cur,why:'The list is full ('+LG_MAX+' leagues). Remove one first.'};
+ return{ok:true,list:cur.concat([ne]),why:'',entry:ne};
 }
 const REC_TAG='U35DATA ';
 // Text you can paste into Notes or a message: a short summary plus one data line that recordImport can read back.
@@ -2343,7 +2414,7 @@ const NUM=Object.keys(FD);
 const KEY='u35_v2';
 const INP=['avgH','avgA','min','gh','ga','sotH','sotA','xgh','xga'];
 let c={...D},s,hist=[],ses=1,showLog=false,size='normal',lastLock=-1;
-let fold={clock:true,match:true,rules:true,xg:true,mom:true,stats:true,sd:true,sm:true,sl:true,pn:true,qh:true,bk:true};
+let fold={clock:true,match:true,rules:true,xg:true,mom:true,stats:true,sd:true,sm:true,sl:true,pn:true,qh:true,sk:true,bk:true};
 function applyFold(){
  Object.keys(fold).forEach(k=>{
   const el=$('fd-'+k);if(!el)return;
@@ -2407,6 +2478,71 @@ function qhChange(){
 // ---- Glow: how strong the green glow on the boxes is (Soft, Bright, Off). Off stops the breathing glow; the green under a mouse pointer stays.
 var glow='soft';
 function setGlow(v,keep){glow=v==='off'||v==='bright'?v:'soft';document.documentElement.setAttribute('data-glow',glow);if(!keep){try{localStorage.setItem('u35_glow',glow)}catch(e){}}}
+// ---- Skip leagues (the matching is lgSkipped in the logic block)
+const SKK='u35_skip';
+var skipL=[],lvSkipN=0,skPickOpts=[];
+function skSave(){try{localStorage.setItem(SKK,JSON.stringify(skipL))}catch(e){}}
+function skPayload(){return skipL.map(x=>({id:x.id,n:x.n,c:x.c}))}
+function skLoad(){try{skipL=lgClean(JSON.parse(localStorage.getItem(SKK)||'[]'))}catch(e){skipL=[]}skRender()}
+// A live list without the skipped leagues; remembers how many were left out.
+function skFilter(list){const kept=list.filter(f=>!lgSkipped(f,skipL));lvSkipN=list.length-kept.length;return kept}
+const skNote=()=>lvSkipN?' '+lvSkipN+(lvSkipN>1?' matches in skipped leagues are':' match in a skipped league is')+' hidden.':'';
+function skMsg(t,bad){const m=$('sk_msg');m.textContent=t||'';m.hidden=!t;m.className='pace'+(bad?' am':'')}
+// Leagues the panel has seen (live list first, then the data coverage record), minus the ones already skipped.
+function skKnown(){
+ const seen=new Map();
+ lvList.forEach(f=>{if(f.league){const k=lgKey({n:f.league,c:f.country});if(!seen.has(k))seen.set(k,{id:f.leagueId,n:f.league,c:f.country||''})}});
+ Object.keys(cov||{}).forEach(k=>{const p=k.split('|');if(p[0]){const e={id:null,n:p[0],c:p[1]||''},kk=lgKey(e);if(!seen.has(kk))seen.set(kk,e)}});
+ return [...seen.values()].filter(e=>!lgSkipped({leagueId:e.id,league:e.n,country:e.c},skipL)).sort((a,b)=>a.n.localeCompare(b.n)||a.c.localeCompare(b.c)).slice(0,200);
+}
+function skFillList(){const dl=$('sk_dl');if(dl)dl.innerHTML=skKnown().filter(e=>e.c).map(e=>'<option value="'+esc(e.n+' · '+e.c)+'"></option>').join('')}
+function skRender(){
+ const box=$('sk_list');if(!box)return;
+ box.innerHTML=skipL.length?skipL.map((x,i)=>'<div class="skr"><span>'+esc(lgLabel(x))+'</span><button type="button" class="pu" data-a="skdel" data-i="'+i+'" aria-label="Stop skipping '+esc(lgLabel(x))+'">Remove</button></div>').join(''):'<p class="pace">No league is skipped.</p>';
+ $('fs-sk').textContent=skipL.length?skipL.length+' skipped':'None';
+ $('sk_old').hidden=!(skipL.length&&pn.on&&pnVer!=null&&pnVer<3);
+}
+// The picker under Live matches and Scan: the leagues in the list you are looking at, most matches first.
+function skPickRender(){
+ const w=$('lvskipw');if(!w)return;
+ const by=new Map();
+ lvList.forEach(f=>{if(!f.league)return;const k=lgKey({n:f.league,c:f.country}),o=by.get(k);if(o)o.cnt++;else by.set(k,{id:f.leagueId,n:f.league,c:f.country||'',cnt:1})});
+ skPickOpts=[...by.values()].sort((a,b)=>b.cnt-a.cnt||a.n.localeCompare(b.n));
+ $('lv_skip').innerHTML='<option value="">Choose a league…</option>'+skPickOpts.map((e,i)=>'<option value="'+i+'">'+esc(e.n+(e.c?' · '+e.c:'')+' ('+e.cnt+')')+'</option>').join('');
+ $('lv_skipl').hidden=!skPickOpts.length;
+ const n=$('lvskipn');n.textContent=lvSkipN?lvSkipN+(lvSkipN>1?' matches in skipped leagues are':' match in a skipped league is')+' hidden. Manage the list in Settings.':'';n.hidden=!lvSkipN;
+ w.hidden=!(lvListAt&&(skPickOpts.length||lvSkipN));
+}
+// A new list: hide those matches from what is on screen now, then tell the server.
+function skUse(list){
+ skipL=list;skSave();
+ const b=lvList.length;lvList=lvList.filter(f=>!lgSkipped(f,skipL));lvSkipN+=b-lvList.length;
+ if(scItems.length)scItems=scItems.filter(x=>!lgSkipped(x.f,skipL));
+ skRender();skPickRender();
+ if(!$('lvlist').hidden)lvRender();
+ if(!$('scres').hidden)scRender();
+ pnSyncSoon();
+}
+function skAddFromInput(){
+ const inp=$('sk_in'),e=lgParse(inp.value,skKnown()),r=e?lgAdd(skipL,e):{ok:false,why:'Type a league name first.'};
+ skMsg(r.ok?'Skipping '+lgLabel(r.entry)+'.':r.why,!r.ok);
+ if(!r.ok)return;
+ inp.value='';skUse(r.list);
+}
+function skDel(i){
+ const x=skipL[i];if(!x)return;
+ skipL=skipL.filter((y,j)=>j!==i);skSave();skRender();skPickRender();pnSyncSoon();
+ skMsg('No longer skipping '+lgLabel(x)+'. Tap Live matches or Scan again to see its matches.');
+}
+function skPicked(){
+ const sel=$('lv_skip'),i=sel.value;sel.value='';
+ if(i==='')return;
+ const o=skPickOpts[+i];if(!o)return;
+ const r=lgAdd(skipL,{id:o.id,n:o.n,c:o.c});
+ if(!r.ok){lvMsg(r.why,'am');return}
+ skUse(r.list);
+ lvMsg('Skipping '+lgLabel(r.entry)+'. Its matches are hidden here, in Scan and in lock-screen alerts. Undo it in Settings > Skip leagues.');
+}
 function setMkt(v,keep){mktOn=v==='show';document.body.classList.toggle('nomkt',!mktOn);if(!keep){try{localStorage.setItem('u35_mkt',mktOn?'show':'hide')}catch(e){}}}
 function setSize(v){size=v==='compact'?'compact':'normal';document.body.classList.toggle('compact',size==='compact');applyFold();try{localStorage.setItem('u35_size',size)}catch(e){}}
 function fresh(){s=newState(dayKey());showLog=false;sugs={}}
@@ -3224,7 +3360,7 @@ async function keyTest(){
 }
 function keyForget(){
  apiKey='';try{localStorage.removeItem(KEYK)}catch(e){}
- $('apikey').value='';lvUnlink(true);lvList=[];$('lvlist').hidden=true;lvMsg('');
+ $('apikey').value='';lvUnlink(true);lvList=[];lvSkipN=0;lvListAt=0;skPickRender();$('lvlist').hidden=true;lvMsg('');
  keyMsg('Key removed from this browser.');
  if(pn.on)pnOff();
 }
@@ -3283,7 +3419,7 @@ async function pnPing(){
  if(!j||j.name!=='sporthub-alerts')throw new Error('That address is not a SportHub alert server. Check it matches your Worker address.');
  if(!j.password)throw new Error('The server has no TOKEN yet. Add the TOKEN variable to the Worker.');
  if(!j.kv)throw new Error('The server has no storage yet. Bind a KV namespace named STORE to the Worker.');
- pnVer=typeof j.v==='number'?j.v:1;try{localStorage.setItem('u35_pnv',JSON.stringify({url:pn.url,v:pnVer}))}catch(e){}qhRender();
+ pnVer=typeof j.v==='number'?j.v:1;try{localStorage.setItem('u35_pnv',JSON.stringify({url:pn.url,v:pnVer}))}catch(e){}qhRender();skRender();
  return j;
 }
 // Why the server should stay quiet right now, taken from the same session rules the panel uses.
@@ -3298,9 +3434,9 @@ function pnHold(){
 }
 async function pnSyncNow(force){
  if(!pn.on||pn.sync===false||!apiKey||inFrame())return;
- const mute=pnHold(),h=JSON.stringify([c,apiKey,mute.off,mute.until,mute.why,qhPayload()]);
+ const mute=pnHold(),h=JSON.stringify([c,apiKey,mute.off,mute.until,mute.why,qhPayload(),skPayload()]);
  if(!force&&h===pnLast)return;
- try{await pnReq('/sync','POST',{cfg:c,key:apiKey,mute:mute,quiet:qhPayload()});pnLast=h}catch(e){}
+ try{await pnReq('/sync','POST',{cfg:c,key:apiKey,mute:mute,quiet:qhPayload(),skip:skPayload()});pnLast=h}catch(e){}
 }
 function pnSyncSoon(){
  if(!pn||!pn.on||pn.sync===false)return;
@@ -3377,6 +3513,7 @@ async function pnCheck(){
   if(t.last)p.push('last alert '+pnAgo(t.last.at)+': '+t.last.t+', '+t.last.b);
   if(st.hold&&(st.hold.off||st.hold.until>st.now))p.push('paused: '+(st.hold.why||'by the panel'));
   if(st.qnow&&st.qnow.quiet)p.push('quiet hours are holding alerts now');
+  if(st.skipN)p.push('skipping '+st.skipN+(st.skipN>1?' leagues':' league'));
   if(t.rem!=null)p.push(t.rem+' API requests left today');
   const bad=!st.phones||!st.key||!!t.err;
   pnMsg('Server reachable. '+p.join('. ')+'.'+(t.err?' Last problem: '+t.err:'')+(!st.phones?' '+pnTap()+' Turn on to add this '+pnDev()+'.':''),bad);
@@ -3506,16 +3643,16 @@ async function apiGet(path){
 }
 function lvRender(){
  const rows=apiFilter(apiSort(lvList,c),$('lvfilter').value);
- $('lvrows').innerHTML=rows.length?rows.map(f=>'<button type="button" class="lvr'+(live&&live.id===f.id?' on':'')+'" data-a="lvpick" data-id="'+esc(f.id)+'"><b>'+esc(f.home.name)+' v '+esc(f.away.name)+'</b><span class="lvs"><span class="lvm">'+esc(f.min)+"'</span> "+esc(f.gh==null?'-':f.gh)+'–'+esc(f.ga==null?'-':f.ga)+'</span><small>'+esc(f.league+(f.country?' · '+f.country:''))+'</small>'+(apiInWin(f,c)?'<span class="lvw">In window</span>':'<span></span>')+covHtml(f)+'</button>').join(''):'<div class="lvempty">'+(lvList.length?'No live match fits that filter.':'No matches are live right now.')+'</div>';
+ $('lvrows').innerHTML=rows.length?rows.map(f=>'<button type="button" class="lvr'+(live&&live.id===f.id?' on':'')+'" data-a="lvpick" data-id="'+esc(f.id)+'"><b>'+esc(f.home.name)+' v '+esc(f.away.name)+'</b><span class="lvs"><span class="lvm">'+esc(f.min)+"'</span> "+esc(f.gh==null?'-':f.gh)+'–'+esc(f.ga==null?'-':f.ga)+'</span><small>'+esc(f.league+(f.country?' · '+f.country:''))+'</small>'+(apiInWin(f,c)?'<span class="lvw">In window</span>':'<span></span>')+covHtml(f)+'</button>').join(''):'<div class="lvempty">'+(lvList.length?'No live match fits that filter.':lvSkipN?'Every live match is in a skipped league.':'No matches are live right now.')+'</div>';
 }
 async function lvOpen(){
  if(lvBusy)return;
  lvBusy=true;lvMsg('Loading live matches…');
  try{
-  lvList=apiLive(await apiGet('/fixtures?live=all'));lvListAt=Date.now();
+  lvList=skFilter(apiLive(await apiGet('/fixtures?live=all')));lvListAt=Date.now();
   $('scres').hidden=true;
-  $('lvlist').hidden=false;lvRender();
-  lvMsg(lvList.length+' live now.'+(lvList.length?' Matches inside your entry window are listed first.':''));
+  $('lvlist').hidden=false;lvRender();skPickRender();
+  lvMsg(lvList.length+' live now.'+(lvList.length?' Matches inside your entry window are listed first.':'')+skNote());
  }catch(e){lvMsg(e.message,true)}
  lvBusy=false;
 }
@@ -3633,11 +3770,11 @@ async function lvScan(){
  lvBusy=true;$('lvscan').disabled=true;
  try{
   lvMsg('Loading live matches…');
-  lvList=apiLive(await scGet('/fixtures?live=all'));lvListAt=Date.now();
-  $('lvlist').hidden=true;
+  lvList=skFilter(apiLive(await scGet('/fixtures?live=all')));lvListAt=Date.now();
+  $('lvlist').hidden=true;skPickRender();
   const cand=scanPick(lvList,c);
   scItems=[];scShowOut=false;
-  if(!cand.length){scRender();lvMsg(lvList.length+' live now, none between minute '+(c.minFrom-SCAN_LEAD)+' and '+c.minTo+'. Try again in a few minutes.');return}
+  if(!cand.length){scRender();lvMsg(lvList.length+' live now, none between minute '+(c.minFrom-SCAN_LEAD)+' and '+c.minTo+'. Try again in a few minutes.'+skNote());return}
   let firstErr='',bad=0;
   const one=async(f,order)=>{
    const errs=[],safe=p=>p.catch(e=>{errs.push(e.message);return null});
@@ -3655,7 +3792,7 @@ async function lvScan(){
   }
   scRender();
   const n=scanCounts(scItems);
-  lvMsg('Scanned '+cand.length+': '+n.go+' pass, '+n.soon+' coming, '+n.risk+' at risk, '+n.nodata+' missing data, '+n.out+' out. Updated '+hhmmss()+'.'+(bad?' Some lookups failed: '+firstErr:''),bad?'am':false);
+  lvMsg('Scanned '+cand.length+': '+n.go+' pass, '+n.soon+' coming, '+n.risk+' at risk, '+n.nodata+' missing data, '+n.out+' out. Updated '+hhmmss()+'.'+skNote()+(bad?' Some lookups failed: '+firstErr:''),bad?'am':false);
  }catch(e){lvMsg(e.message,true)}
  finally{lvBusy=false;$('lvscan').disabled=false}
 }
@@ -3924,6 +4061,8 @@ document.addEventListener('click',e=>{
  else if(k==='unpin')setPin('');
  else if(k==='won'||k==='lost'||k==='void')settle(a.dataset.id,k);
  else if(k==='next')nextMatch(true);
+ else if(k==='skadd')skAddFromInput();
+ else if(k==='skdel')skDel(+a.dataset.i);
  else if(k==='covclear'){cov={};covSave();covRender();if(lvList.length&&!$('lvlist').hidden)lvRender();if(scItems.length&&!$('scres').hidden)scRender()}
  else if(k==='rulereset'){const pr=presetRules(c.side,lineOf(c));c=Object.assign({},c,pr);c.m=Object.assign({},c.m||{});delete c.m[mkKey(c.side,lineOf(c))];save();buildForm();update()}
  else if(k==='rcopy')recCopy();
@@ -3983,6 +4122,7 @@ if(!s)fresh();
 keyLoad();
 pnLoad();
 qhLoad();['qh_on','qh_from','qh_to'].forEach(id=>$(id).addEventListener('change',qhChange));setInterval(qhRender,30000);
+skLoad();$('lv_skip').addEventListener('change',skPicked);$('sk_in').addEventListener('focus',skFillList);$('sk_in').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();skAddFromInput()}});
 bookLoad();
 
 recheck();
@@ -4002,7 +4142,7 @@ function pgTag(){
  ['#fd-clock','#fd-rules','#snage','#fd-xg','#fd-mom'].forEach(x=>all(x,'2'));
  ['#fd-stats','#banner','#acts','#chkmsg','#autonote','#v-bet .cz'].forEach(x=>all(x,'3'));
  [...$('form').children].forEach(e=>{const f=e.querySelector('[id^="f_"]');e.setAttribute('data-pg',f&&/^f_(theme|size|mkt|pages|glow)$/.test(f.id)?'1':'2')});
- ['#fd-sl','#fd-pn','#fd-qh','#fd-bk'].forEach(x=>all(x,'3'));
+ ['#fd-sl','#fd-pn','#fd-qh','#fd-sk','#fd-bk'].forEach(x=>all(x,'3'));
  all('#v-set > button.wide.pri','2');
 }
 function pgRender(top){
