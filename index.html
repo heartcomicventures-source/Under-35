@@ -979,7 +979,8 @@ body.pg3 .v2[data-cur="3"] [data-pg]:not([data-pg~="3"]){display:none!important}
 @media (max-width:350px){.tabs button .lg{display:none}.tabs button .sh{display:inline}}
 @media (min-width:900px){.tabs{width:max-content}}
 @media (min-width:900px) and (max-width:1099px){.tabs{gap:4px}.tabs button,.compact .tabs button{padding:0 14px}}
-#v-pm .two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+#v-pm .two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;align-items:end}
+.pms .at{white-space:nowrap}
 #v-pm .two label.keyl{min-width:0}
 #v-pm select{width:100%;min-width:0}
 #v-pm #pm_go{margin-top:12px}
@@ -1285,21 +1286,28 @@ body.pg3 .v2[data-cur="3"] [data-pg]:not([data-pg~="3"]){display:none!important}
 <section id="v-pm" class="v2" hidden>
  <div class="cl">
   <p class="fwsub">Pre-match combinations</p>
-  <p class="pace">Builds a 3-game combination from matches that have not started, using the numbers several bookmakers quote. Markets read: Match Winner, Double Chance, Goals Over/Under and Both Teams Score. Your Skip leagues list applies.</p>
+  <p class="pace">Builds a combination of 1 to 4 games from matches that have not started, using the numbers several bookmakers quote. Markets read: Match Winner, Double Chance, Goals Over/Under and Both Teams Score. Your Skip leagues list applies.</p>
   <div class="two">
    <label class="keyl">Day<select id="pm_day" aria-label="Day"><option value="0">Today</option><option value="1">Tomorrow</option></select></label>
    <label class="keyl">Matches to check<select id="pm_pages" aria-label="Matches to check"><option value="3">30 · 4 requests</option><option value="6">60 · 7 requests</option><option value="10">100 · 11 requests</option><option value="15">150 · 16 requests</option></select></label>
   </div>
   <div class="two">
-   <label class="keyl">Minimum chance all three win<select id="pm_min" aria-label="Minimum chance all three win"><option value="0.6">60%</option><option value="0.65">65%</option><option value="0.7">70%</option><option value="0.75">75%</option><option value="0.8">80%</option><option value="0.85">85%</option><option value="0.9">90%</option></select></label>
+   <label class="keyl"><span id="pm_minl">Minimum chance all three win</span><select id="pm_min" aria-label="Minimum chance all three win"><option value="0.6">60%</option><option value="0.65">65%</option><option value="0.7">70%</option><option value="0.75">75%</option><option value="0.8">80%</option><option value="0.85">85%</option><option value="0.9">90%</option></select></label>
    <label class="keyl">Target total<select id="pm_tot" aria-label="Target total"><option value="1.25">1.25</option><option value="1.5">1.50</option><option value="1.75">1.75</option><option value="2">2.00</option><option value="2.5">2.50</option><option value="3">3.00</option></select></label>
+  </div>
+  <div class="two">
+   <label class="keyl">Games in a combination<select id="pm_n" aria-label="Games in a combination"><option value="1">1 game</option><option value="2">2 games</option><option value="3">3 games</option><option value="4">4 games</option></select></label>
+   <label class="keyl">Auto-save picks<select id="pm_auto" aria-label="Auto-save picks"><option value="1">On</option><option value="0">Off</option></select></label>
   </div>
   <button type="button" class="wide pri" id="pm_go" data-a="pmgo">Find combinations</button>
   <p class="pace" id="pm_msg" role="status" hidden></p>
   <p class="pace" id="pm_info" hidden></p>
   <div id="pm_res"></div>
-  <p class="pace">The chance of a game is what the bookmakers together say, with their margin taken out. It is an estimate, not a promise. The chance that all three win is the three chances multiplied: three games that each win 90% of the time win together about 73% of the time. The total is the three numbers multiplied.</p>
+  <p class="fwsub" id="pm_safeh" hidden>Safest single games</p>
+  <div id="pm_safe"></div>
+  <p class="pace">The chance of a game is what the bookmakers together say, with their margin taken out. It is an estimate, not a promise. The chance that every game in a combination wins is their chances multiplied: three games that each win 90% of the time win together about 73% of the time. The total is the numbers multiplied. At the same total, more games do not raise the chance: the total is what decides it.</p>
   <p class="fwsub">Saved combinations</p>
+  <p class="pace" id="pm_anote"></p>
   <p class="pace" id="pm_smsg" role="status" hidden></p>
   <div id="pm_saved"></div>
  </div>
@@ -1373,7 +1381,7 @@ body.pg3 .v2[data-cur="3"] [data-pg]:not([data-pg~="3"]){display:none!important}
  </section>
  <div class="pgnav" id="pgnav" hidden><button type="button" data-go="back">Back</button><button type="button" data-go="next">Next</button></div>
  <p class="pgsr" id="pgsr" role="status" aria-live="polite"></p>
- <footer>Numbers come from a pasted stats line, or are pulled from your own API-Sports key if you add one. Not connected to a bookmaker. No bet is guaranteed.<span class="bld"><span id="buildno">Build 72 · 12 Nov 2026</span> <button type="button" class="pu" id="reloadnew" data-a="reload">Reload latest</button></span></footer>
+ <footer>Numbers come from a pasted stats line, or are pulled from your own API-Sports key if you add one. Not connected to a bookmaker. No bet is guaranteed.<span class="bld"><span id="buildno">Build 73 · 12 Nov 2026</span> <button type="button" class="pu" id="reloadnew" data-a="reload">Reload latest</button></span></footer>
 </main>
 
 <script>
@@ -1981,10 +1989,10 @@ function lgAdd(list,e){
  if(cur.length>=LG_MAX)return{ok:false,list:cur,why:'The list is full ('+LG_MAX+' leagues). Remove one first.'};
  return{ok:true,list:cur.concat([ne]),why:'',entry:ne};
 }
-// ---- Pre-match: a 3-game combination built from the numbers bookmakers quote before kickoff (the API-Sports odds feed).
+// ---- Pre-match: a combination of 1 to 4 games built from the numbers bookmakers quote before kickoff (the API-Sports odds feed).
 // Everything here is pure, so it is tested without a network. The "chance" of a game is what the bookmakers together say, with their margin
-// taken out. It is an estimate, never a promise: the chance that all three win is the three chances multiplied.
-const PM_MIN_BOOKS=3,PM_SPREAD=0.06,PM_LINES=[0.5,1.5,2.5,3.5,4.5],PM_LEAD=20*60000,PM_TOL=0.05,PM_PER_BAND=40,PM_FLOOR=1.12,PM_KEEP=240,PM_SAVED=200,PM_SETTLE_MS=135*60000;
+// taken out. It is an estimate, never a promise: the chance that every game in a combination wins is their chances multiplied.
+const PM_MIN_BOOKS=3,PM_SPREAD=0.06,PM_LINES=[0.5,1.5,2.5,3.5,4.5],PM_LEAD=20*60000,PM_TOL=0.05,PM_PER_BAND=40,PM_PER_BAND4=30,PM_BIG=60,PM_BIGCAP=3,PM_MAXN=4,PM_SAFE_FLOOR=1.05,PM_SAFE_KEEP=30,PM_FLOOR=1.12,PM_KEEP=420,PM_SAVED=200,PM_SETTLE_MS=135*60000;
 const pmR=(x,n)=>{const m=Math.pow(10,n||0);return Math.round(x*m)/m};
 // Which market a bet is: Match Winner, Double Chance, Goals Over/Under (full match) or Both Teams Score. Anything else is left out.
 function pmKind(b){
@@ -2093,49 +2101,67 @@ function pmLegs(fixes,odds,now,skip){
  });
  return legs;
 }
-// Which games are worth trying together. At a fixed total, the chance of all three only depends on how generous each quoted number is for the
+// Which games are worth trying together. At a fixed total, the chance of all the games winning only depends on how generous each quoted number is for the
 // chance behind it (number x chance, "value"), so: for each match keep its two best-value games in each size band, then the PM_PER_BAND best-value games
-// in each band. (Ranking by chance alone would fill the pool with the smallest numbers and never reach a total of 2.00.)
-function pmPool(legs){
+// in each band (30 when four games are combined, to keep the search quick). (Ranking by chance alone would fill the pool with the smallest numbers and never reach a total of 2.00.)
+function pmPool(legs,per,cap){
+ const keepN=per||PM_PER_BAND,perMatch=cap||2;
  const by={},bands=[[1.01,1.06],[1.06,1.15],[1.15,1.25],[1.25,1.4],[1.4,1.8],[1.8,3.5]],cand=bands.map(()=>[]),pool=[];
  legs.forEach(l=>{(by[l.fid]=by[l.fid]||[]).push(l)});
  Object.keys(by).forEach(fid=>{
   bands.forEach((b,bi)=>{
-   by[fid].filter(l=>l.odd>=b[0]&&l.odd<b[1]).map(l=>({v:l.odd*l.ch,l:l})).sort((x,y)=>y.v-x.v).slice(0,2).forEach(x=>cand[bi].push(x));
+   by[fid].filter(l=>l.odd>=b[0]&&l.odd<b[1]).map(l=>({v:l.odd*l.ch,l:l})).sort((x,y)=>y.v-x.v).slice(0,perMatch).forEach(x=>cand[bi].push(x));
   });
  });
- cand.forEach(c=>{c.sort((x,y)=>y.v-x.v).slice(0,PM_PER_BAND).forEach(x=>pool.push(x.l))});
+ cand.forEach(c=>{c.sort((x,y)=>y.v-x.v).slice(0,keepN).forEach(x=>pool.push(x.l))});
  return pool;
 }
+// What is kept after a read: the games that every size of combination can need (three games use 40 a band, four use 30, one or two use 60 with three
+// a match), so the search can be run again later, for any number of games, without reading the feed again.
+function pmKeep(legs){
+ const seen={},out=[];
+ pmPool(legs).concat(pmPool(legs,PM_BIG,PM_BIGCAP)).forEach(l=>{const k=l.fid+'|'+l.key;if(!seen[k]){seen[k]=1;out.push(l)}});
+ return out;
+}
 const pmCombo=ls=>{const legs=ls.slice().sort((a,b)=>a.ko-b.ko);return{legs:legs,tot:pmR(legs.reduce((p,l)=>p*l.odd,1),2),ch:legs.reduce((p,l)=>p*l.ch,1)}};
-// Looks at every set of three games from three different matches and returns
+// Looks at every set of n games (1 to 4) from n different matches and returns
 //  near: the strongest combination whose total is within 5% of the target,
-//  hi:   the highest total (not above target + 5%) whose chance that all three win is at least `min`,
+//  hi:   the highest total (not above target + 5%) whose chance that every game wins is at least `min`,
 //  top:  the strongest combination with a total of at least PM_FLOOR and not above target + 5% (shown when nothing reaches `min`).
+// The games are tried in order of their number, so the search stops looking along a row as soon as even the smallest possible total is too big.
 function pmSearch(legs,o){
- const target=o.target,min=o.min,lo=target*(1-PM_TOL),up=target*(1+PM_TOL),pool=pmPool(legs),n=pool.length;
+ const target=o.target,min=o.min,n=Math.max(1,Math.min(PM_MAXN,Math.floor(o.n)||3)),lo=target*(1-PM_TOL),up=target*(1+PM_TOL);
+ const pool=(n>=4?pmPool(legs,PM_PER_BAND4):n===3?pmPool(legs):pmPool(legs,PM_BIG,PM_BIGCAP)).sort((a,b)=>a.odd-b.odd),m=pool.length;
  let near=null,hi=null,top=null;
- const better=(a,b,k1,k2)=>!a||b[k1]>a[k1]+1e-12||(Math.abs(b[k1]-a[k1])<=1e-12&&b[k2]>a[k2]);
- for(let i=0;i<n;i++){
-  const a=pool[i];
-  for(let j=i+1;j<n;j++){
-   const b=pool[j];
-   if(b.fid===a.fid)continue;
-   const t2=a.odd*b.odd,c2=a.ch*b.ch;
-   for(let k=j+1;k<n;k++){
-    const c=pool[k];
-    if(c.fid===a.fid||c.fid===b.fid)continue;
-    const tot=t2*c.odd,ch=c2*c.ch;
-    if(tot>up+0.005)continue;
-    const x={i:i,j:j,k:k,tot:tot,ch:ch};
-    if(tot>=lo-0.005&&better(near,x,'ch','tot'))near=x;
-    if(ch>=min&&better(hi,x,'tot','ch'))hi=x;
-    if(tot>=PM_FLOOR&&better(top,x,'ch','tot'))top=x;
-   }
+ const bCh=(a,tot,ch)=>!a||ch>a.ch+1e-12||(Math.abs(ch-a.ch)<=1e-12&&tot>a.tot);
+ const bTot=(a,tot,ch)=>!a||tot>a.tot+1e-12||(Math.abs(tot-a.tot)<=1e-12&&ch>a.ch);
+ const pick=[],fids=[],limit=up+0.005;
+ const rec=(from,t,c,rem)=>{
+  for(let i=from;i<m;i++){
+   const l=pool[i],od=l.odd;
+   if(t*(rem===1?od:rem===2?od*od:Math.pow(od,rem))>limit)break;
+   if(fids.indexOf(l.fid)>=0)continue;
+   const tot=t*od,ch=c*l.ch;
+   if(rem===1){
+    if(tot>=lo-0.005&&bCh(near,tot,ch))near={tot:tot,ch:ch,ix:pick.concat(i)};
+    if(ch>=min&&bTot(hi,tot,ch))hi={tot:tot,ch:ch,ix:pick.concat(i)};
+    if(tot>=PM_FLOOR&&bCh(top,tot,ch))top={tot:tot,ch:ch,ix:pick.concat(i)};
+   }else{pick.push(i);fids.push(l.fid);rec(i+1,tot,ch,rem-1);pick.pop();fids.pop()}
   }
- }
- const mk=x=>x?pmCombo([pool[x.i],pool[x.j],pool[x.k]]):null;
- return{near:mk(near),hi:mk(hi),top:mk(top),pool:n};
+ };
+ rec(0,1,1,n);
+ const mk=x=>x?pmCombo(x.ix.map(i=>pool[i])):null;
+ return{near:mk(near),hi:mk(hi),top:mk(top),pool:m,n:n};
+}
+// The safest single games: for each match, its highest-chance game whose number is at least PM_SAFE_FLOOR (below that it says almost nothing), best first.
+function pmSafe(legs){
+ const by={};
+ (Array.isArray(legs)?legs:[]).forEach(l=>{
+  if(!l||l.odd<PM_SAFE_FLOOR)return;
+  const b=by[l.fid];
+  if(!b||l.ch>b.ch+1e-12||(Math.abs(l.ch-b.ch)<=1e-12&&l.odd>b.odd))by[l.fid]=l;
+ });
+ return Object.keys(by).map(k=>by[k]).sort((x,y)=>y.ch-x.ch||y.odd-x.odd||x.fid-y.fid).slice(0,PM_SAFE_KEEP);
 }
 // ---- Settling a game and a combination on the regular-time score (fin comes from apiFinal: {k:'final',gh,ga} or {k:'void'}).
 function pmLegWon(key,gh,ga){
@@ -2176,11 +2202,11 @@ function pmFinals(j){
 function pmClean(list){
  const out=[];
  (Array.isArray(list)?list:[]).forEach(c=>{
-  if(!c||typeof c!=='object'||!Array.isArray(c.legs)||c.legs.length!==3)return;
+  if(!c||typeof c!=='object'||!Array.isArray(c.legs)||c.legs.length<1||c.legs.length>PM_MAXN)return;
   const legs=c.legs.map(l=>l&&typeof l==='object'&&l.fid!=null&&typeof l.key==='string'&&pmKeyKind(l.key)&&isFinite(l.odd)&&isFinite(l.ch)&&isFinite(l.ko)?{fid:l.fid,h:String(l.h||'').slice(0,60),a:String(l.a||'').slice(0,60),lg:String(l.lg||'').slice(0,60),key:l.key,pick:String(l.pick||'').slice(0,100),odd:+l.odd,ch:+l.ch,ko:+l.ko}:null);
   if(legs.some(l=>!l))return;
   const lr=legs.map((l,i)=>{const r=Array.isArray(c.lr)?c.lr[i]:null;return r==='w'||r==='l'||r==='v'?r:null});
-  out.push({id:String(c.id||legs.map(l=>l.fid).join('-')+'@'+(+c.at||0)),day:String(c.day||'').slice(0,10),at:+c.at||0,target:isFinite(c.target)?+c.target:0,legs:legs,lr:lr,res:pmComboRes(lr)});
+  out.push({id:String(c.id||legs.map(l=>l.fid).join('-')+'@'+(+c.at||0)),day:String(c.day||'').slice(0,10),at:+c.at||0,target:isFinite(c.target)?+c.target:0,legs:legs,lr:lr,res:pmComboRes(lr),ak:typeof c.ak==='string'?c.ak.slice(0,24):''});
  });
  return out.slice(-PM_SAVED);
 }
@@ -2220,6 +2246,26 @@ function pmApply(saved,fins){
   if(any){const was=c.res;c.res=pmComboRes(c.lr);if(c.res!==was)changed++}
  });
  return changed;
+}
+// A combination as it is saved, by hand or by itself (ak is the auto-save key, empty for a hand-saved one).
+function pmRecord(cb,day,at,target,ak){
+ return{id:cb.legs.map(l=>l.fid).join('-')+'@'+at,day:day,at:at,target:target,legs:cb.legs.map(l=>({fid:l.fid,h:l.h,a:l.a,lg:l.lg,key:l.key,pick:l.pick,odd:l.odd,ch:l.ch,ko:l.ko})),lr:cb.legs.map(()=>null),ak:ak||''};
+}
+const pmGames=cb=>cb.legs.map(l=>l.fid+l.key).join();
+// Auto-save: which of the cards on screen (each tagged with kind: hi, near or top) are saved by themselves. A card is saved once for each day, number of
+// games and kind; `done` remembers those keys, so a combination you removed is not put back. Nothing is saved twice, and nothing that is already saved by hand.
+function pmAutoPlan(cards,day,done,saved){
+ const keys=(Array.isArray(done)?done:[]).filter(k=>typeof k==='string'),take=[];
+ (Array.isArray(cards)?cards:[]).forEach(cb=>{
+  if(!cb||!cb.kind||!Array.isArray(cb.legs)||!cb.legs.length||!day)return;
+  const ak=day+'|'+cb.legs.length+'|'+cb.kind;
+  if(keys.indexOf(ak)>=0)return;
+  keys.push(ak);
+  const g=pmGames(cb);
+  if(take.some(t=>pmGames(t.cb)===g)||(Array.isArray(saved)?saved:[]).some(c=>c.res==null&&pmGames(c)===g))return;
+  take.push({cb:cb,ak:ak});
+ });
+ return{take:take,done:keys.slice(-60)};
 }
 const REC_TAG='U35DATA ';
 // Text you can paste into Notes or a message: a short summary plus one data line that recordImport can read back.
@@ -2861,12 +2907,15 @@ function skPicked(){
 }
 // ---- Pre-match tab (the maths is in the logic block: pm*). Nothing is requested until you tap Find combinations or Check results.
 const PMK='u35_pm',PMS='u35_pmset',PMC='u35_pmc';
-let pmSaved=[],pmSet={min:0.8,tot:2,day:0,pages:6},pmCache=null,pmBusy=false,pmChecking=false,pmShown=[],pmChkAt=0;
+let pmSaved=[],pmSet={min:0.8,tot:2,day:0,pages:6,n:3,auto:true,done:[]},pmCache=null,pmBusy=false,pmChecking=false,pmShown=[],pmChkAt=0,pmMemo=null;
 const pmDate=off=>{const d=new Date();d.setDate(d.getDate()+off);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
 const pmTz=()=>{try{return Intl.DateTimeFormat().resolvedOptions().timeZone||''}catch(e){return ''}};
 const pmDayLabel=k=>{const m=/^(\d{4})-(\d\d)-(\d\d)$/.exec(k||'');return m?new Date(+m[1],+m[2]-1,+m[3]).toLocaleDateString([],{weekday:'short',day:'numeric',month:'short'}):''};
 const pmClock=ms=>new Date(ms).toLocaleTimeString([],{hour:'numeric',minute:'2-digit'});
 const pmPct=ch=>ch<0.005?'under 1%':'about '+Math.round(ch*100)+'%';
+const pmWinAll=n=>n===1?'the game wins':n===2?'both win':'all '+(['','one','two','three','four'][n]||n)+' win';
+const pmNm=n=>n===1?'single game':n+'-game combination';
+const pmOkLeg=l=>!!l&&l.fid!=null&&typeof l.key==='string'&&!!pmKeyKind(l.key)&&isFinite(l.odd)&&isFinite(l.ch)&&isFinite(l.ko);
 function pmMsg(t,bad){const m=$('pm_msg');m.textContent=t||'';m.hidden=!t;m.className='pace'+(bad?' am':'')}
 function pmSMsg(t,bad){const m=$('pm_smsg');m.textContent=t||'';m.hidden=!t;m.className='pace'+(bad?' am':'')}
 function pmSetSave(){try{localStorage.setItem(PMS,JSON.stringify(pmSet))}catch(e){}}
@@ -2880,63 +2929,85 @@ function pmLoad(){
    if([1.25,1.5,1.75,2,2.5,3].indexOf(+d.tot)>=0)pmSet.tot=+d.tot;
    if(+d.day===1)pmSet.day=1;
    if([3,6,10,15].indexOf(+d.pages)>=0)pmSet.pages=+d.pages;
+   if([1,2,3,4].indexOf(+d.n)>=0)pmSet.n=+d.n;
+   if(d.auto===false)pmSet.auto=false;
+   if(Array.isArray(d.done))pmSet.done=d.done.filter(k=>typeof k==='string'&&k.length<=24).slice(-60);
   }
  }catch(e){}
  try{pmSaved=pmClean(JSON.parse(localStorage.getItem(PMK)||'[]'))}catch(e){pmSaved=[]}
  try{
   const d=JSON.parse(localStorage.getItem(PMC)||'null');
-  if(d&&typeof d==='object'&&Array.isArray(d.legs)&&typeof d.at==='number')pmCache={day:String(d.day||''),at:d.at,fx:+d.fx||0,nb:+d.nb||0,req:+d.req||0,skip:+d.skip||0,legs:d.legs.filter(l=>l&&l.fid!=null&&typeof l.key==='string'&&pmKeyKind(l.key)&&isFinite(l.odd)&&isFinite(l.ch)&&isFinite(l.ko)).slice(0,PM_KEEP)};
+  if(d&&typeof d==='object'&&Array.isArray(d.legs)&&typeof d.at==='number')pmCache={day:String(d.day||''),at:d.at,fx:+d.fx||0,nb:+d.nb||0,req:+d.req||0,skip:+d.skip||0,legs:d.legs.filter(pmOkLeg).slice(0,PM_KEEP),safe:Array.isArray(d.safe)?d.safe.filter(pmOkLeg).slice(0,PM_SAFE_KEEP):null};
  }catch(e){pmCache=null}
 }
-const pmSame=(a,b)=>!!a&&!!b&&a.legs.map(l=>l.fid+l.key).join()===b.legs.map(l=>l.fid+l.key).join();
-function pmCard(cb,tag,tone){
- const i=pmShown.length;pmShown.push(cb);
- const dup=pmSaved.some(c=>c.res==null&&c.legs.map(l=>l.fid+l.key).join()===cb.legs.map(l=>l.fid+l.key).join());
+const pmSame=(a,b)=>!!a&&!!b&&pmGames(a)===pmGames(b);
+function pmFind(legs){
+ const k=[pmCache.at,legs.length,pmSet.n,pmSet.tot,pmSet.min].join('|');
+ if(!pmMemo||pmMemo.k!==k)pmMemo={k:k,r:pmSearch(legs,{target:pmSet.tot,min:pmSet.min,n:pmSet.n})};
+ return pmMemo.r;
+}
+function pmCard(cb,tag,tone,kind){
+ const i=pmShown.length;cb.kind=kind;pmShown.push(cb);
+ const dup=pmSaved.some(c=>c.res==null&&pmGames(c)===pmGames(cb));
  return '<div class="pmc"><div class="pmtag '+tone+'">'+esc(tag)+'</div><ol class="pml">'+cb.legs.map((l,n)=>
   '<li class="pmg"><div class="top"><span>'+esc(pmClock(l.ko))+' · '+esc(l.lg)+(l.cn?' · '+esc(l.cn):'')+'</span><span>Game '+(n+1)+'</span></div><p class="mt">'+esc(l.h)+' v '+esc(l.a)+'</p><div class="pk"><b>'+esc(l.pick)+'</b><span class="num">'+l.odd.toFixed(2)+'</span></div><p class="ch">Chance this game wins: <b>'+Math.round(l.ch*100)+'%</b> · '+l.nb+' bookmakers</p></li>').join('')+
-  '</ol><div class="pmt2"><div class="row"><span>Total</span><span class="big">'+cb.tot.toFixed(2)+'</span></div><div class="row"><span>Chance all three win</span><b>'+pmPct(cb.ch)+'</b></div></div>'+
+  '</ol><div class="pmt2"><div class="row"><span>Total</span><span class="big">'+cb.tot.toFixed(2)+'</span></div><div class="row"><span>Chance '+pmWinAll(cb.legs.length)+'</span><b>'+pmPct(cb.ch)+'</b></div></div>'+
   '<button type="button" class="wide'+(dup?'':' pri')+'" data-a="pmsave" data-i="'+i+'"'+(dup?' disabled':'')+'>'+(dup?'Saved':'Save this combination')+'</button></div>';
 }
 function pmRender(){
  pmShown=[];
- $('pm_day').value=String(pmSet.day);$('pm_pages').value=String(pmSet.pages);$('pm_min').value=String(pmSet.min);$('pm_tot').value=String(pmSet.tot);
+ $('pm_day').value=String(pmSet.day);$('pm_pages').value=String(pmSet.pages);$('pm_min').value=String(pmSet.min);$('pm_tot').value=String(pmSet.tot);$('pm_n').value=String(pmSet.n);$('pm_auto').value=pmSet.auto?'1':'0';
+ $('pm_minl').textContent='Minimum chance '+pmWinAll(pmSet.n);$('pm_min').setAttribute('aria-label','Minimum chance '+pmWinAll(pmSet.n));
  const res=$('pm_res'),inf=$('pm_info'),now=Date.now(),minP=Math.round(pmSet.min*100);
  if(!pmCache){
   inf.hidden=true;
   res.innerHTML='<p class="pace">Tap Find combinations. It reads the day\'s matches and the bookmakers\' numbers from your own API-Sports key: '+(pmSet.pages+1)+' requests with your current setting.</p>';
-  pmRenderSaved();return;
+  pmRenderSafe();pmRenderSaved();return;
  }
  inf.hidden=false;
  inf.textContent='Read at '+pmClock(pmCache.at)+' for '+pmDayLabel(pmCache.day)+': '+pmCache.fx+' matches, '+pmCache.nb+' with numbers, '+pmCache.legs.length+' usable games ('+pmCache.req+' requests).'+(pmCache.skip?' '+pmCache.skip+(pmCache.skip>1?' matches in skipped leagues were left out.':' match in a skipped league was left out.'):'')+(pmCache.day!==pmDate(pmSet.day)?' Tap Find combinations to read '+pmDayLabel(pmDate(pmSet.day))+'.':'');
  const legs=pmCache.legs.filter(l=>l.ko>=now+PM_LEAD&&!lgSkipped({leagueId:l.lid,league:l.lg,country:l.cn},skipL));
- const r=pmSearch(legs,{target:pmSet.tot,min:pmSet.min});
+ const r=pmFind(legs),nm=pmNm(pmSet.n);
  let h='';
  if(!r.near&&!r.hi&&!r.top){
-  h='<p class="pace am">'+(pmCache.legs.length?'No 3-game combination can be made from the games that are left: matches start within 20 minutes or need more bookmakers. Tap Find combinations to read again.':'Not enough matches have numbers from at least 3 bookmakers that agree. Try a bigger "Matches to check", or the other day.')+'</p>';
+  h='<p class="pace am">'+(pmCache.legs.length?'No '+nm+' can be made from the games that are left: matches start within 20 minutes, or too few matches have numbers. Tap Find combinations to read again.':'Not enough matches have numbers from at least 3 bookmakers that agree. Try a bigger "Matches to check", or the other day.')+'</p>';
  }else{
-  if(r.hi)h+=pmCard(r.hi,'Meets your '+minP+'% minimum · highest total available','good');
-  else h+='<p class="pace am">No 3-game combination reaches '+minP+'% with a total up to '+(pmSet.tot*1.05).toFixed(2)+'. The more you ask of the total, the lower the chance: every game in a combination has to win.</p>';
-  if(r.near&&!pmSame(r.near,r.hi))h+=pmCard(r.near,'Closest to total '+pmSet.tot.toFixed(2)+(r.near.ch>=pmSet.min?' · meets your '+minP+'% minimum':' · below your '+minP+'% minimum'),r.near.ch>=pmSet.min?'good':'low');
-  if(!r.hi&&r.top&&!pmSame(r.top,r.near))h+=pmCard(r.top,'Strongest chance available · below your '+minP+'% minimum','low');
+  if(r.hi)h+=pmCard(r.hi,'Meets your '+minP+'% minimum · highest total available','good','hi');
+  else h+='<p class="pace am">No '+nm+' reaches '+minP+'% with a total up to '+(pmSet.tot*1.05).toFixed(2)+'. The more you ask of the total, the lower the chance'+(pmSet.n>1?': every game in a combination has to win.':'.')+'</p>';
+  if(r.near&&!pmSame(r.near,r.hi))h+=pmCard(r.near,'Closest to total '+pmSet.tot.toFixed(2)+(r.near.ch>=pmSet.min?' · meets your '+minP+'% minimum':' · below your '+minP+'% minimum'),r.near.ch>=pmSet.min?'good':'low','near');
+  if(!r.hi&&r.top&&!pmSame(r.top,r.near))h+=pmCard(r.top,'Strongest chance available · below your '+minP+'% minimum','low','top');
  }
  res.innerHTML=h;
+ pmRenderSafe();
  pmRenderSaved();
+}
+function pmRenderSafe(){
+ const box=$('pm_safe'),hd=$('pm_safeh');
+ if(!pmCache){box.innerHTML='';hd.hidden=true;return}
+ hd.hidden=false;
+ if(!Array.isArray(pmCache.safe)){box.innerHTML='<p class="pace">Tap Find combinations to build this list.</p>';return}
+ const now=Date.now(),list=pmCache.safe.filter(l=>l.ko>=now+PM_LEAD&&!lgSkipped({leagueId:l.lid,league:l.lg,country:l.cn},skipL)).slice(0,10);
+ if(!list.length){box.innerHTML='<p class="pace">No game has a number of at least '+PM_SAFE_FLOOR.toFixed(2)+' with bookmakers that agree. Tap Find combinations to read again.</p>';return}
+ box.innerHTML='<div class="pmc"><div class="pmtag good">Highest chance first · one pick for each match</div><ol class="pml">'+list.map((l,i)=>
+  '<li class="pmg"><div class="top"><span>'+esc(pmClock(l.ko))+' · '+esc(l.lg)+(l.cn?' · '+esc(l.cn):'')+'</span><span>#'+(i+1)+'</span></div><p class="mt">'+esc(l.h)+' v '+esc(l.a)+'</p><div class="pk"><b>'+esc(l.pick)+'</b><span class="num">'+l.odd.toFixed(2)+'</span></div><p class="ch">Chance this game wins: <b>'+Math.round(l.ch*100)+'%</b> · '+l.nb+' bookmakers</p></li>').join('')+
+  '</ol></div><p class="pace">Each match shows only its highest-chance pick, and a pick with a number under '+PM_SAFE_FLOOR.toFixed(2)+' is left out. A game that is almost sure still loses sometimes.</p>';
 }
 function pmRenderSaved(){
  const st=pmStats(pmSaved),box=$('pm_saved');
- if(!pmSaved.length){box.innerHTML='<p class="pace">Nothing saved yet. Save a combination above and the panel checks it for you after the games are over, then keeps count of how many really won.</p>';return}
+ $('pm_anote').textContent=pmSet.auto?'Auto-save is on: when you tap Find combinations, the cards shown are saved by themselves, once for each day and number of games. A combination you remove stays removed.':'Auto-save is off: use Save this combination on a card.';
+ if(!pmSaved.length){box.innerHTML='<p class="pace">Nothing saved yet. '+(pmSet.auto?'The cards you find are saved by themselves, and the':'Save a combination above and the')+' panel checks them for you after the games are over, then keeps count of how many really won.</p>';return}
  const rl={w:'won',l:'lost',v:'called off'};
  let h='<div class="pmsum"><div class="row"><span>Saved</span><b>'+st.n+'</b></div><div class="row"><span>Won · lost · open</span><b>'+st.won+' · '+st.lost+' · '+st.open+(st.void?' · '+st.void+' called off':'')+'</b></div>'+
   (st.rate!=null?'<div class="row"><span>Won of those settled</span><b>'+Math.round(st.rate*100)+'% ('+st.won+' of '+(st.won+st.lost)+')</b></div><div class="row mut"><span>What their chances said</span><span>'+pmPct(st.avgChSettled)+'</span></div>':'<div class="row mut"><span>Won of those settled</span><span>none settled yet</span></div>')+'</div>';
  h+='<button type="button" class="wide" data-a="pmchk">Check results</button>';
- h+=pmSaved.slice().reverse().slice(0,30).map(c=>'<div class="pms"><div class="top"><span>'+esc(pmDayLabel(c.day)||'Saved')+' · total '+pmTotal(c).toFixed(2)+' · '+pmPct(c.legs.reduce((p,l)=>p*l.ch,1))+'</span><span class="pmr '+(c.res||'o')+'">'+(c.res?({w:'Won',l:'Lost',v:'Called off'})[c.res]:'Open')+'</span></div><ul>'+
+ h+=pmSaved.slice().reverse().slice(0,30).map(c=>'<div class="pms"><div class="top"><span>'+esc(pmDayLabel(c.day)||'Saved')+' · total '+pmTotal(c).toFixed(2)+' · '+pmPct(c.legs.reduce((p,l)=>p*l.ch,1))+(c.ak?' · <span class="at">auto-saved</span>':'')+'</span><span class="pmr '+(c.res||'o')+'">'+(c.res?({w:'Won',l:'Lost',v:'Called off'})[c.res]:'Open')+'</span></div><ul>'+
   c.legs.map((l,i)=>'<li><span class="pmr '+(c.lr[i]||'o')+'">'+(c.lr[i]?rl[c.lr[i]]:'open')+'</span><span><b>'+esc(l.pick)+'</b> <i>'+esc(l.h)+' v '+esc(l.a)+'</i></span><span class="num">'+l.odd.toFixed(2)+'</span></li>').join('')+
   '</ul><button type="button" class="pu" data-a="pmdel" data-id="'+esc(c.id)+'">Remove</button></div>').join('');
  box.innerHTML=h;
 }
 async function pmGo(){
  if(pmBusy)return;
- pmBusy=true;$('pm_go').disabled=true;pmMsg('Reading the matches…');
+ pmBusy=true;$('pm_go').disabled=true;pmSMsg('');pmMsg('Reading the matches…');
  const day=pmDate(pmSet.day),tz=pmTz(),tzq=tz?'&timezone='+encodeURIComponent(tz):'';
  let req=0;
  try{
@@ -2951,20 +3022,30 @@ async function pmGo(){
    if(!j||!Array.isArray(j.response)||!j.response.length)break;
    pg++;
   }
-  const pool=pmPool(pmLegs(keep,odds,Date.now(),skipL));
-  pmCache={day:day,at:Date.now(),fx:fx.length,nb:fx.filter(f=>odds[f.id]).length,req:req,skip:skipped,legs:pool};
+  const all=pmLegs(keep,odds,Date.now(),skipL);
+  pmCache={day:day,at:Date.now(),fx:fx.length,nb:fx.filter(f=>odds[f.id]).length,req:req,skip:skipped,legs:pmKeep(all),safe:pmSafe(all)};
   pmCacheSave();
   pmMsg(fx.length?'':'The API lists no matches for '+pmDayLabel(day)+'.',!fx.length);
   pmRender();
+  const k=pmAuto();
+  if(k){pmRender();pmSMsg('Auto-saved '+k+(k>1?' combinations':' combination')+' for '+pmDayLabel(day)+'. The panel checks them after the games are over.')}
  }catch(e){pmMsg(e&&e.message||'Something went wrong.',true)}
  pmBusy=false;$('pm_go').disabled=false;apiQShow();
+}
+// Saves the cards on screen by themselves (once for each day, number of games and kind of card). Only called after a read, never when a setting changes.
+function pmAuto(){
+ if(!pmSet.auto||!pmCache)return 0;
+ const plan=pmAutoPlan(pmShown,pmCache.day,pmSet.done,pmSaved),at=Date.now();
+ pmSet.done=plan.done;
+ if(plan.take.length){pmSaved=pmClean(pmSaved.concat(plan.take.map((t,i)=>pmRecord(t.cb,pmCache.day,at+i,pmSet.tot,t.ak))));pmStore()}
+ pmSetSave();
+ return plan.take.length;
 }
 function pmSave(i){
  const cb=pmShown[i];
  if(!cb)return;
- const key=cb.legs.map(l=>l.fid+l.key).join();
- if(pmSaved.some(c=>c.res==null&&c.legs.map(l=>l.fid+l.key).join()===key)){pmSMsg('That combination is already saved.');return}
- pmSaved=pmClean(pmSaved.concat([{id:cb.legs.map(l=>l.fid).join('-')+'@'+Date.now(),day:pmCache?pmCache.day:pmDate(0),at:Date.now(),target:pmSet.tot,legs:cb.legs.map(l=>({fid:l.fid,h:l.h,a:l.a,lg:l.lg,key:l.key,pick:l.pick,odd:l.odd,ch:l.ch,ko:l.ko})),lr:[null,null,null]}]));
+ if(pmSaved.some(c=>c.res==null&&pmGames(c)===pmGames(cb))){pmSMsg('That combination is already saved.');return}
+ pmSaved=pmClean(pmSaved.concat([pmRecord(cb,pmCache?pmCache.day:pmDate(0),Date.now(),pmSet.tot,'')]));
  pmStore();pmSMsg('Saved. The panel checks the result after the games are over.');pmRender();
 }
 function pmDel(id){pmSaved=pmSaved.filter(c=>c.id!==id);pmStore();pmSMsg('');pmRender()}
@@ -2988,6 +3069,7 @@ function pmOpen(){
 }
 function pmChange(){
  pmSet.day=+$('pm_day').value===1?1:0;pmSet.pages=+$('pm_pages').value||6;pmSet.min=+$('pm_min').value||0.8;pmSet.tot=+$('pm_tot').value||2;
+ pmSet.n=[1,2,3,4].indexOf(+$('pm_n').value)>=0?+$('pm_n').value:3;pmSet.auto=$('pm_auto').value!=='0';
  pmSetSave();pmRender();
 }
 function setMkt(v,keep){mktOn=v==='show';document.body.classList.toggle('nomkt',!mktOn);if(!keep){try{localStorage.setItem('u35_mkt',mktOn?'show':'hide')}catch(e){}}}
@@ -4573,7 +4655,7 @@ if(!s)fresh();
 keyLoad();
 pnLoad();
 qhLoad();['qh_on','qh_from','qh_to'].forEach(id=>$(id).addEventListener('change',qhChange));setInterval(qhRender,30000);
-pmLoad();['pm_day','pm_pages','pm_min','pm_tot'].forEach(id=>$(id).addEventListener('change',pmChange));
+pmLoad();['pm_day','pm_pages','pm_min','pm_tot','pm_n','pm_auto'].forEach(id=>$(id).addEventListener('change',pmChange));
 skLoad();$('lv_skip').addEventListener('change',skPicked);$('sk_in').addEventListener('focus',skFillList);$('sk_in').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();skAddFromInput()}});
 bookLoad();
 
