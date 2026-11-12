@@ -992,6 +992,7 @@ body.pg3 .v2[data-cur="3"] [data-pg]:not([data-pg~="3"]){display:none!important}
 .pmg,.pms{border:1px solid var(--line);border-radius:12px;background:var(--card);padding:14px}
 .pmg .top,.pms .top{display:flex;justify-content:space-between;align-items:center;gap:8px;font:400 13px/18px var(--body);color:var(--mut)}
 .pmg .top span:first-child,.pms .top span:first-child{min-width:0;overflow-wrap:anywhere}
+.pmg .top span:last-child,.pms .top span:last-child{flex:none;white-space:nowrap}
 .pmg .mt{margin:6px 0 0;font:600 16px/22px var(--body);color:var(--tx)}
 .pmg .pk{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:10px 0 0}
 .pmg .pk b{min-width:0;font:600 16px/22px var(--body);color:var(--tx);overflow-wrap:anywhere}
@@ -2951,7 +2952,7 @@ async function pmGo(){
    pg++;
   }
   const pool=pmPool(pmLegs(keep,odds,Date.now(),skipL));
-  pmCache={day:day,at:Date.now(),fx:fx.length,nb:Object.keys(odds).length,req:req,skip:skipped,legs:pool};
+  pmCache={day:day,at:Date.now(),fx:fx.length,nb:fx.filter(f=>odds[f.id]).length,req:req,skip:skipped,legs:pool};
   pmCacheSave();
   pmMsg(fx.length?'':'The API lists no matches for '+pmDayLabel(day)+'.',!fx.length);
   pmRender();
