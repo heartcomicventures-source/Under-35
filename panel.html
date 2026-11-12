@@ -1006,6 +1006,9 @@ body.pg3 .v2[data-cur="3"] [data-pg]:not([data-pg~="3"]){display:none!important}
 .pmt2 .row+.row,.pmsum .row+.row{margin-top:4px}
 .pmt2 .big{font:700 28px/32px var(--body);font-variant-numeric:tabular-nums}
 .pmsum .row.mut{color:var(--mut);font-size:14px;line-height:20px}
+.pmsum .row.sub{margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}
+.pmsum .row.sub b{text-align:left}
+.pmsum .row.sub span{color:var(--mut)}
 .pmsum .row b{text-align:right}
 #pm_saved{display:grid;gap:12px;margin-bottom:24px}
 #pm_saved>button.wide{margin:0}
@@ -1381,7 +1384,7 @@ body.pg3 .v2[data-cur="3"] [data-pg]:not([data-pg~="3"]){display:none!important}
  </section>
  <div class="pgnav" id="pgnav" hidden><button type="button" data-go="back">Back</button><button type="button" data-go="next">Next</button></div>
  <p class="pgsr" id="pgsr" role="status" aria-live="polite"></p>
- <footer>Numbers come from a pasted stats line, or are pulled from your own API-Sports key if you add one. Not connected to a bookmaker. No bet is guaranteed.<span class="bld"><span id="buildno">Build 73 · 12 Nov 2026</span> <button type="button" class="pu" id="reloadnew" data-a="reload">Reload latest</button></span></footer>
+ <footer>Numbers come from a pasted stats line, or are pulled from your own API-Sports key if you add one. Not connected to a bookmaker. No bet is guaranteed.<span class="bld"><span id="buildno">Build 74 · 12 Nov 2026</span> <button type="button" class="pu" id="reloadnew" data-a="reload">Reload latest</button></span></footer>
 </main>
 
 <script>
@@ -1992,7 +1995,7 @@ function lgAdd(list,e){
 // ---- Pre-match: a combination of 1 to 4 games built from the numbers bookmakers quote before kickoff (the API-Sports odds feed).
 // Everything here is pure, so it is tested without a network. The "chance" of a game is what the bookmakers together say, with their margin
 // taken out. It is an estimate, never a promise: the chance that every game in a combination wins is their chances multiplied.
-const PM_MIN_BOOKS=3,PM_SPREAD=0.06,PM_LINES=[0.5,1.5,2.5,3.5,4.5],PM_LEAD=20*60000,PM_TOL=0.05,PM_PER_BAND=40,PM_PER_BAND4=30,PM_BIG=60,PM_BIGCAP=3,PM_MAXN=4,PM_SAFE_FLOOR=1.05,PM_SAFE_KEEP=30,PM_FLOOR=1.12,PM_KEEP=420,PM_SAVED=200,PM_SETTLE_MS=135*60000;
+const PM_MIN_BOOKS=3,PM_SPREAD=0.06,PM_LINES=[0.5,1.5,2.5,3.5,4.5],PM_LEAD=20*60000,PM_TOL=0.05,PM_PER_BAND=40,PM_PER_BAND4=30,PM_BIG=60,PM_BIGCAP=3,PM_MAXN=4,PM_SAFE_FLOOR=1.05,PM_SAFE_KEEP=30,PM_FLOOR=1.12,PM_KEEP=420,PM_SAVED=200,PM_MIN_DEFAULT=0.8,PM_SETTLE_MS=135*60000;
 const pmR=(x,n)=>{const m=Math.pow(10,n||0);return Math.round(x*m)/m};
 // Which market a bet is: Match Winner, Double Chance, Goals Over/Under (full match) or Both Teams Score. Anything else is left out.
 function pmKind(b){
@@ -2206,21 +2209,28 @@ function pmClean(list){
   const legs=c.legs.map(l=>l&&typeof l==='object'&&l.fid!=null&&typeof l.key==='string'&&pmKeyKind(l.key)&&isFinite(l.odd)&&isFinite(l.ch)&&isFinite(l.ko)?{fid:l.fid,h:String(l.h||'').slice(0,60),a:String(l.a||'').slice(0,60),lg:String(l.lg||'').slice(0,60),key:l.key,pick:String(l.pick||'').slice(0,100),odd:+l.odd,ch:+l.ch,ko:+l.ko}:null);
   if(legs.some(l=>!l))return;
   const lr=legs.map((l,i)=>{const r=Array.isArray(c.lr)?c.lr[i]:null;return r==='w'||r==='l'||r==='v'?r:null});
-  out.push({id:String(c.id||legs.map(l=>l.fid).join('-')+'@'+(+c.at||0)),day:String(c.day||'').slice(0,10),at:+c.at||0,target:isFinite(c.target)?+c.target:0,legs:legs,lr:lr,res:pmComboRes(lr),ak:typeof c.ak==='string'?c.ak.slice(0,24):''});
+  out.push({id:String(c.id||legs.map(l=>l.fid).join('-')+'@'+(+c.at||0)),day:String(c.day||'').slice(0,10),at:+c.at||0,target:isFinite(c.target)?+c.target:0,legs:legs,lr:lr,res:pmComboRes(lr),ak:typeof c.ak==='string'?c.ak.slice(0,24):'',mn:isFinite(c.mn)&&+c.mn>=0.5&&+c.mn<=1?+c.mn:0});
  });
  return out.slice(-PM_SAVED);
 }
 const pmTotal=c=>pmR(c.legs.reduce((p,l,i)=>c.lr[i]==='v'?p:p*l.odd,1),2);
+// Did the combination reach the minimum chance that was set when it was saved? (One saved before that was recorded counts against 80%, the default.)
+const pmMet=c=>c.legs.reduce((p,l)=>p*l.ch,1)>=(c.mn>0?c.mn:PM_MIN_DEFAULT)-1e-9;
+// Counts for all saved combinations, and in .met the same counts for those that met their minimum (the ones the 80% claim is about).
 function pmStats(saved){
- const s={n:0,won:0,lost:0,void:0,open:0,rate:null,avgCh:null,avgChSettled:null};
- let chs=0,chd=0;
+ const mk=()=>({n:0,won:0,lost:0,void:0,open:0,rate:null,avgCh:null,avgChSettled:null,_s:0,_d:0});
+ const s=mk(),m=mk();
+ const add=(t,c,ch)=>{t.n++;t._s+=ch;if(c.res==='w'){t.won++;t._d+=ch}else if(c.res==='l'){t.lost++;t._d+=ch}else if(c.res==='v')t.void++;else t.open++};
  (Array.isArray(saved)?saved:[]).forEach(c=>{
   const ch=c.legs.reduce((p,l)=>p*l.ch,1);
-  s.n++;chs+=ch;
-  if(c.res==='w'){s.won++;chd+=ch}else if(c.res==='l'){s.lost++;chd+=ch}else if(c.res==='v')s.void++;else s.open++;
+  add(s,c,ch);if(pmMet(c))add(m,c,ch);
  });
- if(s.won+s.lost){s.rate=s.won/(s.won+s.lost);s.avgChSettled=chd/(s.won+s.lost)}
- if(s.n)s.avgCh=chs/s.n;
+ [s,m].forEach(t=>{
+  if(t.won+t.lost){t.rate=t.won/(t.won+t.lost);t.avgChSettled=t._d/(t.won+t.lost)}
+  if(t.n)t.avgCh=t._s/t.n;
+  delete t._s;delete t._d;
+ });
+ s.met=m;
  return s;
 }
 // Game ids worth asking about now: not settled, and kicked off long enough ago to be over. At most 20 (one request).
@@ -2248,8 +2258,8 @@ function pmApply(saved,fins){
  return changed;
 }
 // A combination as it is saved, by hand or by itself (ak is the auto-save key, empty for a hand-saved one).
-function pmRecord(cb,day,at,target,ak){
- return{id:cb.legs.map(l=>l.fid).join('-')+'@'+at,day:day,at:at,target:target,legs:cb.legs.map(l=>({fid:l.fid,h:l.h,a:l.a,lg:l.lg,key:l.key,pick:l.pick,odd:l.odd,ch:l.ch,ko:l.ko})),lr:cb.legs.map(()=>null),ak:ak||''};
+function pmRecord(cb,day,at,target,ak,mn){
+ return{id:cb.legs.map(l=>l.fid).join('-')+'@'+at,day:day,at:at,target:target,legs:cb.legs.map(l=>({fid:l.fid,h:l.h,a:l.a,lg:l.lg,key:l.key,pick:l.pick,odd:l.odd,ch:l.ch,ko:l.ko})),lr:cb.legs.map(()=>null),ak:ak||'',mn:mn||0};
 }
 const pmGames=cb=>cb.legs.map(l=>l.fid+l.key).join();
 // Auto-save: which of the cards on screen (each tagged with kind: hi, near or top) are saved by themselves. A card is saved once for each day, number of
@@ -2997,8 +3007,13 @@ function pmRenderSaved(){
  $('pm_anote').textContent=pmSet.auto?'Auto-save is on: when you tap Find combinations, the cards shown are saved by themselves, once for each day and number of games. A combination you remove stays removed.':'Auto-save is off: use Save this combination on a card.';
  if(!pmSaved.length){box.innerHTML='<p class="pace">Nothing saved yet. '+(pmSet.auto?'The cards you find are saved by themselves, and the':'Save a combination above and the')+' panel checks them for you after the games are over, then keeps count of how many really won.</p>';return}
  const rl={w:'won',l:'lost',v:'called off'};
+ const mt=st.met;
+ let met='';
+ if(st.n>0&&mt.n<st.n){
+  met='<div class="row sub"><b>Met your minimum</b><span>'+(mt.n?mt.n+' saved':'none saved yet')+'</span></div>'+(mt.n?(mt.rate!=null?'<div class="row"><span>Won of those settled</span><b>'+Math.round(mt.rate*100)+'% ('+mt.won+' of '+(mt.won+mt.lost)+')</b></div><div class="row mut"><span>What their chances said</span><span>'+pmPct(mt.avgChSettled)+'</span></div>':'<div class="row mut"><span>Won of those settled</span><span>none settled yet</span></div>'):'');
+ }
  let h='<div class="pmsum"><div class="row"><span>Saved</span><b>'+st.n+'</b></div><div class="row"><span>Won · lost · open</span><b>'+st.won+' · '+st.lost+' · '+st.open+(st.void?' · '+st.void+' called off':'')+'</b></div>'+
-  (st.rate!=null?'<div class="row"><span>Won of those settled</span><b>'+Math.round(st.rate*100)+'% ('+st.won+' of '+(st.won+st.lost)+')</b></div><div class="row mut"><span>What their chances said</span><span>'+pmPct(st.avgChSettled)+'</span></div>':'<div class="row mut"><span>Won of those settled</span><span>none settled yet</span></div>')+'</div>';
+  (st.rate!=null?'<div class="row"><span>Won of those settled</span><b>'+Math.round(st.rate*100)+'% ('+st.won+' of '+(st.won+st.lost)+')</b></div><div class="row mut"><span>What their chances said</span><span>'+pmPct(st.avgChSettled)+'</span></div>':'<div class="row mut"><span>Won of those settled</span><span>none settled yet</span></div>')+met+'</div>';
  h+='<button type="button" class="wide" data-a="pmchk">Check results</button>';
  h+=pmSaved.slice().reverse().slice(0,30).map(c=>'<div class="pms"><div class="top"><span>'+esc(pmDayLabel(c.day)||'Saved')+' · total '+pmTotal(c).toFixed(2)+' · '+pmPct(c.legs.reduce((p,l)=>p*l.ch,1))+(c.ak?' · <span class="at">auto-saved</span>':'')+'</span><span class="pmr '+(c.res||'o')+'">'+(c.res?({w:'Won',l:'Lost',v:'Called off'})[c.res]:'Open')+'</span></div><ul>'+
   c.legs.map((l,i)=>'<li><span class="pmr '+(c.lr[i]||'o')+'">'+(c.lr[i]?rl[c.lr[i]]:'open')+'</span><span><b>'+esc(l.pick)+'</b> <i>'+esc(l.h)+' v '+esc(l.a)+'</i></span><span class="num">'+l.odd.toFixed(2)+'</span></li>').join('')+
@@ -3037,7 +3052,7 @@ function pmAuto(){
  if(!pmSet.auto||!pmCache)return 0;
  const plan=pmAutoPlan(pmShown,pmCache.day,pmSet.done,pmSaved),at=Date.now();
  pmSet.done=plan.done;
- if(plan.take.length){pmSaved=pmClean(pmSaved.concat(plan.take.map((t,i)=>pmRecord(t.cb,pmCache.day,at+i,pmSet.tot,t.ak))));pmStore()}
+ if(plan.take.length){pmSaved=pmClean(pmSaved.concat(plan.take.map((t,i)=>pmRecord(t.cb,pmCache.day,at+i,pmSet.tot,t.ak,pmSet.min))));pmStore()}
  pmSetSave();
  return plan.take.length;
 }
@@ -3045,7 +3060,7 @@ function pmSave(i){
  const cb=pmShown[i];
  if(!cb)return;
  if(pmSaved.some(c=>c.res==null&&pmGames(c)===pmGames(cb))){pmSMsg('That combination is already saved.');return}
- pmSaved=pmClean(pmSaved.concat([pmRecord(cb,pmCache?pmCache.day:pmDate(0),Date.now(),pmSet.tot,'')]));
+ pmSaved=pmClean(pmSaved.concat([pmRecord(cb,pmCache?pmCache.day:pmDate(0),Date.now(),pmSet.tot,'',pmSet.min)]));
  pmStore();pmSMsg('Saved. The panel checks the result after the games are over.');pmRender();
 }
 function pmDel(id){pmSaved=pmSaved.filter(c=>c.id!==id);pmStore();pmSMsg('');pmRender()}
