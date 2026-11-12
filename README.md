@@ -17,6 +17,8 @@ This repository is the whole site. Publish it with GitHub Pages (Settings, Pages
 
 **Phone:** one column. **Computer (a window 900 px wide or more):** two columns, with the inputs on the left and the decision on the right. The phone layout is the same as before.
 
+**Pre-match tab (needs your API-Sports key):** the fifth tab builds a 3-game combination from the day's matches that have not started, using the numbers several bookmakers quote (Match Winner, Double Chance, Goals Over/Under, Both Teams Score). For each game it shows the chance, then the total and the chance that all three win. It shows two combinations: the one with the highest total that still reaches your minimum chance (80% by default) and the one closest to your target total (2.00 by default). A chance is what the bookmakers together say with their margin taken out, so it is an estimate, never a promise. In practice a combination near a total of 2.00 wins about half the time, and 80% or better needs a total well under 1.5. Saved combinations are checked for you after the games are over and counted, so you see the real hit rate next to what the chances said. Reading one day costs about 7 requests of your daily allowance (you can choose 4 to 16).
+
 **If you used an older version:** the site no longer has a landing page. Its address now opens the panel, and your existing Home Screen icon and any `panel.html` link keep working. Your data lives in the browser's storage for this site and is shared by both addresses, so nothing is lost. After you update, tap Reload latest in Settings.
 
 ## Lock-screen alerts (optional)

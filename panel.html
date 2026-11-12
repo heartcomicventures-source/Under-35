@@ -964,6 +964,59 @@ body.pg3 .v2[data-cur="3"] [data-pg]:not([data-pg~="3"]){display:none!important}
 #fd-sk .wide{margin-top:2px}
 #lvskipw{padding:10px 10px 4px;border-top:1px solid var(--line)}
 #lvskipw .keyl{margin-bottom:6px}
+
+/* ===== Build 72: the Pre-match tab (fifth tab) ===== */
+/* Five tabs on a phone: the buttons size to their words (16 semibold, as before) and share what is left. */
+.tabs button .sh{display:none}
+@media (max-width:599px){
+ .tabs,.compact .tabs{padding-left:8px;padding-right:8px}
+ .tabs button{flex:1 1 auto;min-width:44px;padding-left:2px;padding-right:2px}
+}
+@media (max-width:379px){
+ .tabs,.compact .tabs{padding-left:4px;padding-right:4px}
+ .tabs button{padding-left:0;padding-right:0}
+}
+@media (max-width:350px){.tabs button .lg{display:none}.tabs button .sh{display:inline}}
+@media (min-width:900px){.tabs{width:max-content}}
+@media (min-width:900px) and (max-width:1099px){.tabs{gap:4px}.tabs button,.compact .tabs button{padding:0 14px}}
+#v-pm .two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+#v-pm .two label.keyl{min-width:0}
+#v-pm select{width:100%;min-width:0}
+#v-pm #pm_go{margin-top:12px}
+#v-pm #pm_res{display:grid;gap:20px;margin:16px 0}
+.pmc{display:grid;gap:12px}
+.pmtag{padding:8px 12px;border:1px solid var(--line);border-radius:10px;font:600 14px/20px var(--body);color:var(--mut)}
+.pmtag.good{color:var(--grn);border-color:var(--grn)}
+.pmtag.low{border-style:dashed}
+.pml{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+.pmg,.pms{border:1px solid var(--line);border-radius:12px;background:var(--card);padding:14px}
+.pmg .top,.pms .top{display:flex;justify-content:space-between;align-items:center;gap:8px;font:400 13px/18px var(--body);color:var(--mut)}
+.pmg .top span:first-child,.pms .top span:first-child{min-width:0;overflow-wrap:anywhere}
+.pmg .mt{margin:6px 0 0;font:600 16px/22px var(--body);color:var(--tx)}
+.pmg .pk{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:10px 0 0}
+.pmg .pk b{min-width:0;font:600 16px/22px var(--body);color:var(--tx);overflow-wrap:anywhere}
+.pmg .num,.pms .num{flex:none;min-width:56px;text-align:center;padding:4px 10px;border-radius:8px;background:var(--grnbg);color:var(--grn);font:700 16px/24px var(--body);font-variant-numeric:tabular-nums}
+.pmg .ch{margin:8px 0 0;font:400 14px/20px var(--body);color:var(--mut)}
+.pmg .ch b{color:var(--tx)}
+.pmt2,.pmsum{border:1px solid var(--tx);border-radius:12px;padding:14px}
+.pmsum{border-color:var(--line);margin-bottom:12px}
+.pmt2 .row,.pmsum .row{display:flex;justify-content:space-between;align-items:baseline;gap:12px;font:400 16px/24px var(--body);color:var(--tx)}
+.pmt2 .row+.row,.pmsum .row+.row{margin-top:4px}
+.pmt2 .big{font:700 28px/32px var(--body);font-variant-numeric:tabular-nums}
+.pmsum .row.mut{color:var(--mut);font-size:14px;line-height:20px}
+.pmsum .row b{text-align:right}
+#pm_saved{display:grid;gap:12px;margin-bottom:24px}
+#pm_saved>button.wide{margin:0}
+.pms ul{list-style:none;margin:10px 0 8px;padding:0;display:grid;gap:8px}
+.pms li{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:10px;font:400 14px/20px var(--body);color:var(--tx)}
+.pms li i{display:block;font-style:normal;color:var(--mut)}
+.pms li .num{min-width:48px;padding:2px 8px;font-size:14px}
+.pmr{display:inline-block;padding:2px 8px;border-radius:999px;border:1px solid var(--line);font:600 12px/18px var(--body);color:var(--mut);white-space:nowrap}
+.pmr.w{color:var(--grn);background:var(--grnbg);border-color:transparent}
+.pmr.l{color:var(--red);background:var(--redbg);border-color:transparent}
+.pmr.v{color:var(--mut)}
+.pms .pu{margin-top:4px}
+@media (min-width:900px){#v-pm .cl{max-width:640px}}
 </style>
 </head>
 <body>
@@ -974,7 +1027,7 @@ body.pg3 .v2[data-cur="3"] [data-pg]:not([data-pg~="3"]){display:none!important}
   <button id="theme" type="button" aria-label="Switch between light and dark"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" style="display:block;margin:auto"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M8 2a6 6 0 0 1 0 12z" fill="currentColor"/></svg></button>
   <button id="pause" type="button" aria-label="Pause or resume betting">❚❚</button>
  </header>
- <nav class="tabs"><button type="button" class="on" data-t="bet">Bet</button><button type="button" data-t="rec">Record</button><button type="button" data-t="bt">Backtest</button><button type="button" data-t="set">Settings</button></nav>
+ <nav class="tabs"><button type="button" class="on" data-t="bet">Bet</button><button type="button" data-t="rec">Record</button><button type="button" data-t="bt">Backtest</button><button type="button" data-t="set">Settings</button><button type="button" data-t="pm" aria-label="Pre-match"><span class="lg">Pre-match</span><span class="sh" aria-hidden="true">Pre</span></button></nav>
  <nav class="pgstrip" id="pgstrip" aria-label="Pages" hidden><button type="button" data-go="1"><i>1</i><span></span></button><button type="button" data-go="2"><i>2</i><span></span></button><button type="button" data-go="3"><i>3</i><span></span></button></nav>
  <p class="ckalert" id="ckalert" role="status" hidden></p>
 
@@ -1228,6 +1281,28 @@ body.pg3 .v2[data-cur="3"] [data-pg]:not([data-pg~="3"]){display:none!important}
  </div>
  </section>
 
+<section id="v-pm" class="v2" hidden>
+ <div class="cl">
+  <p class="fwsub">Pre-match combinations</p>
+  <p class="pace">Builds a 3-game combination from matches that have not started, using the numbers several bookmakers quote. Markets read: Match Winner, Double Chance, Goals Over/Under and Both Teams Score. Your Skip leagues list applies.</p>
+  <div class="two">
+   <label class="keyl">Day<select id="pm_day" aria-label="Day"><option value="0">Today</option><option value="1">Tomorrow</option></select></label>
+   <label class="keyl">Matches to check<select id="pm_pages" aria-label="Matches to check"><option value="3">30 · 4 requests</option><option value="6">60 · 7 requests</option><option value="10">100 · 11 requests</option><option value="15">150 · 16 requests</option></select></label>
+  </div>
+  <div class="two">
+   <label class="keyl">Minimum chance all three win<select id="pm_min" aria-label="Minimum chance all three win"><option value="0.6">60%</option><option value="0.65">65%</option><option value="0.7">70%</option><option value="0.75">75%</option><option value="0.8">80%</option><option value="0.85">85%</option><option value="0.9">90%</option></select></label>
+   <label class="keyl">Target total<select id="pm_tot" aria-label="Target total"><option value="1.25">1.25</option><option value="1.5">1.50</option><option value="1.75">1.75</option><option value="2">2.00</option><option value="2.5">2.50</option><option value="3">3.00</option></select></label>
+  </div>
+  <button type="button" class="wide pri" id="pm_go" data-a="pmgo">Find combinations</button>
+  <p class="pace" id="pm_msg" role="status" hidden></p>
+  <p class="pace" id="pm_info" hidden></p>
+  <div id="pm_res"></div>
+  <p class="pace">The chance of a game is what the bookmakers together say, with their margin taken out. It is an estimate, not a promise. The chance that all three win is the three chances multiplied: three games that each win 90% of the time win together about 73% of the time. The total is the three numbers multiplied.</p>
+  <p class="fwsub">Saved combinations</p>
+  <p class="pace" id="pm_smsg" role="status" hidden></p>
+  <div id="pm_saved"></div>
+ </div>
+ </section>
  <section id="v-set" class="v2" hidden>
   <div id="form"></div>
   <div class="cr">
@@ -1271,7 +1346,7 @@ body.pg3 .v2[data-cur="3"] [data-pg]:not([data-pg~="3"]){display:none!important}
   <div class="fold sfold" id="fd-sk">
    <button type="button" class="fhd" data-f="sk" aria-expanded="true"><span class="ft">Skip leagues</span><span class="fs" id="fs-sk">None</span><i class="chev"></i></button>
    <div class="fb">
-    <p class="pace">Matches in these leagues are left out of Live matches and Scan, and no lock-screen alert is sent for them. You can also skip a league straight from the list under Live matches or Scan.</p>
+    <p class="pace">Matches in these leagues are left out of Live matches, Scan and Pre-match, and no lock-screen alert is sent for them. You can also skip a league straight from the list under Live matches or Scan.</p>
     <div id="sk_list"></div>
     <label class="keyl">League to skip<input id="sk_in" list="sk_dl" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Name, or Name · Country" aria-label="League to skip"></label>
     <datalist id="sk_dl"></datalist>
@@ -1297,7 +1372,7 @@ body.pg3 .v2[data-cur="3"] [data-pg]:not([data-pg~="3"]){display:none!important}
  </section>
  <div class="pgnav" id="pgnav" hidden><button type="button" data-go="back">Back</button><button type="button" data-go="next">Next</button></div>
  <p class="pgsr" id="pgsr" role="status" aria-live="polite"></p>
- <footer>Numbers come from a pasted stats line, or are pulled from your own API-Sports key if you add one. Not connected to a bookmaker. No bet is guaranteed.<span class="bld"><span id="buildno">Build 71 · 7 Nov 2026</span> <button type="button" class="pu" id="reloadnew" data-a="reload">Reload latest</button></span></footer>
+ <footer>Numbers come from a pasted stats line, or are pulled from your own API-Sports key if you add one. Not connected to a bookmaker. No bet is guaranteed.<span class="bld"><span id="buildno">Build 72 · 12 Nov 2026</span> <button type="button" class="pu" id="reloadnew" data-a="reload">Reload latest</button></span></footer>
 </main>
 
 <script>
@@ -1904,6 +1979,246 @@ function lgAdd(list,e){
  if(dup)return{ok:false,list:cur,why:dup.n+' is already skipped.'};
  if(cur.length>=LG_MAX)return{ok:false,list:cur,why:'The list is full ('+LG_MAX+' leagues). Remove one first.'};
  return{ok:true,list:cur.concat([ne]),why:'',entry:ne};
+}
+// ---- Pre-match: a 3-game combination built from the numbers bookmakers quote before kickoff (the API-Sports odds feed).
+// Everything here is pure, so it is tested without a network. The "chance" of a game is what the bookmakers together say, with their margin
+// taken out. It is an estimate, never a promise: the chance that all three win is the three chances multiplied.
+const PM_MIN_BOOKS=3,PM_SPREAD=0.06,PM_LINES=[0.5,1.5,2.5,3.5,4.5],PM_LEAD=20*60000,PM_TOL=0.05,PM_PER_BAND=40,PM_FLOOR=1.12,PM_KEEP=240,PM_SAVED=200,PM_SETTLE_MS=135*60000;
+const pmR=(x,n)=>{const m=Math.pow(10,n||0);return Math.round(x*m)/m};
+// Which market a bet is: Match Winner, Double Chance, Goals Over/Under (full match) or Both Teams Score. Anything else is left out.
+function pmKind(b){
+ if(!b)return '';
+ const n=String(b.name==null?'':b.name).trim().toLowerCase(),id=Number(b.id);
+ if(n==='match winner')return '1x2';
+ if(n==='double chance')return 'dc';
+ if(n==='goals over/under')return 'ou';
+ if(n==='both teams score')return 'bt';
+ if(n&&/half|team|handicap|exact|odd|clean|corner|card/.test(n))return '';
+ return id===1?'1x2':id===12?'dc':id===5?'ou':id===8?'bt':'';
+}
+const pmKeyKind=k=>/^[OU]\d/.test(k)?'ou':k==='H'||k==='D'||k==='A'?'1x2':k==='HD'||k==='HA'||k==='DA'?'dc':k==='Y'||k==='N'?'bt':'';
+// One value of a bet -> a short key: H D A, HD HA DA, Y N, or O2.5 / U2.5 (whole-match lines ending in .5 only).
+function pmOutcome(kind,v){
+ const t=String(v==null?'':v).trim().toLowerCase();
+ if(kind==='1x2')return t==='home'||t==='1'?'H':t==='draw'||t==='x'?'D':t==='away'||t==='2'?'A':'';
+ if(kind==='dc')return({'home/draw':'HD','1x':'HD','home/away':'HA','12':'HA','draw/away':'DA','x2':'DA'})[t]||'';
+ if(kind==='bt')return t==='yes'?'Y':t==='no'?'N':'';
+ if(kind==='ou'){
+  const m=/^(over|under)\s+(\d+(?:\.\d+)?)$/.exec(t);
+  if(!m)return '';
+  const ln=parseFloat(m[2]);
+  return PM_LINES.indexOf(ln)<0?'':(m[1]==='over'?'O':'U')+ln;
+ }
+ return '';
+}
+// One bookmaker's market -> {key:{p,odd}}: p is the chance with that bookmaker's margin taken out. A market missing an outcome, or whose
+// numbers do not add up like a market (a data slip), gives nothing.
+function pmBookProbs(kind,values){
+ const raw={};
+ (Array.isArray(values)?values:[]).forEach(x=>{
+  const k=pmOutcome(kind,x&&x.value),o=nOrNull(x&&x.odd);
+  if(k&&o!=null&&o>1&&o<=200&&raw[k]==null)raw[k]=o;
+ });
+ const groups=kind==='ou'?PM_LINES.map(l=>['O'+l,'U'+l]):kind==='1x2'?[['H','D','A']]:kind==='dc'?[['HD','HA','DA']]:[['Y','N']];
+ const sum=kind==='dc'?2:1,out={};
+ groups.forEach(g=>{
+  if(!g.every(k=>raw[k]!=null))return;
+  const imp=g.map(k=>1/raw[k]),tot=imp.reduce((a,b)=>a+b,0),over=tot/sum;
+  if(!(over>=0.97&&over<=1.25))return;
+  g.forEach((k,i)=>{out[k]={p:imp[i]/tot*sum,odd:raw[k]}});
+ });
+ return out;
+}
+// The /odds answer -> {fixtureId:{id,leagueId,league,country,m:{key:[{p,odd} one per bookmaker]}}}
+function pmParseOdds(j){
+ const a=j&&Array.isArray(j.response)?j.response:[],out={};
+ a.forEach(r=>{
+  try{
+   const id=r&&r.fixture&&r.fixture.id;
+   if(!id)return;
+   const l=r.league||{};
+   const acc=out[id]||(out[id]={id:id,leagueId:nOrNull(l.id),league:String(l.name||''),country:String(l.country||''),m:{}});
+   (Array.isArray(r.bookmakers)?r.bookmakers:[]).forEach(bk=>{
+    (Array.isArray(bk&&bk.bets)?bk.bets:[]).forEach(b=>{
+     const kind=pmKind(b);
+     if(!kind)return;
+     const ps=pmBookProbs(kind,b.values);
+     Object.keys(ps).forEach(k=>{(acc.m[k]=acc.m[k]||[]).push(ps[k])});
+    });
+   });
+  }catch(e){}
+ });
+ return out;
+}
+// What the bookmakers together say about one outcome: the average chance, how far apart they are, the middle number, and how many quoted it.
+function pmCons(list){
+ if(!Array.isArray(list)||list.length<PM_MIN_BOOKS)return null;
+ const ps=list.map(x=>x.p),os=list.map(x=>x.odd).sort((a,b)=>a-b),n=os.length;
+ const med=n%2?os[(n-1)/2]:(os[n/2-1]+os[n/2])/2;
+ return{p:ps.reduce((a,b)=>a+b,0)/ps.length,sp:Math.max.apply(null,ps)-Math.min.apply(null,ps),odd:pmR(med,2),nb:n};
+}
+// /fixtures?date= -> matches that have not started (status NS) and have a kickoff time.
+function pmFixtures(j){
+ const a=j&&Array.isArray(j.response)?j.response:[],out=[];
+ a.forEach(r=>{
+  try{
+   const f=r.fixture||{},st=f.status||{},t=r.teams||{},l=r.league||{};
+   const ko=nOrNull(f.timestamp);
+   if(!f.id||String(st.short||'')!=='NS'||ko==null||!t.home||!t.away)return;
+   out.push({id:f.id,ko:ko*1000,home:String(t.home.name||'Home'),away:String(t.away.name||'Away'),league:String(l.name||''),leagueId:nOrNull(l.id),country:String(l.country||'')});
+  }catch(e){}
+ });
+ return out;
+}
+function pmLabel(key,h,a){
+ switch(key){
+  case 'H':return h+' to win';case 'D':return 'Draw';case 'A':return a+' to win';
+  case 'HD':return h+' or draw';case 'HA':return h+' or '+a+' (no draw)';case 'DA':return a+' or draw';
+  case 'Y':return 'Both teams score';case 'N':return 'Not both teams score';
+ }
+ return (key.charAt(0)==='O'?'Over ':'Under ')+key.slice(1)+' goals';
+}
+// Games that can go into a combination: not started (20 minutes' notice), at least PM_MIN_BOOKS bookmakers, and they agree to within PM_SPREAD.
+function pmLegs(fixes,odds,now,skip){
+ const legs=[];
+ (Array.isArray(fixes)?fixes:[]).forEach(fx=>{
+  const o=odds&&odds[fx.id];
+  if(!o||fx.ko<now+PM_LEAD||lgSkipped(fx,skip))return;
+  Object.keys(o.m).forEach(key=>{
+   const c=pmCons(o.m[key]);
+   if(!c||c.sp>PM_SPREAD||c.odd<1.01||c.p<0.5)return;
+   legs.push({fid:fx.id,h:fx.home,a:fx.away,lg:fx.league,cn:fx.country,lid:fx.leagueId==null?null:fx.leagueId,ko:fx.ko,key:key,k:pmKeyKind(key),pick:pmLabel(key,fx.home,fx.away),odd:c.odd,ch:c.p,nb:c.nb,sp:c.sp});
+  });
+ });
+ return legs;
+}
+// Which games are worth trying together. At a fixed total, the chance of all three only depends on how generous each quoted number is for the
+// chance behind it (number x chance, "value"), so: for each match keep its two best-value games in each size band, then the PM_PER_BAND best-value games
+// in each band. (Ranking by chance alone would fill the pool with the smallest numbers and never reach a total of 2.00.)
+function pmPool(legs){
+ const by={},bands=[[1.01,1.06],[1.06,1.15],[1.15,1.25],[1.25,1.4],[1.4,1.8],[1.8,3.5]],cand=bands.map(()=>[]),pool=[];
+ legs.forEach(l=>{(by[l.fid]=by[l.fid]||[]).push(l)});
+ Object.keys(by).forEach(fid=>{
+  bands.forEach((b,bi)=>{
+   by[fid].filter(l=>l.odd>=b[0]&&l.odd<b[1]).map(l=>({v:l.odd*l.ch,l:l})).sort((x,y)=>y.v-x.v).slice(0,2).forEach(x=>cand[bi].push(x));
+  });
+ });
+ cand.forEach(c=>{c.sort((x,y)=>y.v-x.v).slice(0,PM_PER_BAND).forEach(x=>pool.push(x.l))});
+ return pool;
+}
+const pmCombo=ls=>{const legs=ls.slice().sort((a,b)=>a.ko-b.ko);return{legs:legs,tot:pmR(legs.reduce((p,l)=>p*l.odd,1),2),ch:legs.reduce((p,l)=>p*l.ch,1)}};
+// Looks at every set of three games from three different matches and returns
+//  near: the strongest combination whose total is within 5% of the target,
+//  hi:   the highest total (not above target + 5%) whose chance that all three win is at least `min`,
+//  top:  the strongest combination with a total of at least PM_FLOOR and not above target + 5% (shown when nothing reaches `min`).
+function pmSearch(legs,o){
+ const target=o.target,min=o.min,lo=target*(1-PM_TOL),up=target*(1+PM_TOL),pool=pmPool(legs),n=pool.length;
+ let near=null,hi=null,top=null;
+ const better=(a,b,k1,k2)=>!a||b[k1]>a[k1]+1e-12||(Math.abs(b[k1]-a[k1])<=1e-12&&b[k2]>a[k2]);
+ for(let i=0;i<n;i++){
+  const a=pool[i];
+  for(let j=i+1;j<n;j++){
+   const b=pool[j];
+   if(b.fid===a.fid)continue;
+   const t2=a.odd*b.odd,c2=a.ch*b.ch;
+   for(let k=j+1;k<n;k++){
+    const c=pool[k];
+    if(c.fid===a.fid||c.fid===b.fid)continue;
+    const tot=t2*c.odd,ch=c2*c.ch;
+    if(tot>up+0.005)continue;
+    const x={i:i,j:j,k:k,tot:tot,ch:ch};
+    if(tot>=lo-0.005&&better(near,x,'ch','tot'))near=x;
+    if(ch>=min&&better(hi,x,'tot','ch'))hi=x;
+    if(tot>=PM_FLOOR&&better(top,x,'ch','tot'))top=x;
+   }
+  }
+ }
+ const mk=x=>x?pmCombo([pool[x.i],pool[x.j],pool[x.k]]):null;
+ return{near:mk(near),hi:mk(hi),top:mk(top),pool:n};
+}
+// ---- Settling a game and a combination on the regular-time score (fin comes from apiFinal: {k:'final',gh,ga} or {k:'void'}).
+function pmLegWon(key,gh,ga){
+ const t=gh+ga;
+ switch(key){
+  case 'H':return gh>ga;case 'D':return gh===ga;case 'A':return ga>gh;
+  case 'HD':return gh>=ga;case 'HA':return gh!==ga;case 'DA':return ga>=gh;
+  case 'Y':return gh>0&&ga>0;case 'N':return !(gh>0&&ga>0);
+ }
+ const ln=parseFloat(key.slice(1));
+ return key.charAt(0)==='O'?t>ln:t<ln;
+}
+function pmLegRes(key,fin){
+ if(!fin)return null;
+ if(fin.k==='void')return 'v';
+ if(fin.k!=='final'||typeof fin.gh!=='number'||typeof fin.ga!=='number')return null;
+ return pmLegWon(key,fin.gh,fin.ga)?'w':'l';
+}
+// One lost game loses the combination at once. Games that were called off drop out; the rest decide it. null while any game is still open.
+function pmComboRes(rs){
+ if(!Array.isArray(rs)||!rs.length)return null;
+ if(rs.indexOf('l')>=0)return 'l';
+ if(rs.some(r=>r==null))return null;
+ return rs.every(r=>r==='v')?'v':'w';
+}
+// /fixtures?ids= answer -> {fixtureId:fin}
+function pmFinals(j){
+ const a=j&&Array.isArray(j.response)?j.response:[],out={};
+ a.forEach(r=>{
+  try{
+   const id=r&&r.fixture&&r.fixture.id,fin=apiFinal({response:[r]});
+   if(id&&fin)out[id]=fin;
+  }catch(e){}
+ });
+ return out;
+}
+// Saved combinations ({id,day,at,target,legs,lr,res}) read back from storage.
+function pmClean(list){
+ const out=[];
+ (Array.isArray(list)?list:[]).forEach(c=>{
+  if(!c||typeof c!=='object'||!Array.isArray(c.legs)||c.legs.length!==3)return;
+  const legs=c.legs.map(l=>l&&typeof l==='object'&&l.fid!=null&&typeof l.key==='string'&&pmKeyKind(l.key)&&isFinite(l.odd)&&isFinite(l.ch)&&isFinite(l.ko)?{fid:l.fid,h:String(l.h||'').slice(0,60),a:String(l.a||'').slice(0,60),lg:String(l.lg||'').slice(0,60),key:l.key,pick:String(l.pick||'').slice(0,100),odd:+l.odd,ch:+l.ch,ko:+l.ko}:null);
+  if(legs.some(l=>!l))return;
+  const lr=legs.map((l,i)=>{const r=Array.isArray(c.lr)?c.lr[i]:null;return r==='w'||r==='l'||r==='v'?r:null});
+  out.push({id:String(c.id||legs.map(l=>l.fid).join('-')+'@'+(+c.at||0)),day:String(c.day||'').slice(0,10),at:+c.at||0,target:isFinite(c.target)?+c.target:0,legs:legs,lr:lr,res:pmComboRes(lr)});
+ });
+ return out.slice(-PM_SAVED);
+}
+const pmTotal=c=>pmR(c.legs.reduce((p,l,i)=>c.lr[i]==='v'?p:p*l.odd,1),2);
+function pmStats(saved){
+ const s={n:0,won:0,lost:0,void:0,open:0,rate:null,avgCh:null,avgChSettled:null};
+ let chs=0,chd=0;
+ (Array.isArray(saved)?saved:[]).forEach(c=>{
+  const ch=c.legs.reduce((p,l)=>p*l.ch,1);
+  s.n++;chs+=ch;
+  if(c.res==='w'){s.won++;chd+=ch}else if(c.res==='l'){s.lost++;chd+=ch}else if(c.res==='v')s.void++;else s.open++;
+ });
+ if(s.won+s.lost){s.rate=s.won/(s.won+s.lost);s.avgChSettled=chd/(s.won+s.lost)}
+ if(s.n)s.avgCh=chs/s.n;
+ return s;
+}
+// Game ids worth asking about now: not settled, and kicked off long enough ago to be over. At most 20 (one request).
+function pmDueIds(saved,now){
+ const ids=[];
+ (Array.isArray(saved)?saved:[]).forEach(c=>{
+  if(c.res!=null)return;
+  c.legs.forEach((l,i)=>{if(c.lr[i]==null&&l.ko+PM_SETTLE_MS<now&&ids.indexOf(l.fid)<0)ids.push(l.fid)});
+ });
+ return ids.slice(0,20);
+}
+// Apply finals to saved combinations. Returns how many combinations changed.
+function pmApply(saved,fins){
+ let changed=0;
+ saved.forEach(c=>{
+  if(c.res!=null)return;
+  let any=false;
+  c.legs.forEach((l,i)=>{
+   if(c.lr[i]!=null)return;
+   const r=pmLegRes(l.key,fins&&fins[l.fid]);
+   if(r){c.lr[i]=r;any=true}
+  });
+  if(any){const was=c.res;c.res=pmComboRes(c.lr);if(c.res!==was)changed++}
+ });
+ return changed;
 }
 const REC_TAG='U35DATA ';
 // Text you can paste into Notes or a message: a short summary plus one data line that recordImport can read back.
@@ -2542,6 +2857,137 @@ function skPicked(){
  if(!r.ok){lvMsg(r.why,'am');return}
  skUse(r.list);
  lvMsg('Skipping '+lgLabel(r.entry)+'. Its matches are hidden here, in Scan and in lock-screen alerts. Undo it in Settings > Skip leagues.');
+}
+// ---- Pre-match tab (the maths is in the logic block: pm*). Nothing is requested until you tap Find combinations or Check results.
+const PMK='u35_pm',PMS='u35_pmset',PMC='u35_pmc';
+let pmSaved=[],pmSet={min:0.8,tot:2,day:0,pages:6},pmCache=null,pmBusy=false,pmChecking=false,pmShown=[],pmChkAt=0;
+const pmDate=off=>{const d=new Date();d.setDate(d.getDate()+off);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
+const pmTz=()=>{try{return Intl.DateTimeFormat().resolvedOptions().timeZone||''}catch(e){return ''}};
+const pmDayLabel=k=>{const m=/^(\d{4})-(\d\d)-(\d\d)$/.exec(k||'');return m?new Date(+m[1],+m[2]-1,+m[3]).toLocaleDateString([],{weekday:'short',day:'numeric',month:'short'}):''};
+const pmClock=ms=>new Date(ms).toLocaleTimeString([],{hour:'numeric',minute:'2-digit'});
+const pmPct=ch=>ch<0.005?'under 1%':'about '+Math.round(ch*100)+'%';
+function pmMsg(t,bad){const m=$('pm_msg');m.textContent=t||'';m.hidden=!t;m.className='pace'+(bad?' am':'')}
+function pmSMsg(t,bad){const m=$('pm_smsg');m.textContent=t||'';m.hidden=!t;m.className='pace'+(bad?' am':'')}
+function pmSetSave(){try{localStorage.setItem(PMS,JSON.stringify(pmSet))}catch(e){}}
+function pmStore(){try{localStorage.setItem(PMK,JSON.stringify(pmSaved))}catch(e){}}
+function pmCacheSave(){try{localStorage.setItem(PMC,JSON.stringify(pmCache))}catch(e){}}
+function pmLoad(){
+ try{
+  const d=JSON.parse(localStorage.getItem(PMS)||'null');
+  if(d&&typeof d==='object'){
+   if([0.6,0.65,0.7,0.75,0.8,0.85,0.9].indexOf(+d.min)>=0)pmSet.min=+d.min;
+   if([1.25,1.5,1.75,2,2.5,3].indexOf(+d.tot)>=0)pmSet.tot=+d.tot;
+   if(+d.day===1)pmSet.day=1;
+   if([3,6,10,15].indexOf(+d.pages)>=0)pmSet.pages=+d.pages;
+  }
+ }catch(e){}
+ try{pmSaved=pmClean(JSON.parse(localStorage.getItem(PMK)||'[]'))}catch(e){pmSaved=[]}
+ try{
+  const d=JSON.parse(localStorage.getItem(PMC)||'null');
+  if(d&&typeof d==='object'&&Array.isArray(d.legs)&&typeof d.at==='number')pmCache={day:String(d.day||''),at:d.at,fx:+d.fx||0,nb:+d.nb||0,req:+d.req||0,skip:+d.skip||0,legs:d.legs.filter(l=>l&&l.fid!=null&&typeof l.key==='string'&&pmKeyKind(l.key)&&isFinite(l.odd)&&isFinite(l.ch)&&isFinite(l.ko)).slice(0,PM_KEEP)};
+ }catch(e){pmCache=null}
+}
+const pmSame=(a,b)=>!!a&&!!b&&a.legs.map(l=>l.fid+l.key).join()===b.legs.map(l=>l.fid+l.key).join();
+function pmCard(cb,tag,tone){
+ const i=pmShown.length;pmShown.push(cb);
+ const dup=pmSaved.some(c=>c.res==null&&c.legs.map(l=>l.fid+l.key).join()===cb.legs.map(l=>l.fid+l.key).join());
+ return '<div class="pmc"><div class="pmtag '+tone+'">'+esc(tag)+'</div><ol class="pml">'+cb.legs.map((l,n)=>
+  '<li class="pmg"><div class="top"><span>'+esc(pmClock(l.ko))+' · '+esc(l.lg)+(l.cn?' · '+esc(l.cn):'')+'</span><span>Game '+(n+1)+'</span></div><p class="mt">'+esc(l.h)+' v '+esc(l.a)+'</p><div class="pk"><b>'+esc(l.pick)+'</b><span class="num">'+l.odd.toFixed(2)+'</span></div><p class="ch">Chance this game wins: <b>'+Math.round(l.ch*100)+'%</b> · '+l.nb+' bookmakers</p></li>').join('')+
+  '</ol><div class="pmt2"><div class="row"><span>Total</span><span class="big">'+cb.tot.toFixed(2)+'</span></div><div class="row"><span>Chance all three win</span><b>'+pmPct(cb.ch)+'</b></div></div>'+
+  '<button type="button" class="wide'+(dup?'':' pri')+'" data-a="pmsave" data-i="'+i+'"'+(dup?' disabled':'')+'>'+(dup?'Saved':'Save this combination')+'</button></div>';
+}
+function pmRender(){
+ pmShown=[];
+ $('pm_day').value=String(pmSet.day);$('pm_pages').value=String(pmSet.pages);$('pm_min').value=String(pmSet.min);$('pm_tot').value=String(pmSet.tot);
+ const res=$('pm_res'),inf=$('pm_info'),now=Date.now(),minP=Math.round(pmSet.min*100);
+ if(!pmCache){
+  inf.hidden=true;
+  res.innerHTML='<p class="pace">Tap Find combinations. It reads the day\'s matches and the bookmakers\' numbers from your own API-Sports key: '+(pmSet.pages+1)+' requests with your current setting.</p>';
+  pmRenderSaved();return;
+ }
+ inf.hidden=false;
+ inf.textContent='Read at '+pmClock(pmCache.at)+' for '+pmDayLabel(pmCache.day)+': '+pmCache.fx+' matches, '+pmCache.nb+' with numbers, '+pmCache.legs.length+' usable games ('+pmCache.req+' requests).'+(pmCache.skip?' '+pmCache.skip+(pmCache.skip>1?' matches in skipped leagues were left out.':' match in a skipped league was left out.'):'')+(pmCache.day!==pmDate(pmSet.day)?' Tap Find combinations to read '+pmDayLabel(pmDate(pmSet.day))+'.':'');
+ const legs=pmCache.legs.filter(l=>l.ko>=now+PM_LEAD&&!lgSkipped({leagueId:l.lid,league:l.lg,country:l.cn},skipL));
+ const r=pmSearch(legs,{target:pmSet.tot,min:pmSet.min});
+ let h='';
+ if(!r.near&&!r.hi&&!r.top){
+  h='<p class="pace am">'+(pmCache.legs.length?'No 3-game combination can be made from the games that are left: matches start within 20 minutes or need more bookmakers. Tap Find combinations to read again.':'Not enough matches have numbers from at least 3 bookmakers that agree. Try a bigger "Matches to check", or the other day.')+'</p>';
+ }else{
+  if(r.hi)h+=pmCard(r.hi,'Meets your '+minP+'% minimum · highest total available','good');
+  else h+='<p class="pace am">No 3-game combination reaches '+minP+'% with a total up to '+(pmSet.tot*1.05).toFixed(2)+'. The more you ask of the total, the lower the chance: every game in a combination has to win.</p>';
+  if(r.near&&!pmSame(r.near,r.hi))h+=pmCard(r.near,'Closest to total '+pmSet.tot.toFixed(2)+(r.near.ch>=pmSet.min?' · meets your '+minP+'% minimum':' · below your '+minP+'% minimum'),r.near.ch>=pmSet.min?'good':'low');
+  if(!r.hi&&r.top&&!pmSame(r.top,r.near))h+=pmCard(r.top,'Strongest chance available · below your '+minP+'% minimum','low');
+ }
+ res.innerHTML=h;
+ pmRenderSaved();
+}
+function pmRenderSaved(){
+ const st=pmStats(pmSaved),box=$('pm_saved');
+ if(!pmSaved.length){box.innerHTML='<p class="pace">Nothing saved yet. Save a combination above and the panel checks it for you after the games are over, then keeps count of how many really won.</p>';return}
+ const rl={w:'won',l:'lost',v:'called off'};
+ let h='<div class="pmsum"><div class="row"><span>Saved</span><b>'+st.n+'</b></div><div class="row"><span>Won · lost · open</span><b>'+st.won+' · '+st.lost+' · '+st.open+(st.void?' · '+st.void+' called off':'')+'</b></div>'+
+  (st.rate!=null?'<div class="row"><span>Won of those settled</span><b>'+Math.round(st.rate*100)+'% ('+st.won+' of '+(st.won+st.lost)+')</b></div><div class="row mut"><span>What their chances said</span><span>'+pmPct(st.avgChSettled)+'</span></div>':'<div class="row mut"><span>Won of those settled</span><span>none settled yet</span></div>')+'</div>';
+ h+='<button type="button" class="wide" data-a="pmchk">Check results</button>';
+ h+=pmSaved.slice().reverse().slice(0,30).map(c=>'<div class="pms"><div class="top"><span>'+esc(pmDayLabel(c.day)||'Saved')+' · total '+pmTotal(c).toFixed(2)+' · '+pmPct(c.legs.reduce((p,l)=>p*l.ch,1))+'</span><span class="pmr '+(c.res||'o')+'">'+(c.res?({w:'Won',l:'Lost',v:'Called off'})[c.res]:'Open')+'</span></div><ul>'+
+  c.legs.map((l,i)=>'<li><span class="pmr '+(c.lr[i]||'o')+'">'+(c.lr[i]?rl[c.lr[i]]:'open')+'</span><span><b>'+esc(l.pick)+'</b> <i>'+esc(l.h)+' v '+esc(l.a)+'</i></span><span class="num">'+l.odd.toFixed(2)+'</span></li>').join('')+
+  '</ul><button type="button" class="pu" data-a="pmdel" data-id="'+esc(c.id)+'">Remove</button></div>').join('');
+ box.innerHTML=h;
+}
+async function pmGo(){
+ if(pmBusy)return;
+ pmBusy=true;$('pm_go').disabled=true;pmMsg('Reading the matches…');
+ const day=pmDate(pmSet.day),tz=pmTz(),tzq=tz?'&timezone='+encodeURIComponent(tz):'';
+ let req=0;
+ try{
+  const fx=pmFixtures(await apiGet('/fixtures?date='+day+tzq));req++;
+  const keep=fx.filter(f=>!lgSkipped(f,skipL)),skipped=fx.length-keep.length;
+  let odds={},total=1,pg=1;
+  while(fx.length&&pg<=Math.min(total,pmSet.pages)){
+   pmMsg('Reading the numbers, page '+pg+' of '+Math.min(total,pmSet.pages)+'…');
+   const j=await apiGet('/odds?date='+day+tzq+'&page='+pg);req++;
+   if(j&&j.paging&&+j.paging.total>0)total=+j.paging.total;
+   Object.assign(odds,pmParseOdds(j));
+   if(!j||!Array.isArray(j.response)||!j.response.length)break;
+   pg++;
+  }
+  const pool=pmPool(pmLegs(keep,odds,Date.now(),skipL));
+  pmCache={day:day,at:Date.now(),fx:fx.length,nb:Object.keys(odds).length,req:req,skip:skipped,legs:pool};
+  pmCacheSave();
+  pmMsg(fx.length?'':'The API lists no matches for '+pmDayLabel(day)+'.',!fx.length);
+  pmRender();
+ }catch(e){pmMsg(e&&e.message||'Something went wrong.',true)}
+ pmBusy=false;$('pm_go').disabled=false;apiQShow();
+}
+function pmSave(i){
+ const cb=pmShown[i];
+ if(!cb)return;
+ const key=cb.legs.map(l=>l.fid+l.key).join();
+ if(pmSaved.some(c=>c.res==null&&c.legs.map(l=>l.fid+l.key).join()===key)){pmSMsg('That combination is already saved.');return}
+ pmSaved=pmClean(pmSaved.concat([{id:cb.legs.map(l=>l.fid).join('-')+'@'+Date.now(),day:pmCache?pmCache.day:pmDate(0),at:Date.now(),target:pmSet.tot,legs:cb.legs.map(l=>({fid:l.fid,h:l.h,a:l.a,lg:l.lg,key:l.key,pick:l.pick,odd:l.odd,ch:l.ch,ko:l.ko})),lr:[null,null,null]}]));
+ pmStore();pmSMsg('Saved. The panel checks the result after the games are over.');pmRender();
+}
+function pmDel(id){pmSaved=pmSaved.filter(c=>c.id!==id);pmStore();pmSMsg('');pmRender()}
+async function pmCheck(manual){
+ if(pmChecking)return;
+ const ids=pmDueIds(pmSaved,Date.now());
+ if(!ids.length){if(manual)pmSMsg(pmSaved.some(c=>c.res==null)?'Nothing to check yet. A game can be checked about 2 hours 15 minutes after it kicks off.':'Every saved combination is settled.');return}
+ pmChecking=true;
+ try{
+  const fins=pmFinals(await apiGet('/fixtures?ids='+ids.join('-')));
+  const n=pmApply(pmSaved,fins);
+  pmStore();pmChkAt=Date.now();
+  pmSMsg(manual||n?'Checked '+ids.length+(ids.length>1?' games':' game')+(n?': '+n+(n>1?' combinations':' combination')+' settled.':'. None is settled yet.'):'');
+  apiQShow();
+ }catch(e){if(manual)pmSMsg(e&&e.message||'Something went wrong.',true)}
+ pmChecking=false;pmRender();
+}
+function pmOpen(){
+ pmSMsg('');pmRender();
+ if(apiKey&&!inFrame()&&Date.now()-pmChkAt>600000&&pmDueIds(pmSaved,Date.now()).length)pmCheck(false);
+}
+function pmChange(){
+ pmSet.day=+$('pm_day').value===1?1:0;pmSet.pages=+$('pm_pages').value||6;pmSet.min=+$('pm_min').value||0.8;pmSet.tot=+$('pm_tot').value||2;
+ pmSetSave();pmRender();
 }
 function setMkt(v,keep){mktOn=v==='show';document.body.classList.toggle('nomkt',!mktOn);if(!keep){try{localStorage.setItem('u35_mkt',mktOn?'show':'hide')}catch(e){}}}
 function setSize(v){size=v==='compact'?'compact':'normal';document.body.classList.toggle('compact',size==='compact');applyFold();try{localStorage.setItem('u35_size',size)}catch(e){}}
@@ -4050,8 +4496,8 @@ document.addEventListener('click',e=>{
  if(t){
   document.querySelectorAll('.tabs button').forEach(x=>x.classList.toggle('on',x===t));
   document.body.classList.toggle('dockon',t.dataset.t==='bet');
-  $('v-bet').hidden=t.dataset.t!=='bet';$('v-set').hidden=t.dataset.t!=='set';$('v-rec').hidden=t.dataset.t!=='rec';$('v-bt').hidden=t.dataset.t!=='bt';
-  if(t.dataset.t==='set')buildForm();else if(t.dataset.t==='rec'){rmsg('');$('r_out').hidden=true;renderRec()}else if(t.dataset.t==='bt')btOpen();else update();
+  $('v-bet').hidden=t.dataset.t!=='bet';$('v-set').hidden=t.dataset.t!=='set';$('v-rec').hidden=t.dataset.t!=='rec';$('v-bt').hidden=t.dataset.t!=='bt';$('v-pm').hidden=t.dataset.t!=='pm';
+  if(t.dataset.t==='set')buildForm();else if(t.dataset.t==='rec'){rmsg('');$('r_out').hidden=true;renderRec()}else if(t.dataset.t==='bt')btOpen();else if(t.dataset.t==='pm')pmOpen();else update();
   return;
  }
  const a=e.target.closest('[data-a]');if(!a)return;
@@ -4062,6 +4508,10 @@ document.addEventListener('click',e=>{
  else if(k==='won'||k==='lost'||k==='void')settle(a.dataset.id,k);
  else if(k==='next')nextMatch(true);
  else if(k==='skadd')skAddFromInput();
+ else if(k==='pmgo')pmGo();
+ else if(k==='pmsave')pmSave(+a.dataset.i);
+ else if(k==='pmdel')pmDel(a.dataset.id);
+ else if(k==='pmchk')pmCheck(true);
  else if(k==='skdel')skDel(+a.dataset.i);
  else if(k==='covclear'){cov={};covSave();covRender();if(lvList.length&&!$('lvlist').hidden)lvRender();if(scItems.length&&!$('scres').hidden)scRender()}
  else if(k==='rulereset'){const pr=presetRules(c.side,lineOf(c));c=Object.assign({},c,pr);c.m=Object.assign({},c.m||{});delete c.m[mkKey(c.side,lineOf(c))];save();buildForm();update()}
@@ -4122,6 +4572,7 @@ if(!s)fresh();
 keyLoad();
 pnLoad();
 qhLoad();['qh_on','qh_from','qh_to'].forEach(id=>$(id).addEventListener('change',qhChange));setInterval(qhRender,30000);
+pmLoad();['pm_day','pm_pages','pm_min','pm_tot'].forEach(id=>$(id).addEventListener('change',pmChange));
 skLoad();$('lv_skip').addEventListener('change',skPicked);$('sk_in').addEventListener('focus',skFillList);$('sk_in').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();skAddFromInput()}});
 bookLoad();
 
