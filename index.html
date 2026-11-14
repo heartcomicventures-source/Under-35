@@ -1022,6 +1022,45 @@ body.pg3 .v2[data-cur="3"] [data-pg]:not([data-pg~="3"]){display:none!important}
 .pmr.v{color:var(--mut)}
 .pms .pu{margin-top:4px}
 @media (min-width:900px){#v-pm .cl{max-width:640px}}
+
+/* ===== Build 76: Live numbers over time (Record tab) ===== */
+.pvd{margin:0 0 18px;border-bottom:1px solid var(--line);padding-bottom:8px}
+.pvd>summary{font:var(--t-h2);color:var(--tx);cursor:pointer;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:44px;padding:8px 0}
+.pvd>summary::-webkit-details-marker{display:none}
+.pvd>summary::after{content:"";flex:none;width:8px;height:8px;margin-right:4px;border-right:2px solid var(--mut);border-bottom:2px solid var(--mut);transform:rotate(45deg);transition:transform .15s}
+.pvd[open]>summary::after{transform:rotate(-135deg)}
+.pvd .pvbtns{display:flex;flex-wrap:wrap;gap:8px}
+.pvd .pvbtns .wide{flex:1 1 180px;width:auto;margin-top:0}
+.pvd #pv_pick{margin:10px 0;background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+#pv_q{font:var(--t-field);display:block;width:100%;box-sizing:border-box;min-height:44px;padding:9px 10px;background:var(--panel);color:var(--tx);border:0;border-bottom:1px solid var(--line)}
+#pv_q:focus-visible{outline-offset:-2px}
+#pv_rows{max-height:280px;overflow-y:auto;overscroll-behavior:contain}
+.pvd .pace{margin:8px 0 0}
+.pvhd{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin:14px 0 8px}
+.pvhd b{font:var(--t-team);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pvhd span{font:var(--t-label);color:var(--mut);white-space:nowrap}
+.pvtwo{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;align-items:end;margin-bottom:10px}
+.pvtwo .keyl{margin:0}
+.pvd .xgleg{margin:0 0 8px}
+.xgk .pvsq{width:10px;height:10px;border-radius:2px;background:var(--mut);opacity:.7}
+.xgk .pvgl{width:0;height:12px;border-left:1.5px dashed var(--mut)}
+.xgbox .pvg{stroke:var(--mut);stroke-width:1;stroke-dasharray:3 3;opacity:.85}
+.xgbox .pvb{fill:var(--mut);opacity:.6}
+.pvd .pvread{min-height:20px}
+.pvd #pv_grid{margin:12px 0 0}
+.pvd #pv_grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+@media (max-width:520px){.pvd #pv_grid{grid-template-columns:1fr 1fr}}
+.pvd .xgtab{margin-top:8px}
+.pvh2{margin:16px 0 4px!important}
+.pvrow{display:flex;align-items:stretch;gap:8px;border-bottom:1px solid var(--line)}
+.pvrow.on{background:var(--grnbg)}
+.pvopen{flex:1 1 auto;min-width:0;display:grid;gap:2px;text-align:left;padding:9px 10px;min-height:44px;background:none;border:0;color:var(--tx)}
+.pvopen b{font:var(--t-team);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pvopen small{font:var(--t-label);color:var(--mut)}
+.pvx{flex:none;min-width:44px;min-height:44px;padding:0 10px;background:none;border:0;color:var(--mut);font:var(--t-label)}
+#pvbox{max-width:560px}
+.pvd .xgk{white-space:normal;min-width:0}
+#pv_intro{margin:8px 0 12px!important}
 </style>
 </head>
 <body>
@@ -1207,6 +1246,42 @@ body.pg3 .v2[data-cur="3"] [data-pg]:not([data-pg~="3"]){display:none!important}
   </div>
   </div>
  <div class="cr">
+  <details class="pvd" id="pvd">
+   <summary>Price / Volume over time</summary>
+   <p class="pace" id="pv_intro">Pick a live match. While this page is open and on screen it reads the match's live price and draws it over the match clock, with goals marked. The feed gives no traded volume, so the bars under the line show movement: how far the price moved between readings.</p>
+   <div class="pvbtns">
+    <button class="wide" type="button" data-a="pvlist">Pick a live match</button>
+    <button class="wide" type="button" id="pv_lk" data-a="pvlinked" hidden>Use the match linked on the Bet tab</button>
+   </div>
+   <div id="pv_pick" hidden>
+    <input id="pv_q" type="text" placeholder="Filter by team or league" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Filter live matches">
+    <div id="pv_rows"></div>
+   </div>
+   <p class="pace" id="pv_msg" role="status" hidden></p>
+   <div id="pv_box" hidden>
+    <div class="pvhd"><b id="pv_t"></b><span id="pv_s"></span></div>
+    <div class="pvtwo">
+     <label class="keyl">Market<select id="pv_key" aria-label="Which market to draw"></select></label>
+     <label class="keyl">Read every<select id="pv_ev" aria-label="How often to read"><option value="30000">30 seconds</option><option value="60000">1 minute</option><option value="120000">2 minutes</option></select></label>
+    </div>
+    <div class="xgleg" id="pv_leg"></div>
+    <div class="xgbox" id="pvbox" tabindex="0" role="img" aria-label="Live price over time"><svg id="pvsvg" viewBox="0 0 320 204" aria-hidden="true"></svg></div>
+    <p class="pace pvread" id="pv_read"></p>
+    <div class="grid" id="pv_grid">
+     <div><small>Start price</small><b id="pv_a"></b></div>
+     <div><small>Now</small><b id="pv_b"></b></div>
+     <div><small>High</small><b id="pv_c"></b></div>
+     <div><small>Low</small><b id="pv_d"></b></div>
+    </div>
+    <button class="wide" id="pv_stop" type="button" data-a="pvstop" hidden>Stop recording</button>
+    <button class="wide" id="pv_go" type="button" data-a="pvresume" hidden>Keep recording</button>
+    <details class="xgtab"><summary>Show readings</summary><div id="pv_tbl"></div></details>
+   </div>
+   <p class="pace" id="pv_note"></p>
+   <p class="pace apiq" id="apiq3" hidden></p>
+   <div id="pv_saved"></div>
+   <button class="wide" id="pv_clr" type="button" data-a="pvclear" hidden>Clear saved readings</button>
+  </details>
   <p class="pace" id="r_recl" hidden>Latest results, newest first</p>
   <div class="rrec" id="r_rec"></div>
   <p class="pace" id="r_note"></p>
@@ -1384,7 +1459,7 @@ body.pg3 .v2[data-cur="3"] [data-pg]:not([data-pg~="3"]){display:none!important}
  </section>
  <div class="pgnav" id="pgnav" hidden><button type="button" data-go="back">Back</button><button type="button" data-go="next">Next</button></div>
  <p class="pgsr" id="pgsr" role="status" aria-live="polite"></p>
- <footer>Numbers come from a pasted stats line, or are pulled from your own API-Sports key if you add one. Not connected to a bookmaker. No bet is guaranteed.<span class="bld"><span id="buildno">Build 75 · 12 Nov 2026</span> <button type="button" class="pu" id="reloadnew" data-a="reload">Reload latest</button></span></footer>
+ <footer>Numbers come from a pasted stats line, or are pulled from your own API-Sports key if you add one. Not connected to a bookmaker. No bet is guaranteed.<span class="bld"><span id="buildno">Build 76 · 13 Nov 2026</span> <button type="button" class="pu" id="reloadnew" data-a="reload">Reload latest</button></span></footer>
 </main>
 
 <script>
@@ -2277,6 +2352,284 @@ function pmAutoPlan(cards,day,done,saved){
  });
  return{take:take,done:keys.slice(-60)};
 }
+// ---- Price / Volume over time (Record tab). One reading = what the live feed shows for a match at one moment.
+// Everything here is pure, so it is tested without a network. The feed has no traded volume, so the second layer of the chart is
+// Movement: how far the chosen price moved since the previous reading.
+const PV_MAX_READ=500,PV_MAX_MATCH=5,PV_STOP_BAD=3;
+const PV_W=320,PV_H=204;
+const pvR=(x,n)=>{const m=Math.pow(10,n||0);return Math.round(x*m)/m};
+const PV_SKIP=/half|1st|2nd|first|second|next|handicap|double|no bet|corner|card|exact|odd\/even|odd or even|range|asian|minute|penalt|clean|nil|home|away|team goals|booking|shot|player|goalscorer|scorer/;
+const PV_COMBO=/&|\+|\band\b|\bor\b|\//;
+// Which market a live bet is: the full-time result, goals over/under, or both teams to score. Anything else is left out.
+function pvMarket(name){
+ const n=String(name==null?'':name).trim().toLowerCase();
+ if(!n||PV_SKIP.test(n))return '';
+ if(/^both teams (to )?score$/.test(n))return 'bt';
+ if(PV_COMBO.test(n)&&!/^(over\/under( line)?|goals over\/under)$/.test(n))return '';
+ if(/^(fulltime result|full time result|full-time result|match winner|match result|1x2|3way result|3-way result)$/.test(n))return '1x2';
+ if(/^(over\/under( line)?|over under( line)?|match goals|goals over\/under|goals over under|total goals)$/.test(n))return 'ou';
+ return '';
+}
+// One value of a live bet -> a short key: H D A, Y N, or O2.5 / U2.5. The line is in the value ("Over 2.5") or in a separate field.
+function pvOutcome(kind,v,h){
+ const t=String(v==null?'':v).trim().toLowerCase();
+ if(kind==='1x2')return t==='home'||t==='1'?'H':t==='draw'||t==='x'?'D':t==='away'||t==='2'?'A':'';
+ if(kind==='bt')return t==='yes'?'Y':t==='no'?'N':'';
+ if(kind==='ou'){
+  const m=/^(over|under)(?:\s+(\d+(?:\.\d+)?))?$/.exec(t);
+  if(!m)return '';
+  const ln=m[2]!=null?parseFloat(m[2]):nOrNull(h);
+  if(ln==null||ln<0.5||ln>8.5||pvR(ln*2)%2!==1||Math.abs(ln*2-pvR(ln*2))>1e-9)return '';
+  return(m[1]==='over'?'O':'U')+ln;
+ }
+ return '';
+}
+// The feed's answer for one match -> {m,gh,ga,v:{key:number},names,seen,susp,stopped,done}, or null when it has no entry for the match.
+// A suspended value is left out of v (a gap in the chart). seen counts the recognised markets; names lists every market name the feed sent.
+function pvParse(j){
+ const a=j&&Array.isArray(j.response)?j.response:[];
+ const e=a[0];
+ if(!e||typeof e!=='object')return null;
+ const o=x=>x&&typeof x==='object'?x:{},st=o(e.status),fx=o(e.fixture),fs=o(fx.status),tm=o(e.teams);
+ let m=nOrNull(fs.elapsed);
+ if(m==null){const sec=nOrNull(st.seconds!=null?st.seconds:fs.seconds);if(sec!=null)m=Math.floor(sec/60)}
+ if(m!=null&&(m<0||m>200))m=null;
+ const g=t=>{const x=nOrNull(o(t).goals);return x!=null&&x>=0&&x<=30&&x===Math.floor(x)?x:null};
+ const out={m,gh:g(tm.home),ga:g(tm.away),v:{},names:[],seen:0,susp:false,stopped:st.stopped===true||st.blocked===true,
+  done:st.finished===true||['FT','AET','PEN'].indexOf(String(fs.short||''))>=0};
+ (Array.isArray(e.odds)?e.odds:[]).forEach(b=>{
+  if(!b||typeof b!=='object')return;
+  const nm=String(b.name==null?'':b.name).trim();
+  if(nm&&out.names.indexOf(nm)<0&&out.names.length<24)out.names.push(nm.slice(0,40));
+  const kind=pvMarket(nm);
+  if(!kind)return;
+  out.seen++;
+  (Array.isArray(b.values)?b.values:[]).forEach(x=>{
+   if(!x||typeof x!=='object')return;
+   const k=pvOutcome(kind,x.value,x.handicap);
+   if(!k)return;
+   if(x.suspended===true||x.suspended==='true'){out.susp=true;return}
+   const n=nOrNull(x.odd);
+   if(n==null||n<=1||n>1000)return;
+   if(out.v[k]==null&&Object.keys(out.v).length<24)out.v[k]=pvR(n,2);
+  });
+ });
+ if(out.stopped)out.susp=true;
+ return out;
+}
+const pvSame=(a,b)=>{const ka=Object.keys(a),kb=Object.keys(b);return ka.length===kb.length&&ka.every(k=>a[k]===b[k])};
+const pvNew=(id,name,league,now)=>({id:String(id),name:String(name||'').slice(0,80),lg:String(league||'').slice(0,60),at:now,done:false,rd:[]});
+// Add a reading to a match record. A reading identical to the last one (same minute, score and numbers) only moves that reading's time,
+// so half-time and quiet spells stay one point. The record keeps its newest PV_MAX_READ readings.
+function pvAdd(rec,r,now){
+ const last=rec.rd.length?rec.rd[rec.rd.length-1]:null;
+ let m=r.m;
+ if(m==null&&last&&last.m!=null)m=Math.min(200,last.m+Math.floor(Math.max(0,now-last.t)/60000));
+ const rd={t:now,m:m,gh:r.gh,ga:r.ga,v:Object.assign({},r.v)};
+ if(r.susp&&!Object.keys(rd.v).length)rd.s=1;
+ if(last&&last.m===rd.m&&last.gh===rd.gh&&last.ga===rd.ga&&(last.s||0)===(rd.s||0)&&pvSame(last.v,rd.v))last.t=now;
+ else rec.rd.push(rd);
+ while(rec.rd.length>PV_MAX_READ)rec.rd.shift();
+ if(r.done)rec.done=true;
+ return rec;
+}
+// Insert or replace a match record, newest first, keeping PV_MAX_MATCH of them.
+const pvLast=r=>r.rd.length?r.rd[r.rd.length-1].t:r.at;
+function pvPut(list,rec){
+ const out=list.filter(x=>x.id!==rec.id);
+ out.push(rec);
+ out.sort((a,b)=>pvLast(b)-pvLast(a));
+ return out.slice(0,PV_MAX_MATCH);
+}
+const PV_KEY=/^(H|D|A|Y|N|[OU][0-8]\.5)$/;
+// Stored data -> a clean list. Anything that is not the right shape is dropped, so a damaged value cannot break the page.
+function pvClean(raw){
+ const a=Array.isArray(raw)?raw:[],out=[];
+ a.forEach(x=>{
+  if(!x||typeof x!=='object'||(typeof x.id!=='string'&&typeof x.id!=='number')||!Array.isArray(x.rd))return;
+  const at=nOrNull(x.at);
+  const rec=pvNew(x.id,typeof x.name==='string'?x.name:'',typeof x.lg==='string'?x.lg:'',at==null?0:at);
+  rec.done=x.done===true;
+  x.rd.forEach(r=>{
+   if(!r||typeof r!=='object')return;
+   const t=nOrNull(r.t);
+   if(t==null||t<0)return;
+   const m=nOrNull(r.m),gh=nOrNull(r.gh),ga=nOrNull(r.ga),v={};
+   if(r.v&&typeof r.v==='object')Object.keys(r.v).forEach(k=>{const n=nOrNull(r.v[k]);if(PV_KEY.test(k)&&n!=null&&n>1&&n<=1000&&Object.keys(v).length<24)v[k]=pvR(n,2)});
+   const rd={t:t,m:m!=null&&m>=0&&m<=200?m:null,gh:gh!=null&&gh>=0&&gh<=30?gh:null,ga:ga!=null&&ga>=0&&ga<=30?ga:null,v:v};
+   if(r.s===1&&!Object.keys(v).length)rd.s=1;
+   rec.rd.push(rd);
+  });
+  rec.rd=rec.rd.slice(-PV_MAX_READ);
+  if(rec.rd.length)out.push(rec);
+ });
+ out.sort((p,q)=>pvLast(q)-pvLast(p));
+ return out.slice(0,PV_MAX_MATCH);
+}
+// The numbers a record has, in a fixed order: Under lines, Over lines, then Home, Draw, Away, Yes, No.
+const pvKeyRank=k=>{const c=k.charAt(0),l=parseFloat(k.slice(1));return c==='U'?l:c==='O'?100+l:({H:200,D:201,A:202,Y:203,N:204})[k]};
+function pvKeys(rec){
+ const set={};
+ rec.rd.forEach(r=>Object.keys(r.v).forEach(k=>{set[k]=1}));
+ return Object.keys(set).sort((a,b)=>pvKeyRank(a)-pvKeyRank(b));
+}
+function pvLabel(k){
+ const c=k.charAt(0);
+ if(c==='U')return 'Under '+k.slice(1);
+ if(c==='O')return 'Over '+k.slice(1);
+ return({H:'Home win',D:'Draw',A:'Away win',Y:'Both teams score: Yes',N:'Both teams score: No'})[k]||k;
+}
+// Which number to draw first. The one chosen before wins if this match has it; then the panel's own market (u3.5 -> U3.5);
+// then the Under line whose latest number is closest to 1.9 (the line the feed is really trading); then the first one there is.
+function pvDefaultKey(rec,prefer,panel){
+ const keys=pvKeys(rec);
+ if(!keys.length)return '';
+ if(prefer&&keys.indexOf(prefer)>=0)return prefer;
+ const p=String(panel||'');
+ const pk=/^[uo]\d+(\.\d+)?$/.test(p)?p.charAt(0).toUpperCase()+p.slice(1):'';
+ if(pk&&keys.indexOf(pk)>=0)return pk;
+ let lastV=null;
+ for(let i=rec.rd.length-1;i>=0;i--)if(Object.keys(rec.rd[i].v).length){lastV=rec.rd[i].v;break}
+ const us=keys.filter(k=>k.charAt(0)==='U'&&lastV&&lastV[k]!=null);
+ if(us.length)return us.slice().sort((a,b)=>Math.abs(lastV[a]-1.9)-Math.abs(lastV[b]-1.9)||pvKeyRank(a)-pvKeyRank(b))[0];
+ return keys[0];
+}
+// Where each reading sits on the match clock. The minute is the feed's; readings within the same minute are spread across it by real time,
+// and the line never goes backwards.
+function pvX(rd){
+ const xs=[];
+ let runM=null,runT=0;
+ rd.forEach((r,i)=>{
+  let x;
+  if(r.m==null){x=i?xs[i-1]+Math.max(0,r.t-rd[i-1].t)/60000:0;runM=null}
+  else{
+   if(r.m!==runM){runM=r.m;runT=r.t}
+   x=r.m+Math.min(0.95,Math.max(0,r.t-runT)/60000);
+  }
+  if(i&&x<xs[i-1])x=xs[i-1];
+  xs.push(pvR(x,3));
+ });
+ return xs;
+}
+// One number over the match: points (y null where the feed gave nothing), movement since the previous reading, and where goals first show.
+function pvSeries(rec,key){
+ const xs=pvX(rec.rd),pts=[],goals=[];
+ let pg=null;
+ rec.rd.forEach((r,i)=>{
+  const y=r.v[key]!=null?r.v[key]:null,prev=i?pts[i-1].y:null;
+  pts.push({i:i,x:xs[i],y:y,m:r.m,gh:r.gh,ga:r.ga,s:r.s?1:0,mv:y!=null&&prev!=null?pvR(Math.abs(y-prev),2):null});
+  if(r.gh!=null&&r.ga!=null){
+   const tot=r.gh+r.ga;
+   if(pg!==null&&tot>pg)goals.push({i:i,x:xs[i],gh:r.gh,ga:r.ga});
+   pg=tot;
+  }
+ });
+ return{pts:pts,goals:goals};
+}
+function pvStats(pts){
+ const ys=pts.filter(p=>p.y!=null).map(p=>p.y);
+ if(!ys.length)return{n:0,start:null,now:null,hi:null,lo:null,gaps:pts.length};
+ return{n:ys.length,start:ys[0],now:ys[ys.length-1],hi:Math.max.apply(null,ys),lo:Math.min.apply(null,ys),gaps:pts.length-ys.length};
+}
+const pvF=v=>v==null?'–':(v>=10?v.toFixed(1):v.toFixed(2));
+// A y axis for the numbers: round ticks, at most five, with a little room above and below.
+function pvScale(vals){
+ const v=vals.filter(x=>x!=null&&isFinite(x));
+ if(!v.length)return{lo:1,hi:2,ticks:[1,1.5,2]};
+ let lo=Math.min.apply(null,v),hi=Math.max.apply(null,v);
+ if(hi-lo<0.1){const mid=(hi+lo)/2;lo=mid-0.05;hi=mid+0.05}
+ const steps=[0.05,0.1,0.2,0.25,0.5,1,2,5,10,20,50,100,200,500];
+ let st=steps[steps.length-1];
+ for(let i=0;i<steps.length;i++)if((hi-lo)/steps[i]<=4){st=steps[i];break}
+ const a=Math.floor(lo/st+1e-9)*st,b=Math.ceil(hi/st-1e-9)*st,ticks=[];
+ for(let t=a;t<=b+st/2;t+=st)ticks.push(pvR(t,4));
+ return{lo:ticks[0],hi:ticks[ticks.length-1],ticks:ticks};
+}
+// The chart's geometry in a 320-wide box (the page scales it to the card and scales the text back).
+function pvGeom(pts,sc){
+ const lastX=pts.length?pts[pts.length-1].x:0,xmax=Math.max(90,Math.ceil(lastX/15)*15);
+ const G={W:PV_W,H:PV_H,l:44,r:8,t:22,h:112,bt:148,bh:28,xmax:xmax};
+ G.w=G.W-G.l-G.r;
+ G.px=x=>pvR(G.l+Math.max(0,Math.min(xmax,x))/xmax*G.w,1);
+ G.py=y=>pvR(G.t+(sc.hi-y)/(sc.hi-sc.lo)*G.h,1);
+ G.xt=[];for(let m=0;m<=xmax;m+=15)if(xmax<=90||m%30===0)G.xt.push(m);   // past 90 minutes the labels come every 30 so they never crowd
+ return G;
+}
+// The line as path text: a missing number breaks it into pieces. A piece of one point is not a line, so it comes back as a dot instead.
+function pvPath(pts,G){
+ const segs=[];
+ let cur=null;
+ pts.forEach(p=>{
+  if(p.y==null){cur=null;return}
+  if(!cur){cur=[];segs.push(cur)}
+  cur.push([G.px(p.x),G.py(p.y)]);
+ });
+ const d=segs.filter(q=>q.length>1).map(q=>q.map((c,i)=>(i?'L':'M')+c[0]+' '+c[1]).join('')).join('');
+ return{d:d,dots:segs.filter(q=>q.length===1).map(q=>q[0])};
+}
+// Everything the drawing needs for one number of one match.
+function pvModel(rec,key){
+ const S=pvSeries(rec,key),sc=pvScale(S.pts.map(p=>p.y)),G=pvGeom(S.pts,sc);
+ const mx=S.pts.reduce((a,p)=>p.mv!=null&&p.mv>a?p.mv:a,0);
+ return{key:key,label:pvLabel(key),pts:S.pts,goals:S.goals,sc:sc,G:G,st:pvStats(S.pts),maxMv:mx,path:pvPath(S.pts,G)};
+}
+// The drawing, as markup for the inside of the svg (classes are styled by the page).
+function pvSvg(M){
+ const G=M.G,n=M.pts.length;
+ let h='<line class="ax" x1="'+G.l+'" x2="'+G.l+'" y1="'+G.t+'" y2="'+(G.t+G.h)+'"/>';
+ M.sc.ticks.forEach(v=>{const y=G.py(v);h+='<line class="gl" x1="'+G.l+'" x2="'+(G.W-G.r)+'" y1="'+y+'" y2="'+y+'"/><text class="tk" x="'+(G.l-6)+'" y="'+(y+4)+'" text-anchor="end">'+pvF(v)+'</text>'});
+ h+='<line class="base" x1="'+G.l+'" x2="'+(G.W-G.r)+'" y1="'+(G.bt+G.bh)+'" y2="'+(G.bt+G.bh)+'"/>';
+ G.xt.forEach(m=>{h+='<text class="tk" x="'+G.px(m)+'" y="'+(G.H-6)+'" text-anchor="'+(m===0?'start':m===G.xmax?'end':'middle')+'">'+m+"'</text>"});
+ if(G.xmax>=45)h+='<line class="gl" x1="'+G.px(45)+'" x2="'+G.px(45)+'" y1="'+G.t+'" y2="'+(G.bt+G.bh)+'"/>';
+ let lastLabel=-99;
+ M.goals.forEach(g=>{
+  const x=G.px(g.x);
+  h+='<line class="pvg" x1="'+x+'" x2="'+x+'" y1="'+G.t+'" y2="'+(G.bt+G.bh)+'"/>';
+  if(x-lastLabel>=34){h+='<text class="tk" x="'+Math.min(Math.max(x,G.l+14),G.W-G.r-14)+'" y="'+(G.t-8)+'" text-anchor="middle">'+g.gh+'–'+g.ga+'</text>';lastLabel=x}
+ });
+ const bw=pvR(Math.max(1.5,Math.min(5,G.w/G.xmax*0.6)),1);
+ if(M.maxMv>0)M.pts.forEach(p=>{if(p.mv==null||p.mv<=0)return;const hh=pvR(Math.max(1.5,Math.sqrt(p.mv/M.maxMv)*G.bh),1);h+='<rect class="pvb" x="'+pvR(G.px(p.x)-bw/2,1)+'" y="'+pvR(G.bt+G.bh-hh,1)+'" width="'+bw+'" height="'+hh+'" rx="1"/>'});
+ if(M.path.d)h+='<path class="ls s3" d="'+M.path.d+'"/>';
+ M.path.dots.forEach(d=>{h+='<circle class="dt s3" cx="'+d[0]+'" cy="'+d[1]+'" r="3"/>'});
+ let L=null;
+ for(let i=n-1;i>=0;i--)if(M.pts[i].y!=null){L=M.pts[i];break}
+ if(L)h+='<circle class="hl s3" cx="'+G.px(L.x)+'" cy="'+G.py(L.y)+'" r="8"/><circle class="dt s3" cx="'+G.px(L.x)+'" cy="'+G.py(L.y)+'" r="4"/>';
+ h+='<line class="cx" id="pvcx" x1="0" x2="0" y1="'+G.t+'" y2="'+(G.bt+G.bh)+'" visibility="hidden"/><circle class="dt s3" id="pvh" r="4" cx="0" cy="0" visibility="hidden"/>';
+ return h;
+}
+// The reading nearest to a spot on the chart (x in the 320-wide box), or -1.
+function pvNearest(M,x){
+ let best=-1,bd=1e9;
+ M.pts.forEach((p,i)=>{const d=Math.abs(M.G.px(p.x)-x);if(d<bd){bd=d;best=i}});
+ return best;
+}
+// One reading in words, for the line under the chart. (Bars use a square-root scale so quiet drift stays visible beside a goal jump.)
+function pvReadText(M,i){
+ const p=M.pts[i];
+ if(!p)return '';
+ const clock=p.m!=null?p.m+"'":'–';
+ const score=p.gh!=null&&p.ga!=null?' · '+p.gh+'–'+p.ga:'';
+ if(p.y==null)return clock+score+' · '+M.label+(p.s?' · paused by the feed':' · not offered at this point');
+ return clock+score+' · '+M.label+' · price '+pvF(p.y)+(p.mv!=null?' · moved '+(p.mv===0?'0.00':pvF(p.mv)):'');
+}
+// The whole chart as one sentence for a screen reader.
+function pvAria(M){
+ const s=M.st;
+ if(!s.n)return 'Live price over time. No readings yet.';
+ return 'Live price over time for '+M.label+'. '+s.n+' readings. Start '+pvF(s.start)+', now '+pvF(s.now)+', high '+pvF(s.hi)+', low '+pvF(s.lo)+'. Use the left and right arrow keys to read each point.';
+}
+// What to do after one reading: keep going, or stop and say why. bad = readings in a row that failed, empty = readings in a row with no recognised market.
+function pvNext(r,bad,empty){
+ if(r&&r.done)return{go:false,why:'done'};
+ if(bad>=PV_STOP_BAD)return{go:false,why:'errors'};
+ if(empty>=PV_STOP_BAD)return{go:false,why:'unknown'};
+ return{go:true,why:''};
+}
+// How often to read: the chosen gap, never shorter than the app's own refresh gap, and doubled once after a "too many requests" answer.
+function pvEvery(choice,floor,slow){
+ const c=[30000,60000,120000].indexOf(choice)>=0?choice:60000;
+ return Math.max(c,floor||0)*(slow?2:1);
+}
 const REC_TAG='U35DATA ';
 // Text you can paste into Notes or a message: a short summary plus one data line that recordImport can read back.
 function recordExport(book,stamp){
@@ -3086,6 +3439,189 @@ function pmChange(){
  pmSet.day=+$('pm_day').value===1?1:0;pmSet.pages=+$('pm_pages').value||6;pmSet.min=+$('pm_min').value||0.8;pmSet.tot=+$('pm_tot').value||2;
  pmSet.n=[1,2,3,4].indexOf(+$('pm_n').value)>=0?+$('pm_n').value:3;pmSet.auto=$('pm_auto').value!=='0';
  pmSetSave();pmRender();
+}
+// ---- Price / Volume over time (Record tab). The maths is in the logic block (pv*). One reading is one request to the API,
+// taken only while this page is open and on screen. The readings stay on this device (last 5 matches) and are not part of a backup.
+const PVK='u35_pv',PVS='u35_pvset';
+let pvList=[],pvRecs=[],pvSet={every:60000,key:''},pvCur=null,pvW=null,pvM=null,pvSel=-1,pvLoading=false,pvT=0,pvGen=0,pvBad=0,pvEmpty=0,pvSlow=false,pvPaused=false,pvDiag='',pvClrArm=0,pvClrT=0;
+function pvLoad(){
+ try{pvRecs=pvClean(JSON.parse(localStorage.getItem(PVK)||'[]'))}catch(e){pvRecs=[]}
+ try{const o=JSON.parse(localStorage.getItem(PVS)||'null');if(o&&typeof o==='object'){if([30000,60000,120000].indexOf(o.every)>=0)pvSet.every=o.every;if(typeof o.key==='string'&&PV_KEY.test(o.key))pvSet.key=o.key}}catch(e){}
+}
+function pvSave(){
+ const w=()=>localStorage.setItem(PVK,JSON.stringify(pvRecs));
+ try{w()}catch(e){try{if(pvRecs.length>1){pvRecs=pvRecs.slice(0,pvRecs.length-1);w()}}catch(e2){}}
+}
+function pvSetSave(){try{localStorage.setItem(PVS,JSON.stringify({every:pvSet.every,key:pvSet.key}))}catch(e){}}
+function pvMsg(t,warn){const e=$('pv_msg');e.textContent=t||'';e.hidden=!t;e.className='pace'+(warn?' am':'')}
+const pvName=r=>r&&r.name?r.name:'Match';
+const pvPl=n=>n+(n===1?' reading is':' readings are');
+function pvDay(at){try{return new Date(at).toLocaleDateString('en-US',{day:'numeric',month:'short'})}catch(e){return ''}}
+async function pvPickOpen(){
+ if(pvLoading)return;
+ pvLoading=true;pvMsg('Loading live matches…');
+ try{
+  pvList=skFilter(apiLive(await apiGet('/fixtures?live=all')));
+  $('pv_pick').hidden=false;pvPickRender();
+  pvMsg(pvList.length+' live now.'+(pvList.length?' Tap one to start.':'')+skNote());
+ }catch(e){pvMsg(e.message,true)}
+ pvLoading=false;
+}
+function pvPickRender(){
+ const rows=apiFilter(apiSort(pvList,c),$('pv_q').value);
+ $('pv_rows').innerHTML=rows.length?rows.map(f=>'<button type="button" class="lvr'+(pvW&&pvW.id===String(f.id)?' on':'')+'" data-a="pvpick" data-id="'+esc(f.id)+'"><b>'+esc(f.home.name)+' v '+esc(f.away.name)+'</b><span class="lvs"><span class="lvm">'+esc(f.min)+"'</span> "+esc(f.gh==null?'-':f.gh)+'–'+esc(f.ga==null?'-':f.ga)+'</span><small>'+esc(f.league+(f.country?' · '+f.country:''))+'</small><span></span></button>').join(''):'<div class="lvempty">'+(pvList.length?'No live match fits that filter.':lvSkipN?'Every live match is in a skipped league.':'No matches are live right now.')+'</div>';
+}
+function pvPickGo(id){const f=pvList.find(x=>String(x.id)===String(id));if(f)pvStartId(f.id,f.home.name+' v '+f.away.name,f.league)}
+function pvLinked(){if(live)pvStartId(live.id,live.home.name+' v '+live.away.name,'')}
+function pvResume(){if(pvCur&&!pvCur.done)pvStartId(pvCur.id,pvCur.name,pvCur.lg)}
+function pvStartId(id,name,league){
+ if(!apiKey){pvMsg('Add your API-Sports key in Settings first.',true);return}
+ pvStop(true);
+ id=String(id);
+ let rec=pvRecs.find(x=>x.id===id);
+ if(!rec)rec=pvNew(id,name,league,Date.now());
+ rec.done=false;
+ pvRecs=pvPut(pvRecs,rec);
+ pvCur=rec;pvSel=-1;
+ pvW={id:id};pvBad=0;pvEmpty=0;pvSlow=false;pvDiag='';
+ $('pvd').open=true;$('pv_pick').hidden=true;
+ pvMsg('Reading '+name+'…');
+ pvDraw();pvSavedRender();
+ pvRead();
+}
+function pvStop(quiet){
+ clearTimeout(pvT);pvT=0;pvPaused=false;pvGen++;
+ const had=pvW;pvW=null;
+ if(had&&!quiet){const rec=pvRecs.find(x=>x.id===had.id);pvMsg('Stopped. '+pvPl(rec?rec.rd.length:0)+' saved on this device.')}
+ pvDraw();pvSavedRender();
+}
+// One reading, then the next one after the chosen gap. Nothing is requested while the page is hidden; it picks up again when it is shown.
+async function pvRead(){
+ if(!pvW)return;
+ clearTimeout(pvT);pvT=0;
+ if(document.hidden){pvPaused=true;return}
+ pvPaused=false;
+ const g=pvGen,id=pvW.id;
+ let r=null,err='';
+ try{r=pvParse(await apiGet('/odds/live?fixture='+encodeURIComponent(id)))}catch(e){err=String(e&&e.message||'The reading failed.')}
+ if(g!==pvGen)return;
+ const rec=pvRecs.find(x=>x.id===id);
+ if(!rec){pvStop(true);return}
+ if(err){pvBad++;pvSlow=/too many/i.test(err);pvMsg(err+(pvBad<PV_STOP_BAD?' I will try again.':''),true)}
+ else{
+  pvBad=0;pvSlow=false;
+  if(r&&r.seen>0){
+   pvEmpty=0;pvDiag='';pvAdd(rec,r,Date.now());pvSave();
+   pvMsg(r.susp&&!Object.keys(r.v).length?'The feed has paused its prices for now (after a goal or a card, for example).':'');
+  }else{
+   pvEmpty++;
+   pvDiag=r&&r.names.length?'The feed answered for this match but sent no market I can read. It sent: '+r.names.join(', ')+'.':'The feed has no live prices for this match right now. Not every match is covered.';
+   pvMsg(pvDiag+(pvEmpty<PV_STOP_BAD?' I will try again.':''),true);
+  }
+ }
+ if(r&&r.done){rec.done=true;pvSave()}
+ const nx=pvNext(r,pvBad,pvEmpty);
+ if(!nx.go){
+  pvW=null;pvGen++;
+  const n=rec.rd.length;
+  pvMsg(nx.why==='done'?'The match has finished. '+pvPl(n)+' saved on this device.':nx.why==='errors'?'Recording stopped after '+PV_STOP_BAD+' failed readings in a row. '+err:'Recording stopped. '+pvDiag,nx.why!=='done');
+ }
+ if(pvCur&&pvCur.id===id)pvDraw();
+ pvSavedRender();
+ if(nx.go)pvT=setTimeout(pvRead,pvEvery(pvSet.every,lvEvery(),pvSlow));
+}
+function pvWake(){if(pvW&&pvPaused)pvRead()}
+function pvOpen(id){const r=pvRecs.find(x=>x.id===String(id));if(!r)return;pvCur=r;pvSel=-1;pvDraw();pvSavedRender()}
+function pvDel(id){
+ id=String(id);
+ if(pvW&&pvW.id===id)pvStop(true);
+ pvRecs=pvRecs.filter(x=>x.id!==id);
+ if(pvCur&&pvCur.id===id)pvCur=null;
+ pvSave();pvDraw();pvSavedRender();
+}
+function pvClear(){
+ if(!pvClrArm){pvClrArm=1;clearTimeout(pvClrT);pvClrT=setTimeout(()=>{pvClrArm=0;pvSavedRender()},4000);pvSavedRender();return}
+ pvClrArm=0;clearTimeout(pvClrT);
+ pvStop(true);pvRecs=[];pvCur=null;pvSave();pvMsg('');pvDraw();pvSavedRender();
+}
+function pvShow(i){
+ if(!pvM||i<0||i>=pvM.pts.length){pvHide();return}
+ pvSel=i;
+ const p=pvM.pts[i],G=pvM.G,x=G.px(p.x),cx=$('pvcx'),h=$('pvh');
+ if(cx){cx.setAttribute('x1',x);cx.setAttribute('x2',x);cx.setAttribute('visibility','visible')}
+ if(h){if(p.y!=null){h.setAttribute('cx',x);h.setAttribute('cy',G.py(p.y));h.setAttribute('visibility','visible')}else h.setAttribute('visibility','hidden')}
+ $('pv_read').textContent=pvReadText(pvM,i);
+}
+function pvHide(){
+ pvSel=-1;
+ const cx=$('pvcx'),h=$('pvh');
+ if(cx)cx.setAttribute('visibility','hidden');
+ if(h)h.setAttribute('visibility','hidden');
+ const n=pvM?pvM.pts.length:0;
+ $('pv_read').textContent=n?'Latest: '+pvReadText(pvM,n-1)+'. Tap the chart to read a point.':'No readings yet.';
+}
+function pvNote(){
+ const rec=pvCur,per=Math.round(3600000/pvEvery(pvSet.every,lvEvery(),false));
+ let t='';
+ if(rec&&rec.rd.length){const f=rec.rd[0],l=rec.rd[rec.rd.length-1];t=pvPl(rec.rd.length).replace(/ (is|are)$/,'')+(f.m!=null&&l.m!=null?', '+f.m+"' to "+l.m+"'":'')+'. '}
+ $('pv_note').textContent=t+'One reading is one request to the API: about '+per+' an hour at this pace. Readings are taken only while this page is open and on screen, so a gap in the chart means the page was closed or hidden.';
+}
+function pvDraw(){
+ const rec=pvCur;
+ $('pv_box').hidden=!rec;
+ if(!rec){pvM=null;pvNote();return}
+ const keys=pvKeys(rec),key=pvDefaultKey(rec,pvSet.key,mkKey(c.side,lineOf(c)));
+ $('pv_key').innerHTML=keys.length?keys.map(k=>'<option value="'+esc(k)+'"'+(k===key?' selected':'')+'>'+esc(pvLabel(k))+'</option>').join(''):'<option value="">No prices yet</option>';
+ $('pv_key').disabled=!keys.length;
+ $('pv_ev').value=String(pvSet.every);
+ const M=pvModel(rec,key),st=M.st,w=!!(pvW&&pvW.id===rec.id);
+ pvM=M;
+ $('pvsvg').innerHTML=pvSvg(M);
+ $('pvbox').setAttribute('aria-label',pvAria(M));
+ $('pv_t').textContent=pvName(rec);
+ $('pv_s').textContent=w?'Recording':rec.done?'Finished':'Stopped';
+ $('pv_leg').innerHTML='<span class="xgk"><i class="ln s3"></i>'+esc(M.label||'Market')+' price <b>'+(st.n?pvF(st.now):'–')+'</b></span><span class="xgk"><i class="pvsq"></i>Movement (the feed has no volume)</span>'+(M.goals.length?'<span class="xgk"><i class="pvgl"></i>Goal</span>':'');
+ $('pv_a').textContent=pvF(st.start);$('pv_b').textContent=pvF(st.now);$('pv_c').textContent=pvF(st.hi);$('pv_d').textContent=pvF(st.lo);
+ $('pv_stop').hidden=!w;
+ $('pv_go').hidden=w||rec.done;
+ const rows=M.pts.slice(-80).reverse().map(p=>'<tr><td>'+(p.m!=null?p.m+"'":'–')+'</td><td>'+(p.gh!=null&&p.ga!=null?p.gh+'–'+p.ga:'–')+'</td><td>'+pvF(p.y)+'</td><td>'+(p.mv==null?'–':pvF(p.mv))+'</td></tr>').join('');
+ $('pv_tbl').innerHTML=M.pts.length?'<table class="xgtb"><thead><tr><th>Min</th><th>Score</th><th>Price</th><th>Moved</th></tr></thead><tbody>'+rows+'</tbody></table>':'<p class="pace">Nothing to show yet.</p>';
+ if(pvSel>=0&&pvSel<M.pts.length)pvShow(pvSel);else pvHide();
+ pvNote();
+ chartK();
+}
+function pvSavedRender(){
+ const e=$('pv_saved');
+ e.innerHTML=pvRecs.length?'<p class="pace pvh2">Saved on this device (the last '+PV_MAX_MATCH+' matches)</p>'+pvRecs.map(r=>'<div class="pvrow'+(pvCur&&pvCur.id===r.id?' on':'')+'"><button type="button" class="pvopen" data-a="pvopen" data-id="'+esc(r.id)+'"><b>'+esc(pvName(r))+'</b><small>'+esc(pvDay(r.at)+' · '+pvPl(r.rd.length).replace(/ (is|are)$/,'')+(pvW&&pvW.id===r.id?' · recording':r.done?' · finished':''))+'</small></button><button type="button" class="pvx" data-a="pvdel" data-id="'+esc(r.id)+'" aria-label="Remove '+esc(pvName(r))+'">Remove</button></div>').join(''):'';
+ $('pv_clr').hidden=!pvRecs.length;
+ $('pv_clr').textContent=pvClrArm?'Tap again to clear every saved reading':'Clear saved readings';
+}
+function pvTab(){$('pv_lk').hidden=!live}
+function pvInit(){
+ pvLoad();pvSavedRender();pvDraw();
+ $('pv_ev').value=String(pvSet.every);
+ $('pv_key').addEventListener('change',e=>{pvSet.key=e.target.value;pvSetSave();pvSel=-1;pvDraw()});
+ $('pv_ev').addEventListener('change',e=>{pvSet.every=+e.target.value;pvSetSave();pvNote();if(pvW&&!pvPaused){clearTimeout(pvT);pvT=setTimeout(pvRead,pvEvery(pvSet.every,lvEvery(),false))}});
+ $('pv_q').addEventListener('input',pvPickRender);
+ const b=$('pvbox'),at=e=>{const r=$('pvsvg').getBoundingClientRect();return!r.width||!pvM||!pvM.pts.length?-1:pvNearest(pvM,(e.clientX-r.left)/r.width*PV_W)};
+ b.addEventListener('pointermove',e=>{const i=at(e);if(i>=0)pvShow(i)});
+ b.addEventListener('pointerdown',e=>{const i=at(e);if(i>=0)pvShow(i)});
+ b.addEventListener('pointerleave',e=>{if(e.pointerType==='mouse')pvHide()});
+ b.addEventListener('focus',()=>{if(pvM&&pvM.pts.length&&pvSel<0)pvShow(pvM.pts.length-1)});
+ b.addEventListener('blur',pvHide);
+ b.addEventListener('keydown',e=>{
+  const n=pvM?pvM.pts.length:0;if(!n)return;
+  const cur=pvSel<0?n-1:pvSel;let i=-1;
+  if(e.key==='ArrowLeft')i=Math.max(0,cur-1);
+  else if(e.key==='ArrowRight')i=Math.min(n-1,cur+1);
+  else if(e.key==='Home')i=0;
+  else if(e.key==='End')i=n-1;
+  else if(e.key==='Escape'){pvHide();return}
+  else return;
+  e.preventDefault();pvShow(i);
+ });
+ document.addEventListener('pointerdown',e=>{if(!e.target.closest('#pvbox'))pvHide()});
+ document.addEventListener('visibilitychange',()=>{if(!document.hidden)pvWake()});
 }
 function setMkt(v,keep){mktOn=v==='show';document.body.classList.toggle('nomkt',!mktOn);if(!keep){try{localStorage.setItem('u35_mkt',mktOn?'show':'hide')}catch(e){}}}
 function setSize(v){size=v==='compact'?'compact':'normal';document.body.classList.toggle('compact',size==='compact');applyFold();try{localStorage.setItem('u35_size',size)}catch(e){}}
@@ -3904,7 +4440,7 @@ async function keyTest(){
 }
 function keyForget(){
  apiKey='';try{localStorage.removeItem(KEYK)}catch(e){}
- $('apikey').value='';lvUnlink(true);lvList=[];lvSkipN=0;lvListAt=0;skPickRender();$('lvlist').hidden=true;lvMsg('');
+ $('apikey').value='';lvUnlink(true);pvStop(true);pvList=[];lvList=[];lvSkipN=0;lvListAt=0;skPickRender();$('lvlist').hidden=true;lvMsg('');
  keyMsg('Key removed from this browser.');
  if(pn.on)pnOff();
 }
@@ -4088,7 +4624,7 @@ async function pnResub(){
  }catch(e){}
 }
 // ---- Back up everything on this phone (not the API key or alert password), so a new Home Screen icon can start from it.
-const BK_SKIP={u35_apikey:1,u35_pn:1,u35_apiq:1};
+const BK_SKIP={u35_apikey:1,u35_pn:1,u35_apiq:1,u35_pv:1};
 let bkArm=0,bkT=0;
 function bkMsg(t,bad){const m=$('bkmsg');m.textContent=t||'';m.hidden=!t;m.className='pace'+(bad?' am':'')}
 function bkMake(){
@@ -4163,7 +4699,7 @@ function apiQText(){
 }
 function apiQShow(){
  const t=apiQText(),lv=apiQLevel();
- ['apiq','apiq2'].forEach(id=>{const e=$(id);if(!e)return;e.textContent=t;e.hidden=!t;e.className='pace apiq'+(lv?' lvl'+lv:'')});
+ ['apiq','apiq2','apiq3'].forEach(id=>{const e=$(id);if(!e)return;e.textContent=t;e.hidden=!t;e.className='pace apiq'+(lv?' lvl'+lv:'')});
 }
 // Auto-refresh every 30 s; every 60 s when the day's allowance runs low, every 120 s when it is almost gone.
 function lvEvery(){const lv=apiQLevel();return lv===2?120000:lv===1?60000:30000}
@@ -4595,7 +5131,7 @@ document.addEventListener('click',e=>{
   document.querySelectorAll('.tabs button').forEach(x=>x.classList.toggle('on',x===t));
   document.body.classList.toggle('dockon',t.dataset.t==='bet');
   $('v-bet').hidden=t.dataset.t!=='bet';$('v-set').hidden=t.dataset.t!=='set';$('v-rec').hidden=t.dataset.t!=='rec';$('v-bt').hidden=t.dataset.t!=='bt';$('v-pm').hidden=t.dataset.t!=='pm';
-  if(t.dataset.t==='set')buildForm();else if(t.dataset.t==='rec'){rmsg('');$('r_out').hidden=true;renderRec()}else if(t.dataset.t==='bt')btOpen();else if(t.dataset.t==='pm')pmOpen();else update();
+  if(t.dataset.t==='set')buildForm();else if(t.dataset.t==='rec'){rmsg('');$('r_out').hidden=true;renderRec();pvTab()}else if(t.dataset.t==='bt')btOpen();else if(t.dataset.t==='pm')pmOpen();else update();
   return;
  }
  const a=e.target.closest('[data-a]');if(!a)return;
@@ -4606,6 +5142,14 @@ document.addEventListener('click',e=>{
  else if(k==='won'||k==='lost'||k==='void')settle(a.dataset.id,k);
  else if(k==='next')nextMatch(true);
  else if(k==='skadd')skAddFromInput();
+ else if(k==='pvlist')pvPickOpen();
+ else if(k==='pvpick')pvPickGo(a.dataset.id);
+ else if(k==='pvlinked')pvLinked();
+ else if(k==='pvstop')pvStop();
+ else if(k==='pvresume')pvResume();
+ else if(k==='pvopen')pvOpen(a.dataset.id);
+ else if(k==='pvdel')pvDel(a.dataset.id);
+ else if(k==='pvclear')pvClear();
  else if(k==='pmgo')pmGo();
  else if(k==='pmsave')pmSave(+a.dataset.i);
  else if(k==='pmdel')pmDel(a.dataset.id);
@@ -4671,7 +5215,7 @@ keyLoad();
 pnLoad();
 qhLoad();['qh_on','qh_from','qh_to'].forEach(id=>$(id).addEventListener('change',qhChange));setInterval(qhRender,30000);
 pmLoad();['pm_day','pm_pages','pm_min','pm_tot','pm_n','pm_auto'].forEach(id=>$(id).addEventListener('change',pmChange));
-skLoad();$('lv_skip').addEventListener('change',skPicked);$('sk_in').addEventListener('focus',skFillList);$('sk_in').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();skAddFromInput()}});
+pvInit();skLoad();$('lv_skip').addEventListener('change',skPicked);$('sk_in').addEventListener('focus',skFillList);$('sk_in').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();skAddFromInput()}});
 bookLoad();
 
 recheck();
@@ -4748,8 +5292,8 @@ $('pn_sync').addEventListener('change',pnSyncToggle);
 if(pn.on)setTimeout(pnResub,1500);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)pnSyncSoon()});
 // The charts are drawn in a 320-unit box that is scaled to the card. Counter-scale their text so axis labels stay 13 px like every other label.
-function chartK(){['xgbox','mombox'].forEach(id=>{const b=document.getElementById(id),sv=b&&b.querySelector('svg');if(!sv)return;const w=sv.getBoundingClientRect().width;if(w>0)b.style.setProperty('--k',(320/w).toFixed(4))})}
-if(window.ResizeObserver){const ro=new ResizeObserver(chartK);['xgbox','mombox'].forEach(id=>{const e=document.getElementById(id);if(e)ro.observe(e)})}
+function chartK(){['xgbox','mombox','pvbox'].forEach(id=>{const b=document.getElementById(id),sv=b&&b.querySelector('svg');if(!sv)return;const w=sv.getBoundingClientRect().width;if(w>0)b.style.setProperty('--k',(320/w).toFixed(4))})}
+if(window.ResizeObserver){const ro=new ResizeObserver(chartK);['xgbox','mombox','pvbox'].forEach(id=>{const e=document.getElementById(id);if(e)ro.observe(e)})}
 window.addEventListener('resize',chartK);chartK();
 $('ck_t').addEventListener('change',e=>clkFromTime(e.target.value));
 document.addEventListener('change',e=>{
