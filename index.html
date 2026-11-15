@@ -1168,6 +1168,55 @@ body.sx .sxbig.w{background:var(--grn);color:var(--bg)}
 body.sx .sxbig.x{background:var(--sxred,var(--red));color:#fff}
 :root.sxr{--sxred:#d92f43}
 body.sx .sxbig:disabled{opacity:.35;box-shadow:none}
+
+/* ===== Build 83: signal checks ===== */
+.sgbox{display:none}
+body.sx .sgbox{display:block;border:1px solid var(--line);border-left:3px solid var(--se);border-radius:12px;padding:10px 14px 12px;margin:0 0 12px}
+.sgbox .sgh{font:600 14px/20px var(--body);letter-spacing:.14em;text-transform:uppercase;color:var(--se);margin:0 0 8px}
+.sgbox label{display:flex;align-items:center;justify-content:space-between;gap:12px;font:var(--t-body);margin:0 0 8px;min-height:44px}
+.sgbox select{width:auto;max-width:62%;margin:0;border-radius:8px;font-weight:600}
+.sgbox .pace{margin:0}
+.sxg b.neg{color:var(--red)}
+
+/* ===== Build 84: a livelier verdict (cartoon ball, pop, pulse) ===== */
+.sxm{height:76px;display:flex;justify-content:center;align-items:flex-end;margin-bottom:2px}
+.sxm svg{overflow:visible}
+.sxm .ball{fill:#f6f7fb;stroke:#0a1330;stroke-width:2.5}
+.sxm .pat{fill:#0a1330;opacity:.82}
+.sxm .eyes ellipse{fill:#fff;stroke:#0a1330;stroke-width:1.6}
+.sxm .pu{fill:#0a1330}
+.sxm .mo,.sxm .lid,.sxm .arm{fill:none;stroke:#0a1330;stroke-width:2.6;stroke-linecap:round}
+.sxm .arm{stroke:var(--tx);stroke-width:3}
+.sxm .sh{fill:#000;opacity:.25}
+.sxm .mo,.sxm .lid,.sxm .zz{display:none}
+.sxm .zz{font:700 14px var(--body);fill:var(--mut)}
+.sxm.go .m-go,.sxm.warn .m-warn,.sxm.stop .m-stop,.sxm.idle .m-idle{display:block}
+.sxm.go .ball{fill:#d9ffe9;stroke:var(--grn)}.sxm.stop .ball{fill:#ffe1e4}.sxm.warn .ball{fill:#fff3cf}
+.sxm.idle .eyes{display:none}.sxm.idle .lid,.sxm.idle .zz{display:block}
+.sxm.go .a1{d:path("M15 40q-10-6-8-17")}.sxm.go .a2{d:path("M65 40q10-6 8-17")}
+.sxm .bd{transform-origin:40px 65px}
+@keyframes sxbounce{0%,100%{transform:translateY(0) scale(1,1)}12%{transform:translateY(0) scale(1.1,.88)}45%{transform:translateY(-16px) scale(.95,1.06)}80%{transform:translateY(0) scale(1.06,.92)}}
+@keyframes sxsh{0%,100%{transform:scaleX(1);opacity:.25}45%{transform:scaleX(.6);opacity:.12}}
+@keyframes sxsway{0%,100%{transform:rotate(-7deg)}50%{transform:rotate(7deg)}}
+@keyframes sxlook{0%,100%{transform:translateX(-2px)}50%{transform:translateX(2px)}}
+@keyframes sxshake{0%,100%{transform:translateX(0)}20%{transform:translateX(-5px) rotate(-5deg)}40%{transform:translateX(5px) rotate(5deg)}60%{transform:translateX(-3px)}80%{transform:translateX(3px)}}
+@keyframes sxbreathe{0%,100%{transform:scale(1)}50%{transform:scale(1.04,.97)}}
+@keyframes sxzz{0%{opacity:0;transform:translate(0,6px)}40%{opacity:1}100%{opacity:0;transform:translate(8px,-10px)}}
+@keyframes sxpop{0%{transform:scale(.5);opacity:0}55%{transform:scale(1.18);opacity:1}75%{transform:scale(.95)}100%{transform:scale(1)}}
+@keyframes sxpulse{0%,100%{text-shadow:0 0 0 transparent;transform:scale(1)}50%{text-shadow:0 0 22px var(--grn);transform:scale(1.035)}}
+@media (prefers-reduced-motion:no-preference){
+ .sxm.go .bd{animation:sxbounce .9s cubic-bezier(.3,.6,.4,1) infinite}
+ .sxm.go .sh{transform-origin:40px 74px;animation:sxsh .9s infinite}
+ .sxm.warn .bd{animation:sxsway 2.2s ease-in-out infinite}
+ .sxm.warn .pu{animation:sxlook 2.2s ease-in-out infinite}
+ .sxm.stop .bd{animation:sxshake .7s ease-in-out 2}
+ .sxm.idle .bd{animation:sxbreathe 3s ease-in-out infinite}
+ .sxm.idle .zz{animation:sxzz 2.4s ease-out infinite}
+ .sxv{display:inline-block}
+ .sxv.pop{animation:sxpop .5s cubic-bezier(.2,.9,.3,1.3) both}
+ .sxv.go:not(.pop){animation:sxpulse 1.6s ease-in-out infinite}
+}
+body.sx .sxv.warn,body.sx .sxmut.am{color:var(--sb)}
 </style>
 </head>
 <body>
@@ -1184,11 +1233,20 @@ body.sx .sxbig:disabled{opacity:.35;box-shadow:none}
 
  <section id="v-bet" class="v2">
   <div id="sx" hidden>
-   <div class="sxhero"><div class="sxl" id="sx_mk"></div><div class="sxv" id="sx_v" role="status"></div><div class="sxs" id="sx_s"></div></div>
+   <div class="sxhero"><div class="sxm" id="sx_m" aria-hidden="true"><svg viewBox="0 0 80 80" width="72" height="72">
+     <ellipse class="sh" cx="40" cy="74" rx="20" ry="4"/>
+     <g class="bd"><circle class="ball" cx="40" cy="38" r="27"/>
+      <path class="pat" d="M40 11l9 7-3 10H34l-3-10zM14 34l9-5 6 8-4 10-10-2zM66 34l-9-5-6 8 4 10 10-2zM31 62l3-9h12l3 9-9 4z"/>
+      <g class="eyes"><ellipse cx="31" cy="36" rx="4.2" ry="5.2"/><ellipse cx="49" cy="36" rx="4.2" ry="5.2"/><circle class="pu" cx="32" cy="37" r="2"/><circle class="pu" cx="50" cy="37" r="2"/></g>
+      <path class="lid" d="M26 36h10M44 36h10"/>
+      <path class="mo m-go" d="M30 46q10 10 20 0"/><path class="mo m-warn" d="M33 49h14"/><path class="mo m-stop" d="M31 52q9-8 18 0"/><path class="mo m-idle" d="M36 49q4 3 8 0"/>
+      <path class="arm a1" d="M15 44q-9 2-9 11"/><path class="arm a2" d="M65 44q9 2 9 11"/>
+     </g><text class="zz" x="62" y="16">z</text></svg></div><div class="sxl" id="sx_mk"></div><div class="sxv" id="sx_v" role="status"></div><div class="sxs" id="sx_s"></div></div>
    <div class="sxg">
     <div><span class="sxl">Minute</span><b id="sx_min"></b></div><div><span class="sxl">Score</span><b id="sx_sc"></b></div>
     <div><span class="sxl">Chance</span><b id="sx_ch"></b></div><div><span class="sxl">Rules met</span><b id="sx_ru"></b></div>
     <div><span class="sxl">On target</span><b id="sx_sot"></b></div><div><span class="sxl">xG</span><b id="sx_xg"></b></div>
+    <div><span class="sxl">Live price</span><b id="sx_px"></b></div><div><span class="sxl">Red cards</span><b id="sx_red"></b></div>
    </div>
    <div class="sxst"><i class="sxdot" id="sx_dot"></i><span id="sx_st"></span></div>
    <div class="sxbx"><div class="sxrow"><span><span class="sxl">Window</span> <span id="sx_wl"></span></span><span id="sx_wt" class="sxmut"></span></div><div id="sx_tl"></div></div>
@@ -1519,6 +1577,13 @@ body.sx .sxbig:disabled{opacity:.35;box-shadow:none}
  </div>
  </section>
  <section id="v-set" class="v2" hidden>
+  <div class="sgbox" id="sgbox">
+   <p class="sgh">Signal checks</p>
+   <label>Live price check<select id="sg_edge" aria-label="Live price check"><option value="-1">Off</option><option value="0">Chance must match the price</option><option value="2">Beat the price by 2 points</option><option value="5">Beat the price by 5 points</option></select></label>
+   <label>Sounds<select id="sx_snd" aria-label="Sounds"><option value="1">On</option><option value="0">Off</option></select></label>
+   <label>Red card<select id="sg_red" aria-label="Red card"><option value="hold">Hold the signal</option><option value="ignore">Ignore</option></select></label>
+   <p class="pace">For a linked live match only. The price check costs one more request each refresh.</p>
+  </div>
   <div id="form"></div>
   <div class="cr">
   <div class="fold sfold" id="fd-sl">
@@ -1587,7 +1652,7 @@ body.sx .sxbig:disabled{opacity:.35;box-shadow:none}
  </section>
  <div class="pgnav" id="pgnav" hidden><button type="button" data-go="back">Back</button><button type="button" data-go="next">Next</button></div>
  <p class="pgsr" id="pgsr" role="status" aria-live="polite"></p>
- <footer>Numbers come from a pasted stats line, or are pulled from your own API-Sports key if you add one. Not connected to a bookmaker. No bet is guaranteed.<span class="bld"><span id="buildno">Build 82 · 14 Nov 2026</span> <button type="button" class="pu" id="reloadnew" data-a="reload">Reload latest</button></span></footer>
+ <footer>Numbers come from a pasted stats line, or are pulled from your own API-Sports key if you add one. Not connected to a bookmaker. No bet is guaranteed.<span class="bld"><span id="buildno">Build 84 · 14 Nov 2026</span> <button type="button" class="pu" id="reloadnew" data-a="reload">Reload latest</button></span></footer>
 </main>
 
 <script>
@@ -2761,6 +2826,47 @@ function pvEvery(choice,floor,slow){
  const c=[30000,60000,120000].indexOf(choice)>=0?choice:60000;
  return Math.max(c,floor||0)*(slow?2:1);
 }
+// ---- Signal checks (Build 83): the live price and red cards. Pure functions; the page reads the feed and calls these.
+const SG_EDGES=[-1,0,2,5];   // -1 = price check off; otherwise the points the panel's chance must beat the price's chance by
+// Red cards for each side from /fixtures/statistics. null when the feed sent no statistics for the match.
+function sgRed(j,homeId,awayId){
+ const a=j&&Array.isArray(j.response)?j.response:[];
+ let any=false,h=0,aw=0;
+ a.forEach(e=>{
+  const id=e&&e.team&&e.team.id,side=id===homeId?'H':id===awayId?'A':null;
+  if(!side||!Array.isArray(e.statistics))return;
+  any=true;
+  e.statistics.forEach(s=>{if(s&&s.type==='Red Cards'){const n=nOrNull(s.value);if(n!=null&&n>0&&n<=5){if(side==='H')h=n;else aw=n}}});
+ });
+ return any?{h:h,a:aw}:null;
+}
+// The price of the panel's own line in a live reading (v from pvParse), and the chance that price stands for.
+// With both sides of the line priced, the bookmaker's margin is taken out; with one side only, the margin stays in (so the check is stricter).
+function sgPrice(v,side,line){
+ if(!v||line==null)return null;
+ const k=(side==='over'?'O':'U')+line,o=(side==='over'?'U':'O')+line,p=v[k],q=v[o];
+ if(p==null||!(p>1))return null;
+ const raw=1/p,fair=q!=null&&q>1?raw/(raw+1/q):raw;
+ return{price:p,ch:Math.max(0,Math.min(1,fair)),both:q!=null&&q>1};
+}
+// Does the panel's chance beat the price's chance by the margin (in points)? edge -1 = check off.
+function sgEdge(p,px,edge){
+ if(edge<0||p==null||!px)return{on:edge>=0,known:false,ok:true,diff:null};
+ const diff=Math.round((p-px.ch)*1000)/10;
+ return{on:true,known:true,ok:diff>=edge-1e-9,diff:diff};
+}
+// The call after both checks: a go is held when a red card is out (and the rule is on) or when the price shows no edge.
+function sgHold(k,red,redRule,eg){
+ if(k!=='go')return'';
+ if(redRule==='hold'&&red&&red.h+red.a>0)return'red';
+ if(eg&&eg.on&&eg.known&&!eg.ok)return'price';
+ return'';
+}
+function sgClean(o){
+ const out={edge:2,red:'hold'};
+ if(o&&typeof o==='object'){if(SG_EDGES.indexOf(o.edge)>=0)out.edge=o.edge;if(o.red==='ignore')out.red='ignore'}
+ return out;
+}
 const REC_TAG='U35DATA ';
 // Text you can paste into Notes or a message: a short summary plus one data line that recordImport can read back.
 function recordExport(book,stamp){
@@ -3791,7 +3897,11 @@ function sxRender(v,ev,vd,why){
  const word=vd.k==='go'?'ENTER':vd.k==='ok'?'WATCH':vd.k==='am'?'WAIT':vd.k==='bad'?(ev.dead?(c.side==='over'?'WON':'DEAD'):'SKIP'):vd.k==='idle'?'READY':'WAIT';
  const wk=vd.k==='go'?'go':vd.k==='bad'?'stop':vd.k==='ok'||vd.k==='am'?'warn':'';
  $('sx_mk').textContent=mkName(c.side,lineOf(c));
- const hv=$('sx_v');hv.textContent=word;hv.className='sxv '+wk;
+ // Build 83: a go is held when a red card is out or when the live price shows no edge (linked live match only)
+ const sgd=live&&live.sg?live.sg:null,px=sgd?sgPrice(sgd.v,c.side,lineOf(c)):null,eg=sgEdge(LP?LP.p:null,px,sgSet.edge),hold=live?sgHold(vd.k,sgd?sgd.red:null,sgSet.red,eg):'';
+ const hv=$('sx_v');hv.textContent=hold?'WAIT':word;hv.className='sxv '+(hold?'warn':wk);
+ $('sx_px').textContent=px?pvF(px.price)+' · '+Math.round(px.ch*100)+'%':'–';
+ const rc=$('sx_red');rc.textContent=sgd&&sgd.red?sgd.red.h+' · '+sgd.red.a:'–';rc.className=sgd&&sgd.red&&sgd.red.h+sgd.red.a>0?'neg':'';
  $('sx_s').textContent=vd.k==='idle'?'Pick a live match to start':(LP?Math.round(LP.p*100)+'% chance · ':'')+String(vd.head).toLowerCase();
  const two=(a,b)=>a==null&&b==null?'–':(a==null?'–':a)+' · '+(b==null?'–':b);
  $('sx_min').textContent=v.min!=null?v.min+"'":'–';
@@ -3812,8 +3922,10 @@ function sxRender(v,ev,vd,why){
  cap.hidden=!o;cap.textContent=o?'Result of '+(o.name||'Match')+(s.open.length>1?' (+'+(s.open.length-1)+' more open)':''):'';
  $('sx_won').disabled=$('sx_lost').disabled=!o&&!!sg;
  wy.hidden=!!o||!sg||!$('banner').hidden;wy.textContent=!o&&sg?sg:'';
- $('sx_log').hidden=!!why||!!o;
+ $('sx_log').hidden=!!why||!!o||!!hold;
+ if(hold)$('sx_s').textContent=hold==='red'?'Red card: signal held':'Price says '+Math.round(px.ch*100)+'%, panel '+Math.round(LP.p*100)+'%: no edge';
  $('sx_chk').hidden=!s.open.some(x=>x.fx&&x.fx.id!=null);
+ sxAnim();
 }
 // WON / LOST: settle the oldest open bet; with none open, log this match and settle it in one tap.
 function sxResult(kind){
@@ -3829,7 +3941,41 @@ function sxResult(kind){
   o=s.open[s.open.length-1];
  }
  settle(o.id,kind);
+ if(kind==='won')sxTune([[659,.1],[784,.1],[988,.1],[1319,.35]]);else sxTune([[330,.18,'sine'],[247,.35,'sine']]);
  if(quick)nextMatch(false);
+}
+// ---- Build 83: signal checks. live.sg = {red:{h,a}|null, v:{key:price}|null} is filled when a linked match is read.
+let sgSet={edge:2,red:'hold'};
+function sgLoad(){try{sgSet=sgClean(JSON.parse(localStorage.getItem('u35_sg')||'null'))}catch(e){sgSet=sgClean(null)}$('sg_edge').value=String(sgSet.edge);$('sg_red').value=sgSet.red}
+function sgChange(){sgSet=sgClean({edge:+$('sg_edge').value,red:$('sg_red').value});try{localStorage.setItem('u35_sg',JSON.stringify(sgSet))}catch(e){}update()}
+const sgWant=()=>SX&&sgSet.edge>=0;
+const sgGet=id=>sgWant()?apiGet('/odds/live?fixture='+encodeURIComponent(id)).catch(()=>null):Promise.resolve(null);
+function sgSee(sj,pj,hid,aid){
+ if(!live)return;
+ const old=live.sg||{red:null,v:null},red=sj?sgRed(sj,hid,aid):old.red,pr=pj?pvParse(pj):null;
+ live.sg={red:red,v:pr&&pr.seen>0?pr.v:null};
+}
+// ---- Build 84: the verdict comes alive. The ball's mood follows the call; the word pops when it changes; short sounds (can be switched off).
+let sxWord='',sxSnd=true;
+try{sxSnd=localStorage.getItem('u35_snd')!=='0'}catch(e){}
+function sxTune(notes){
+ if(!sxSnd||!ac)return;
+ try{let t=ac.currentTime+0.02;notes.forEach(n=>{const o=ac.createOscillator(),g=ac.createGain();o.type=n[2]||'triangle';o.frequency.value=n[0];g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(0.22,t+0.02);g.gain.exponentialRampToValueAtTime(0.0001,t+n[1]);o.connect(g);g.connect(ac.destination);o.start(t);o.stop(t+n[1]+0.03);t+=n[1]*0.75})}catch(e){}
+}
+function sxAnim(){
+ if(!SX)return;
+ const hv=$('sx_v'),w=hv.textContent,k=/\bgo\b/.test(hv.className)?'go':/\bstop\b/.test(hv.className)?'stop':/\bwarn\b/.test(hv.className)?'warn':'idle';
+ $('sx_m').className='sxm '+k;
+ if(w===sxWord)return;
+ const first=sxWord==='';sxWord=w;
+ if(first)return;   // nothing pops or sounds when the page opens
+ hv.classList.remove('pop');void hv.offsetWidth;hv.classList.add('pop');
+ if(w==='ENTER')sxTune([[523,.14],[659,.14],[784,.14],[1047,.3]]);
+}
+function sxSndInit(){
+ $('sx_snd').value=sxSnd?'1':'0';
+ $('sx_snd').addEventListener('change',e=>{sxSnd=e.target.value!=='0';try{localStorage.setItem('u35_snd',sxSnd?'1':'0')}catch(err){}if(sxSnd){ensureAudio();sxTune([[784,.12],[1047,.2]])}});
+ document.addEventListener('pointerdown',()=>{if(SX&&sxSnd)ensureAudio()},{passive:true});
 }
 function setMkt(v,keep){mktOn=v==='show';document.body.classList.toggle('nomkt',!mktOn);if(!keep){try{localStorage.setItem('u35_mkt',mktOn?'show':'hide')}catch(e){}}}
 function setSize(v){size=v==='compact'?'compact':'normal';document.body.classList.toggle('compact',size==='compact');applyFold();try{localStorage.setItem('u35_size',size)}catch(e){}}
@@ -4995,7 +5141,8 @@ async function lvPick(id){
  $('lvlist').hidden=true;$('scres').hidden=true;lvControls(true);
  lvMsg('Reading '+f.home.name+' v '+f.away.name+'…');
  const errs=[],safe=p=>p.catch(e=>{errs.push(e.message);return null});
- const r=await Promise.all([safe(apiGet('/fixtures/statistics?fixture='+encodeURIComponent(f.id))),safe(lvAvg(f.home.id)),safe(lvAvg(f.away.id))]);
+ const r=await Promise.all([safe(apiGet('/fixtures/statistics?fixture='+encodeURIComponent(f.id))),safe(lvAvg(f.home.id)),safe(lvAvg(f.away.id)),sgGet(f.id)]);
+ sgSee(r[0],r[3],f.home.id,f.away.id);
  const st=r[0]?apiStats(r[0],f.home.id,f.away.id):null;
  live.why=lvWhy(st);
  covSee(f,st);
@@ -5014,7 +5161,8 @@ async function lvRefresh(auto){
  if(!live||lvBusy)return;
  lvBusy=true;
  const errs=[],safe=p=>p.catch(e=>{errs.push(e.message);return null});
- const [fj,sj]=await Promise.all([safe(apiGet('/fixtures?id='+encodeURIComponent(live.id))),safe(apiGet('/fixtures/statistics?fixture='+encodeURIComponent(live.id)))]);
+ const [fj,sj,pj]=await Promise.all([safe(apiGet('/fixtures?id='+encodeURIComponent(live.id))),safe(apiGet('/fixtures/statistics?fixture='+encodeURIComponent(live.id))),sgGet(live.id)]);
+ if(live)sgSee(sj,pj,live.home.id,live.away.id);
  if(!fj&&!sj){
   lvMsg(errs[0]||'Could not refresh.',true);
   if(auto){$('lvauto').checked=false;lvAutoSync()}
@@ -5426,7 +5574,7 @@ keyLoad();
 pnLoad();
 qhLoad();['qh_on','qh_from','qh_to'].forEach(id=>$(id).addEventListener('change',qhChange));setInterval(qhRender,30000);
 pmLoad();['pm_day','pm_pages','pm_min','pm_tot','pm_n','pm_auto'].forEach(id=>$(id).addEventListener('change',pmChange));
-sxInit();pvInit();skLoad();$('lv_skip').addEventListener('change',skPicked);$('sk_in').addEventListener('focus',skFillList);$('sk_in').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();skAddFromInput()}});
+sxInit();sxSndInit();sgLoad();['sg_edge','sg_red'].forEach(id=>$(id).addEventListener('change',sgChange));pvInit();skLoad();$('lv_skip').addEventListener('change',skPicked);$('sk_in').addEventListener('focus',skFillList);$('sk_in').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();skAddFromInput()}});
 bookLoad();
 
 recheck();
