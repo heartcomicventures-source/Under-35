@@ -1217,6 +1217,31 @@ body.sx .sgbox{display:block;border:1px solid var(--line);border-left:3px solid 
  .sxv.go:not(.pop){animation:sxpulse 1.6s ease-in-out infinite}
 }
 body.sx .sxv.warn,body.sx .sxmut.am{color:var(--sb)}
+
+/* ===== Build 85: more life (harder pop, flash, confetti, tiles drop in) ===== */
+.sxhero{position:relative}
+.sxp{position:absolute;left:50%;top:62%;width:9px;height:9px;border-radius:2px;pointer-events:none;opacity:0;z-index:2}
+.sxp:nth-of-type(3n){border-radius:50%}.sxp:nth-of-type(4n){width:5px;height:13px}
+@keyframes sxconf{0%{opacity:1;transform:translate(-50%,-50%) scale(.4)}70%{opacity:1}100%{opacity:0;transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy) + 60px)) rotate(var(--r)) scale(1)}}
+@keyframes sxpop2{0%{transform:scale(.2) rotate(-8deg);opacity:0}45%{transform:scale(1.38) rotate(3deg);opacity:1}62%{transform:scale(.9) rotate(-2deg)}80%{transform:scale(1.08)}100%{transform:scale(1)}}
+@keyframes sxflash{0%{opacity:.55;transform:scale(.3)}100%{opacity:0;transform:scale(1.5)}}
+@keyframes sxtile{0%{opacity:0;transform:translateY(10px) scale(.96)}100%{opacity:1;transform:none}}
+@keyframes sxshk{0%,100%{transform:translateX(0)}20%{transform:translateX(-9px)}40%{transform:translateX(9px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
+.sxhero::after{content:"";position:absolute;left:50%;top:58%;width:260px;height:260px;margin:-130px 0 0 -130px;border-radius:50%;pointer-events:none;opacity:0}
+.sxhero.fl-go::after{background:radial-gradient(circle,var(--grn) 0,transparent 65%)}
+.sxhero.fl-warn::after{background:radial-gradient(circle,var(--sb) 0,transparent 65%)}
+.sxhero.fl-stop::after{background:radial-gradient(circle,var(--red) 0,transparent 65%)}
+@media (prefers-reduced-motion:no-preference){
+ .sxp{animation:sxconf 1s cubic-bezier(.15,.7,.3,1) both}
+ .sxv.pop{animation:sxpop2 .7s cubic-bezier(.2,.9,.3,1.2) both}
+ .sxv.stop.pop{animation:sxpop2 .45s cubic-bezier(.2,.9,.3,1.2) both,sxshk .45s .45s ease-in-out both}
+ .sxhero[class*="fl-"]::after{animation:sxflash .8s ease-out both}
+ .sxg.in>div{animation:sxtile .35s ease-out both}
+ .sxg.in>div:nth-child(2){animation-delay:.05s}.sxg.in>div:nth-child(3){animation-delay:.1s}.sxg.in>div:nth-child(4){animation-delay:.15s}
+ .sxg.in>div:nth-child(5){animation-delay:.2s}.sxg.in>div:nth-child(6){animation-delay:.25s}.sxg.in>div:nth-child(7){animation-delay:.3s}.sxg.in>div:nth-child(8){animation-delay:.35s}
+ .sxv.warn:not(.pop){animation:sxbreathe 2.2s ease-in-out infinite}
+}
+#sx{overflow-x:clip}
 </style>
 </head>
 <body>
@@ -1652,7 +1677,7 @@ body.sx .sxv.warn,body.sx .sxmut.am{color:var(--sb)}
  </section>
  <div class="pgnav" id="pgnav" hidden><button type="button" data-go="back">Back</button><button type="button" data-go="next">Next</button></div>
  <p class="pgsr" id="pgsr" role="status" aria-live="polite"></p>
- <footer>Numbers come from a pasted stats line, or are pulled from your own API-Sports key if you add one. Not connected to a bookmaker. No bet is guaranteed.<span class="bld"><span id="buildno">Build 84 · 14 Nov 2026</span> <button type="button" class="pu" id="reloadnew" data-a="reload">Reload latest</button></span></footer>
+ <footer>Numbers come from a pasted stats line, or are pulled from your own API-Sports key if you add one. Not connected to a bookmaker. No bet is guaranteed.<span class="bld"><span id="buildno">Build 85 · 14 Nov 2026</span> <button type="button" class="pu" id="reloadnew" data-a="reload">Reload latest</button></span></footer>
 </main>
 
 <script>
@@ -3970,13 +3995,44 @@ function sxAnim(){
  const first=sxWord==='';sxWord=w;
  if(first)return;   // nothing pops or sounds when the page opens
  hv.classList.remove('pop');void hv.offsetWidth;hv.classList.add('pop');
- if(w==='ENTER')sxTune([[523,.14],[659,.14],[784,.14],[1047,.3]]);
+ if(SX_TUNES[k])sxTune(SX_TUNES[k]);
+ sxBurst(k);
 }
 function sxSndInit(){
  $('sx_snd').value=sxSnd?'1':'0';
  $('sx_snd').addEventListener('change',e=>{sxSnd=e.target.value!=='0';try{localStorage.setItem('u35_snd',sxSnd?'1':'0')}catch(err){}if(sxSnd){ensureAudio();sxTune([[784,.12],[1047,.2]])}});
  document.addEventListener('pointerdown',()=>{if(SX&&sxSnd)ensureAudio()},{passive:true});
 }
+// ---- Build 85: burst, flash, count-up and a sound for every call
+const SX_TUNES={go:[[523,.11],[659,.11],[784,.11],[1047,.13],[1319,.34]],warn:[[587,.11],[740,.2]],stop:[[294,.16,'sawtooth'],[208,.32,'sawtooth']]};
+const sxCalm=()=>{try{return matchMedia('(prefers-reduced-motion:reduce)').matches}catch(e){return false}};
+function sxBurst(k){
+ const hero=document.querySelector('.sxhero'),hv=$('sx_v');
+ hero.classList.remove('fl-go','fl-warn','fl-stop');void hero.offsetWidth;
+ if(k!=='idle')hero.classList.add('fl-'+k);
+ document.querySelectorAll('.sxp').forEach(e=>e.remove());
+ const g=document.querySelector('.sxg');g.classList.remove('in');void g.offsetWidth;g.classList.add('in');
+ if(sxCalm())return;
+ if(k==='go'){
+  const cols=['var(--grn)','var(--sb)','var(--sa)','var(--sd)','#fff'],n=22;
+  for(let i=0;i<n;i++){
+   const p=document.createElement('i'),a=(i/n)*Math.PI*2+Math.random()*.4,d=70+Math.random()*90;
+   p.className='sxp';p.style.setProperty('--dx',Math.round(Math.cos(a)*d)+'px');p.style.setProperty('--dy',Math.round(Math.sin(a)*d*.7-30)+'px');
+   p.style.setProperty('--r',Math.round(Math.random()*540-270)+'deg');p.style.background=cols[i%cols.length];p.style.animationDelay=Math.round(Math.random()*90)+'ms';
+   hero.appendChild(p);
+  }
+  setTimeout(()=>document.querySelectorAll('.sxp').forEach(e=>e.remove()),1300);
+ }
+ // the chance counts up to its number
+ const ch=$('sx_ch'),m=/^(\d+)%$/.exec(ch.textContent);
+ if(!m)sxCountTo=-1;
+ if(m){
+  const end=+m[1],t0=performance.now(),dur=650;sxCountTo=end;
+  const step=t=>{if(sxCountTo!==end||ch.textContent==='–')return;const f=Math.max(0,Math.min(1,(t-t0)/dur));ch.textContent=Math.round(end*(1-Math.pow(1-f,3)))+'%';if(f<1)requestAnimationFrame(step);else ch.textContent=end+'%'};
+  requestAnimationFrame(step);
+ }
+}
+let sxCountTo=-1;
 function setMkt(v,keep){mktOn=v==='show';document.body.classList.toggle('nomkt',!mktOn);if(!keep){try{localStorage.setItem('u35_mkt',mktOn?'show':'hide')}catch(e){}}}
 function setSize(v){size=v==='compact'?'compact':'normal';document.body.classList.toggle('compact',size==='compact');applyFold();try{localStorage.setItem('u35_size',size)}catch(e){}}
 function fresh(){s=newState(dayKey());showLog=false;sugs={}}
